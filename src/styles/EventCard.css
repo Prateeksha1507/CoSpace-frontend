@@ -1,0 +1,24 @@
+.event-card {
+  display: flex;
+  gap: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  align-items: center;
+}
+
+.event-card img {
+    height: 171px;
+    flex: 1 0 0;
+    border-radius: 8px;
+    /* background: url(<path-to-image>) lightgray 50% / cover no-repeat; */
+}
+
+.event-details h3 {
+  margin-top: 0;
+}
+
+.event-details p {
+  margin: 10px 0;
+}

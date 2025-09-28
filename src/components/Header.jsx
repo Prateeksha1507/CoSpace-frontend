@@ -20,7 +20,7 @@ function Header({loggedIn=false}) {
         <img src="/logo.png" alt="CoSpace Logo" className="logo" />
         <span className="brand-name">CoSpace</span>
         <nav className="nav-links">
-          <a href="/home">Home</a>
+          <a href="/">Home</a>
           <a href="/events">Events</a>
           <a href="/chats" className="btn-primary">Chats</a>
         </nav>

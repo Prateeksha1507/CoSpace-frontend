@@ -9,11 +9,15 @@ import Register from './screens/Register';
 import UserRegister from './screens/users/UserRegister';
 import OrgRegister from './screens/orgs/OrgRegister';
 import Verification from './screens/orgs/Verification';
+import AboutPage from './screens/About';
+import PrivacyPolicy from './screens/Policy';
+import TermsAndConditions from './screens/Terms';
+import ContactPage from './screens/Contact';
 
 function App() {
   return (
     <>
-      <Header/>
+      <Header loggedIn={true}/>
       <BrowserRouter>
         <Routes>
           <Route path="/user/home" element={<UserHome />} />
@@ -24,6 +28,10 @@ function App() {
           <Route path="/register/organization" element={<OrgRegister />} />
           <Route path="/register/organisation" element={<OrgRegister />} />
           <Route path="/register/verification" element={<Verification />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Routes>
       </BrowserRouter>
       <Footer/>

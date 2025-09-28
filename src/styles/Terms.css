@@ -1,0 +1,30 @@
+.tnc-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+  color: #111;
+}
+
+.tnc-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #111827;
+}
+
+.tnc-section {
+  margin-bottom: 1.5rem;
+}
+
+.tnc-section h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.tnc-section p {
+  font-size: 0.95rem;
+  color: #374151;
+  line-height: 1.6;
+}

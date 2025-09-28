@@ -1,0 +1,85 @@
+.privacy-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+  color: #111;
+}
+
+.privacy-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.privacy-meta {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.privacy-intro {
+  margin-bottom: 2rem;
+}
+
+.privacy-intro h3 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.privacy-intro p {
+  font-size: 0.95rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+/* Accordion sections */
+.privacy-item {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.privacy-header {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.privacy-header:hover {
+  background: #f3f4f6;
+}
+
+.privacy-content {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.privacy-footer {
+  margin-top: 3rem;
+}
+
+.privacy-footer h3 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.privacy-footer p {
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.privacy-footer a {
+  color: #0d99ff;
+  text-decoration: none;
+}
+
+.privacy-footer a:hover {
+  text-decoration: underline;
+}

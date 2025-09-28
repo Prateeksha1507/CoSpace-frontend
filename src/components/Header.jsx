@@ -1,7 +1,19 @@
 import React from "react";
 import "../styles/header.css";
 
-function Header() {
+function Header({loggedIn=false}) {
+
+  if (!loggedIn) { 
+    return(
+    <header className="header">
+      <div className="header-left">
+        <img src="/logo.png" alt="CoSpace Logo" className="logo" />
+        <span className="brand-name">CoSpace</span>
+      </div>
+    </header>
+    )
+  }
+
   return (
     <header className="header">
       <div className="header-left">
@@ -19,12 +31,17 @@ function Header() {
           <i className="fas fa-search"></i>
           <input type="text" placeholder="Search" />
         </div>
-        <i className="fas fa-bell notification-icon"></i>
-        <img
+        <a href="/notifications"  className="bell-container">
+          <i className="fa-regular fa-bell"></i>
+        </a>
+        {/* <img
           src="https://via.placeholder.com/30"
           alt="User Avatar"
           className="avatar"
-        />
+        /> */}
+        <a href="/ny-profile"  className="avatar-container">
+          <i class="fa-solid fa-user"></i>
+        </a>
       </div>
     </header>
   );

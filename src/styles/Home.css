@@ -8,17 +8,34 @@
   border-radius: 8px;
 }
 
-.filters {
+h2 {
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 30px;
+  padding: 20px 16px 12px 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  margin: 0;
+}
+
+.filters {
+display: flex;
+padding: 12px 16px 12px 12px;
+align-items: flex-start;
+align-content: flex-start;
+gap: 12px;
+align-self: stretch;
+flex-wrap: wrap;
+}
+
+.filters > select {
+  padding: 5px 15px;
 }
 
 .events {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding: 16px;
 }
 
 .hero {

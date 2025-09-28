@@ -15,6 +15,10 @@
     /* background: url(<path-to-image>) lightgray 50% / cover no-repeat; */
 }
 
+.event-details {
+  width: 75%;
+}
+
 .event-details h3 {
   margin-top: 0;
 }

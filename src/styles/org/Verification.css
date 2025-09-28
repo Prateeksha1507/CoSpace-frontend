@@ -1,0 +1,169 @@
+/* Page container */
+.docs-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem 4rem;
+  background: #ffffff;
+}
+
+/* Content box */
+.docs-box {
+  width: 100%;
+  max-width: 880px;
+}
+
+/* Headings */
+.docs-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #111827; /* near-black */
+  margin: 1rem 0 1.5rem;
+}
+
+.docs-subtitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 1.5rem 0 0.5rem;
+}
+
+/* Text */
+.docs-hint {
+  color: #4b5563; /* gray-600 */
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.docs-text {
+  color: #374151; /* gray-700 */
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.docs-note {
+  color: #6b7280; /* gray-500 */
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* Sections */
+.docs-section + .docs-section {
+  margin-top: 2rem;
+}
+
+/* Upload row layout */
+.docs-upload-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f1f5f9; /* very light divider */
+}
+
+.docs-upload-info {
+  min-width: 0;
+}
+
+.docs-label {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.docs-filename {
+  font-size: 0.9rem;
+  color: #9ca3af; /* gray-400 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.docs-filename-placeholder {
+  opacity: 0.7;
+}
+
+/* Hidden native input + custom button */
+.docs-file-input {
+  position: absolute;
+  left: -9999px;
+}
+
+.docs-upload-action {
+  display: flex;
+  align-items: center;
+}
+
+.docs-upload-btn {
+  display: inline-block;
+  padding: 0.5rem 0.9rem;
+  background: #e8eef2; /* soft gray like your inputs */
+  color: #111827;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease-in-out;
+}
+
+.docs-upload-btn:hover {
+  background: #dbe5eb;
+}
+
+/* Submit button (right-aligned similar to screenshot) */
+.docs-button {
+  margin-top: 0.75rem;
+  align-self: flex-end;
+  padding: 0.6rem 1rem;
+  background: #0d99ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.docs-button:hover {
+  background: #067acc;
+}
+
+/* Progress */
+.docs-progress {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: #e5e7eb; /* gray-200 */
+  overflow: hidden;
+  margin: 0.5rem 0 0.5rem;
+}
+
+.docs-progress-bar {
+  height: 100%;
+  background: #7fbce9; /* soft blue like screenshot */
+  border-radius: 999px;
+}
+
+/* Links */
+.docs-link {
+  color: #0d99ff;
+  text-decoration: none;
+}
+
+.docs-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+  .docs-upload-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .docs-button {
+    width: 100%;
+  }
+}

@@ -6,9 +6,11 @@
   --text-color: #333;
   --link-color: #2980b9;
   --link-hover-color: #1abc9c; 
-  --button-color: #ffffff; 
-  --button-hover-color: #1294D4; 
-  --footer-text-color: #fff; 
+  --button-color: #e9e8f0; 
+  --button-hover-color: #1294D4;
+  --footer-text-color: #fff;
+  --primary-input-background: #E5E5EB
+  --secondary-button-color: #e9e8f0
 }
 
 body {
@@ -21,6 +23,7 @@ body {
 
 .primary-btn {
   background-color: var(--primary-color);
+  text-decoration: none;
   color: white;
 }
 
@@ -30,10 +33,26 @@ body {
 
 .secondary-btn {
   background-color: var(--button-color);
+  text-decoration: none;
   color: black;
 }
 
 .secondary-btn:hover {
   background-color: var(--button-hover-color);
   color: white;
+}
+
+.black-btn {
+  padding: 0.9rem;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  border-radius: 24px;
+  background: #282930;
+}
+
+.black-btn:hover {
+  background: #333;
 }

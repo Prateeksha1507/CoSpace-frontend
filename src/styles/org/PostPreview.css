@@ -1,0 +1,103 @@
+.pp-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+  color: var(--text-color);
+}
+
+/* Banner */
+.pp-banner-wrap {
+  margin-bottom: 1rem;
+}
+.pp-banner {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Title + description */
+.pp-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0.5rem 0 0.25rem;
+  color: #111827;
+}
+.pp-desc {
+  color: #374151;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+/* Sections */
+.pp-section {
+  margin-top: 1rem;
+}
+.pp-section-heading {
+  margin: 0.75rem 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Details grid */
+.pp-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem 2rem;
+  margin-top: 0.75rem;
+}
+.pp-detail {
+  display: grid;
+  gap: 0.25rem;
+}
+.pp-label {
+  color: #9ca3af;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.pp-value {
+  color: #111827;
+  font-size: 0.95rem;
+}
+
+/* Collaborators */
+.pp-collab-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 0.35rem;
+}
+.pp-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  font-size: 1rem;
+}
+.pp-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Actions */
+.pp-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+.pp-btn {
+  display: inline-block;
+  padding: 0.6rem 1.1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+}

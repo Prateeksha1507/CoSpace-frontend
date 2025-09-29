@@ -54,7 +54,7 @@ export default function AboutPage() {
         <div className="team-grid">
           <div className="team-member">
             <img src="/person.png" alt="Akshita Sheera" />
-            <h4>Akshita Sheera</h4>
+            <h4 className="member-name">Akshita Sheera</h4>
             <p className="role">Requirement Analyst</p>
                   <div className="team-socials">
         <a href="https://github.com/sarahchen" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -64,7 +64,7 @@ export default function AboutPage() {
           </div>
           <div className="team-member">
             <img src="/person.png" alt="Prateeksha" />
-            <h4>Prateeksha</h4>
+            <h4 className="member-name">Prateeksha</h4>
             <p className="role">Designer</p>
             <div className="team-socials">
                 <a href="https://github.com/sarahchen" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -74,7 +74,7 @@ export default function AboutPage() {
           </div>
           <div className="team-member">
             <img src="/person.png" alt="Vijay Samant" />
-            <h4>Vijay Samant</h4>
+            <h4 className="member-name">Vijay Samant</h4>
             <p className="role">Developer</p>
             <div className="team-socials">
                 <a href="https://github.com/sarahchen" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -84,7 +84,7 @@ export default function AboutPage() {
           </div>
           <div className="team-member">
             <img src="/person.png" alt="Pratham Singh Chauhan" />
-            <h4>Pratham Singh Chauhan</h4>
+            <h4 className="member-name">Pratham Singh Chauhan</h4>
             <p className="role">Tester</p>
             <div className="team-socials">
                 <a href="https://github.com/sarahchen" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -94,7 +94,7 @@ export default function AboutPage() {
           </div>
           <div className="team-member">
             <img src="/person.png" alt="Prakhar Raghuwanshi" />
-            <h4>Prakhar Raghuwanshi</h4>
+            <h4 className="member-name">Prakhar Raghuwanshi</h4>
             <p className="role">Manager</p>
             <div className="team-socials">
                 <a href="https://github.com/sarahchen" target="_blank" rel="noopener noreferrer">GitHub</a>

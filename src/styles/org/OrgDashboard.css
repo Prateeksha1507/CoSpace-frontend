@@ -1,0 +1,153 @@
+.od-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.od-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.od-subtitle {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+/* Tabs */
+.od-tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.od-tab {
+  background: none;
+  border: none;
+  padding: 0.6rem 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #374151;
+}
+
+.od-tab.active {
+  border-bottom: 2px solid var(--primary-color);
+  font-weight: 600;
+}
+
+/* Sections */
+.od-section {
+  margin-top: 1.5rem;
+}
+
+.od-heading {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Tables */
+.od-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.od-table th,
+.od-table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.od-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.od-link {
+  color: var(--link-color);
+  cursor: pointer;
+}
+
+/* Status tags */
+.od-status {
+  padding: 0.25rem 0.65rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.od-status.open {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.od-status.closed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.od-status.pending {
+  background: #fef9c3;
+  color: #92400e;
+}
+
+.od-status.approved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.od-status.rejected {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
+/* Buttons */
+.od-small-btn {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.od-create-btn {
+  margin-top: 0.75rem;
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Stats */
+.od-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.od-stat-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.od-stat-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.od-stat-label {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+}

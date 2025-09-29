@@ -5,12 +5,15 @@
   --footer-color: #1294D4;
   --text-color: #333;
   --link-color: #2980b9;
-  --link-hover-color: #1abc9c; 
+  --link-hover-color: #afb4c1; 
   --button-color: #e9e8f0; 
   --button-hover-color: #1294D4;
   --footer-text-color: #fff;
   --primary-input-background: #E5E5EB
   --secondary-button-color: #e9e8f0
+  --primary-input-background: #E5E5EB;
+  --secondary-button-color: #e9e8f0;
+
 }
 
 body {

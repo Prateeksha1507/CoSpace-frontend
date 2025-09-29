@@ -1,0 +1,126 @@
+.set-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+  color: var(--text-color);
+}
+
+/* Tabs */
+.set-tabs {
+  display: flex;
+  gap: 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+}
+.set-tab {
+  background: none;
+  border: none;
+  padding: 0.6rem 0;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+}
+.set-tab.active {
+  border-bottom: 2px solid var(--primary-color);
+  font-weight: 600;
+}
+
+/* Headings */
+.set-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0.75rem 0 1.25rem;
+}
+.set-subtitle {
+  margin: 1.25rem 0 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Form controls */
+.set-label {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.set-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  font-size: 1rem;
+  margin-bottom: 0.9rem;
+}
+.set-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.set-row {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.25rem 0 1rem;
+}
+
+.set-btn {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.95rem;
+}
+
+/* Linked accounts */
+.set-linked {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+.set-linked-item {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+}
+.set-linked-icon { font-size: 1.1rem; }
+.set-mini {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+
+/* Checkboxes */
+.set-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.35rem 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+/* Section wrapper */
+.set-section { margin-top: 0.5rem; }
+
+/* Delete button */
+.set-note {
+  color: #6b7280;
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.95rem;
+}
+.set-danger {
+  background: #e11d48;  /* red */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.set-danger:hover { background: #be123c; }

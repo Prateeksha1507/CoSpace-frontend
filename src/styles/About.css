@@ -2,7 +2,7 @@
   padding: 2rem 1rem 4rem;
   max-width: 900px;
   margin: 0 auto;
-  color: #111;
+  color: var(--text-color);
 }
 
 /* Sections */
@@ -14,18 +14,18 @@
 .about-section h3 {
   font-weight: 700;
   margin-bottom: 0.75rem;
-  color: #111827;
+  color: var(--text-color);
+  padding-left: 0;
 }
 
 .about-section p {
-  color: #374151;
+  color: var(--text-color);
   font-size: 0.95rem;
   line-height: 1.6;
 }
 
 /* Achievements */
 .achievements-box {
-  background: #fff;
   padding: 1.5rem;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -61,7 +61,7 @@
 .team-member h4 {
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-color);
 }
 
 .team-member .role {
@@ -87,12 +87,16 @@
 
 .team-socials a {
   font-size: 0.85rem;
-  color: #0d99ff;
+  color: var(--link-color);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .team-socials a:hover {
   text-decoration: underline;
-  color: #067acc;
+  color: var(--link-hover-color)
+}
+
+.member-name {
+  height: 25px;
 }

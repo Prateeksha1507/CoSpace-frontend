@@ -65,7 +65,7 @@ const seedData = {
       eventId: 102,
       name: "Food Bank Assistance",
       description: "Assist with distributing meals at the downtown food bank.",
-      date: "2024-06-15",
+      date: "2026-06-15",
       venue: "Downtown Food Bank",
       conductingOrgId: 10,
       collaboratingOrgId: 11,
@@ -85,7 +85,7 @@ const seedData = {
       eventId: 202,
       name: "Recycling Awareness Workshop",
       description: "Learn and teach recycling techniques.",
-      date: "2024-05-05",
+      date: "2026-05-05",
       venue: "City Hall Auditorium",
       conductingOrgId: 11,
       collaboratingOrgId: null,
@@ -97,7 +97,49 @@ const seedData = {
     { userId: 1, orgId: 10 },     // Alice → Helping Hands
     { userId: 2, orgId: 10 },     // Ethan → Helping Hands
     { userId: 2, orgId: 11 }      // Ethan → Green Earth
-  ]
+  ],
+
+// === Conversations & Messages ===
+conversations: [
+  {
+    convoId: "cleanup",
+    title: "Community Cleanup Drive",
+    participants: [
+      { id: 1, type: "user" },   // Alice
+      { id: 10, type: "org" }    // Helping Hands
+    ],
+  },
+  {
+    convoId: "foodbank",
+    title: "Food Bank Assistance",
+    participants: [
+      { id: 2, type: "user" },   // Ethan
+      { id: 10, type: "org" }    // Helping Hands
+    ],
+  },
+  {
+    convoId: "green",
+    title: "Tree Planting Marathon",
+    participants: [
+      { id: 2, type: "user" },
+      { id: 11, type: "org" }
+    ],
+  },
+],
+
+messages: [
+  { id: 1, convoId: "cleanup", from: { id: 10, type: "org" }, text: "Hi there!", time: "2024-07-18 09:00" },
+  { id: 2, convoId: "cleanup", from: { id: 1, type: "user" }, text: "Hello! Excited to join the cleanup!", time: "2024-07-18 09:02" },
+
+  { id: 3, convoId: "foodbank", from: { id: 10, type: "org" }, text: "Thanks for signing up, Ethan!", time: "2024-06-10 10:00" },
+  { id: 4, convoId: "foodbank", from: { id: 2, type: "user" }, text: "Glad to help ", time: "2024-06-10 10:05" },
+  { id: 5, convoId: "foodbank", from: { id: 2, type: "user" }, text: "😊", time: "2024-06-10 10:06" },
+
+  { id: 5, convoId: "green", from: { id: 11, type: "org" }, text: "Welcome to Green Earth Initiative!", time: "2024-08-10 14:00" },
+],
+
+
+
 };
 
 function db() {
@@ -215,4 +257,57 @@ export async function verify(token) {
   if (now() > payload.exp) return { user: null };
   const { name, email, type } = payload;
   return { user: { name, email, type } };
+}
+
+
+// --- Conversations ---
+export function getConversations() {
+  return db().conversations || [];
+}
+
+export function getConversationById(convoId) {
+  return db().conversations.find((c) => c.convoId === convoId) || null;
+}
+
+export function getConversationsByUser(userId) {
+  return db().conversations.filter((c) => c.userId === Number(userId));
+}
+
+export function getConversationsByOrg(orgId) {
+  return db().conversations.filter((c) => c.orgId === Number(orgId));
+}
+
+export function addMessage(convoId, message) {
+  const convo = getConversationById(convoId);
+  if (!convo) return null;
+  convo.messages.push({
+    id: Date.now(),
+    ...message,
+  });
+  return convo;
+}
+
+// --- Conversations: by participant (Option B) ---
+export function getConversationsByParticipant(participant) {
+  const { id, type } = participant;
+  return (db().conversations || []).filter(c =>
+    (c.participants || []).some(p => Number(p.id) === Number(id) && p.type === type)
+  );
+}
+
+// --- Messages (Option B) ---
+export function getMessagesByConvo(convoId) {
+  return (db().messages || []).filter(m => String(m.convoId) === String(convoId));
+}
+
+export function appendMessage(convoId, message) {
+  const newMsg = {
+    id: Date.now(),
+    convoId: String(convoId),
+    text: message.text,
+    from: message.from,          // { id, type }
+    time: new Date().toISOString()
+  };
+  db().messages.push(newMsg);
+  return newMsg;
 }

@@ -1,32 +1,36 @@
 .header {
-display: flex;
-padding: 12px 40px;
-justify-content: space-between;
-align-items: center;
-align-self: stretch;
-border-bottom: 1px solid #E5E8EB;
+  display: flex;
+  padding: 12px 40px;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+  border-bottom: 1px solid #E5E8EB;
+  background: var(--background-color);
 }
 
+/* Left block: logo + brand + nav */
 .header-left {
   display: flex;
   align-items: center;
   gap: 20px;
+  min-width: 0; /* allow flex shrink of nav on small widths */
 }
 
-.logo {
-  height: 30px;
-}
+.logo { height: 30px; }
 
 .brand-name {
   font-weight: bold;
   font-size: 16px;
   margin-right: 20px;
+  white-space: nowrap;
 }
 
+/* Nav */
 .nav-links {
   display: flex;
   gap: 20px;
   align-items: center;
+  flex-wrap: wrap;  /* allow wrap before stacking for mid widths */
 }
 
 .nav-links a {
@@ -34,12 +38,12 @@ border-bottom: 1px solid #E5E8EB;
   color: var(--text-color);
   font-size: 14px;
   transition: color 0.3s ease;
+  white-space: nowrap;
 }
 
-.nav-links a:hover {
-  color: var(--link-hover-color);
-}
+.nav-links a:hover { color: var(--link-hover-color); }
 
+/* “Chats” button style */
 .btn-primary {
   background-color: var(--primary-color);
   color: #fff !important;
@@ -47,31 +51,26 @@ border-bottom: 1px solid #E5E8EB;
   border-radius: 6px;
   font-weight: bold;
 }
+.nav-links > .btn-primary { font-weight: normal; }
+.btn-primary:hover { background-color: var(--link-hover-color); }
 
-.nav-links > .btn-primary {
-  font-weight: normal;
-}
-
-.btn-primary:hover {
-  background-color: var(--link-hover-color);
-}
-
+/* Right block: search + bell + avatar */
 .header-right {
-display: flex;
-justify-content: flex-end;
-align-items: center;
-gap: 32px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 32px;
+  min-width: 0; /* safety */
 }
 
 .search-box {
-display: flex;
-padding: 8px 16px 8px 8px;
-align-items: center;
-flex: 1 0 0;
-align-self: stretch;
-
-border-radius: 0 8px 8px 0;
-background: #E8F0F2;
+  display: flex;
+  padding: 8px 16px 8px 8px;
+  align-items: center;
+  flex: 1 0 auto;
+  max-width: 420px;
+  border-radius: 0 8px 8px 0;
+  background: #E8F0F2;
 }
 
 .search-box input {
@@ -79,6 +78,7 @@ background: #E8F0F2;
   background: transparent;
   outline: none;
   margin-left: 5px;
+  width: 100%;
 }
 
 .notification-icon {
@@ -87,12 +87,7 @@ background: #E8F0F2;
   color: #444;
 }
 
-.avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-}
+.avatar { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
 
 .bell-container {
   display: flex;
@@ -104,6 +99,7 @@ background: #E8F0F2;
   gap: 8px;
   border-radius: 8px;
   background: #E8F0F2;
+  color: var(--text-color);
 }
 
 .avatar-container {
@@ -111,18 +107,95 @@ background: #E8F0F2;
   height: 40px;
   flex-shrink: 0;
   border-radius: 20px;
-  /* background: url(<path-to-image>) lightgray 50% / cover no-repeat; */
-  background: #3498db none repeat scroll 0% 0% / auto auto padding-box border-box;
+  background: var(--primary-color);
   display: flex;
   justify-content: center;
+  align-items: center;
+  color: #fff;
 }
 
-i {
-  display: flex;
-  align-content: center;
-}
+i { display: flex; align-content: center; }
 
 .header-right > a {
   color: var(--text-color);
   text-decoration: none;
+}
+
+/* ================= Responsive ================= */
+
+/* Tablet & down: stack sections but keep nav links compact (no full-width button) */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 20px;
+    gap: 10px;
+  }
+
+  .header-left {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Put brand+logo left, keep nav below in a row that can wrap */
+  .nav-links {
+    width: 100%;
+    flex-direction: row;   /* keep in a row */
+    flex-wrap: wrap;       /* allow wrap on narrow screens */
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  /* IMPORTANT: do NOT make “Chats” full width on mobile */
+  .nav-links .btn-primary {
+    width: auto;
+    display: inline-flex;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .search-box {
+    width: 50%;
+    max-width: none;
+  }
+
+  .brand-name { font-size: 14px; }
+}
+
+/* Phones */
+@media (max-width: 480px) {
+  .header { padding: 8px 16px; }
+
+  .logo { height: 25px; }
+
+  .nav-links {
+    gap: 10px;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+  }
+
+  .bell-container,
+  .avatar-container {
+    height: 35px;
+    width: 35px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .nav-links { gap: 8px; }
+  .nav-links a { font-size: 12px; }
+
+  .brand-name { display: none; }
+
+  .search-box {
+    padding: 6px 10px 6px 6px;
+  }
 }

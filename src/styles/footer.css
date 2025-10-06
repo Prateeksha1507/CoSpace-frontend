@@ -10,6 +10,7 @@
   justify-content: center;
   gap: 80px;
   margin-bottom: 10px;
+  flex-wrap: wrap; /* allow wrapping on mid screens */
 }
 
 .footer-link {
@@ -20,12 +21,18 @@
 }
 
 .footer-link:hover {
-  /* color: var(--link-hover-color); */
   transform: scale(1.1);
 }
- 
 
 .footer-copyright {
   font-size: 13px;
   color: var(--footer-text-color);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .footer-links {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

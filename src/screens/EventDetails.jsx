@@ -1,28 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import "../styles/EventDetails.css";
+import { fetchEventById } from "../api/eventAPI";
+import { getOrgById } from "../dummy/db"; // to fetch org info linked with event
 
 export default function EventDetails() {
-  const event = {
-    banner: "/images/cleanup-banner.jpg",
-    orgLogo: "/images/helpinghands.png",
-    orgName: "Helping Hands Foundation",
-    orgType: "Non-profit organization",
-    title: "Community Cleanup Drive",
-    date: "Saturday, July 20, 2024",
-    time: "9:00 AM - 12:00 PM",
-    location: "Central Park, New York, NY",
-    description:
-      "Join us for a community cleanup drive to help keep our neighborhood clean and green. We’ll provide all the necessary supplies, including gloves and trash bags. Your participation will make a big difference!",
-    skills: ["Teamwork", "Communication", "Physical Stamina"],
-    mapUrl:
-      "https://maps.googleapis.com/maps/api/staticmap?center=Central+Park,NY&zoom=13&size=600x300&key=YOUR_API_KEY", // or embed an <iframe>
-  };
+  const { id } = useParams();
+  const [event, setEvent] = useState(null);
+  const [org, setOrg] = useState(null);
+
+  useEffect(() => {
+    async function loadEvent() {
+      const data = await fetchEventById(id);
+      if (!data) return;
+
+      setEvent(data);
+      const orgInfo = getOrgById(data.conductingOrgId);
+      setOrg(orgInfo);
+    }
+    loadEvent();
+  }, [id]);
+
+  if (!event) {
+    return <p style={{ textAlign: "center", marginTop: "2rem" }}>Loading event...</p>;
+  }
 
   const comments = [
     {
       name: "Olivia Carter",
       time: "2 weeks ago",
-      text: "I’m excited to participate! Is there a specific meeting point within Central Park?",
+      text: "I’m excited to participate! Is there a specific meeting point within the venue?",
       avatar: "/images/olivia.png",
     },
     {
@@ -36,17 +43,23 @@ export default function EventDetails() {
   return (
     <main className="ed-container">
       {/* Banner */}
-      <img src={event.banner} alt="Event banner" className="ed-banner" />
+      <img src="/images/cleanup-banner.jpg" alt="Event banner" className="ed-banner" />
 
       {/* Title + org */}
-      <h1 className="ed-title">{event.title}</h1>
-      <div className="ed-org">
-        <img src={event.orgLogo} alt={event.orgName} className="ed-org-logo" />
-        <div>
-          <p className="ed-org-name">{event.orgName}</p>
-          <p className="ed-org-type">{event.orgType}</p>
+      <h1 className="ed-title">{event.name}</h1>
+      {org && (
+        <div className="ed-org">
+          <img
+            src="/images/helpinghands.png"
+            alt={org.name}
+            className="ed-org-logo"
+          />
+          <div>
+            <p className="ed-org-name">{org.name}</p>
+            <p className="ed-org-type">{org.type}</p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Details */}
       <section className="ed-section">
@@ -57,12 +70,8 @@ export default function EventDetails() {
             <span className="ed-value">{event.date}</span>
           </div>
           <div>
-            <span className="ed-label">Time</span>
-            <span className="ed-value">{event.time}</span>
-          </div>
-          <div>
-            <span className="ed-label">Location</span>
-            <span className="ed-value">{event.location}</span>
+            <span className="ed-label">Venue</span>
+            <span className="ed-value">{event.venue}</span>
           </div>
         </div>
       </section>
@@ -76,18 +85,18 @@ export default function EventDetails() {
           style={{ border: 0, borderRadius: "8px" }}
           loading="lazy"
           allowFullScreen
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3021.9856488626455!2d-73.96535528459485!3d40.78286444130033!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2588f5c0b1a5f%3A0xd8d5c6b6b8d2d9a5!2sCentral%20Park!5e0!3m2!1sen!2sus!4v1671234567890"
+          src={`https://www.google.com/maps?q=${encodeURIComponent(event.venue)}&output=embed`}
         ></iframe>
       </div>
 
       {/* Description */}
       <p className="ed-desc">{event.description}</p>
 
-      {/* Skills */}
+      {/* Skills (optional, dummy placeholder) */}
       <section className="ed-section">
         <h3 className="ed-heading">Required Skills</h3>
         <div className="ed-tags">
-          {event.skills.map((s, i) => (
+          {["Teamwork", "Communication", "Time Management"].map((s, i) => (
             <span key={i} className="ed-tag">
               {s}
             </span>

@@ -21,8 +21,11 @@ import OrgDashboard from './screens/orgs/OrgDashboard';
 import OrgProfile from './screens/OrgProfile';
 import UserProfile from './screens/UserProfile';
 import ChatsPage from './screens/ChatsPage';
+import EventDetails from './screens/EventDetails';
+import MyProfile from './screens/users/MyProfile';
 
 import ProtectedRoute from "./routes/ProtectedRoute"
+import UserProfilePage from './screens/UserProfile';
 
 function App() {
   return (
@@ -53,6 +56,7 @@ function App() {
           <Route path="/details/eventid/*" element={<NotificationsPage />} />
           <Route path="/profile/org/*" element={<OrgProfile />} />
           <Route path="/profile/user/*" element={<UserProfile />} />
+          <Route path="/user/:id" element={<UserProfilePage />} />
 
           {/* Info specif to user/orgs */}
           <Route path="/notifications" element={
@@ -75,6 +79,11 @@ function App() {
           <Route path="/user/home" element={
             <ProtectedRoute allowed={["user"]}>
               <UserHome />
+            </ProtectedRoute>
+          } />
+          <Route path="/my-profile" element={
+            <ProtectedRoute allowed={["user"]}>
+              <MyProfile />
             </ProtectedRoute>
           } />
 

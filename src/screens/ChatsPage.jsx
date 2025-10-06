@@ -1,126 +1,118 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  fetchMyConversations,
+  fetchRecentMessages,
+  sendMessage,
+  getMyParticipant,
+  getCounterparty
+} from "../api/chatAPI"; // <-- make sure file name/path matches
 import "../styles/ChatsPage.css";
-
-const conversations = [
-  {
-    id: "cleanup",
-    title: "Community Cleanup Drive",
-    last: "Hi there!",
-    avatar: "/images/org-cleanup.png",
-    messages: [
-      { id: 1, from: "org", name: "Organization", text: "Hi  there!", time: "now" },
-      { id: 2, from: "me", name: "Sophia Clark", text: "Hello!", time: "now" },
-    ],
-  },
-  {
-    id: "foodbank",
-    title: "Food Bank Assistance",
-    last: "Thanks for your help!",
-    avatar: "/images/org-foodbank.png",
-    messages: [],
-  },
-  {
-    id: "env",
-    title: "Environmental Awareness",
-    last: "Great job today!",
-    avatar: "/images/org-env.png",
-    messages: [],
-  },
-  {
-    id: "donation",
-    title: "Donation Recipient",
-    last: "Received your donation.",
-    avatar: "/images/org-donation.png",
-    messages: [],
-  },
-  {
-    id: "ethan",
-    title: "Ethan Carter",
-    last: "Welcome to the team!",
-    avatar: "/images/ethan.png",
-    messages: [],
-  },
-];
+import Avatar from "../components/avatar";
 
 export default function ChatsPage() {
-  const [activeId, setActiveId] = useState(conversations[0].id);
+  const [me, setMe] = useState(null);     // { id, type, name }
+  const [convos, setConvos] = useState([]);
+  const [activeId, setActiveId] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
-  const active = false //   conversations.find((c) => c.id === activeId)!;
+  // Load me + conversations
+  useEffect(() => {
+    (async () => {
+      const myself = await getMyParticipant();
+      setMe(myself);
+      const list = await fetchMyConversations();
+      setConvos(list);
+      if (list.length > 0) setActiveId(list[0].convoId);
+    })();
+  }, []);
 
-  const send = (e) => {
+  // Load messages for selected convo
+  useEffect(() => {
+    if (!activeId) return;
+    const msgs = fetchRecentMessages(activeId, 10);
+    setMessages(msgs);
+  }, [activeId]);
+
+  // Send
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
-    active.messages.push({
-      id: Date.now(),
-      from: "me",
-      name: "Sophia Clark",
-      text: input.trim(),
-      time: "now",
-    });
+    if (!input.trim() || !activeId) return;
+    const newMsg = await sendMessage(activeId, input.trim());
+    setMessages((prev) => [...prev, newMsg]);
     setInput("");
   };
 
+  const active = convos.find((c) => c.convoId === activeId);
+
   return (
-    <main className="chatspg">
-      {/* Left: conversation list */}
-      <aside className="chatspg-sidebar">
-        <h2 className="chatspg-heading">Chats</h2>
-        <ul className="chatspg-list">
-          {conversations.map((c) => (
-            <li
-              key={c.id}
-              className={`chatspg-item ${activeId === c.id ? "active" : ""}`}
-              onClick={() => setActiveId(c.id)}
-            >
-              <img className="chatspg-avatar" src={c.avatar} alt={c.title} />
-              <div className="chatspg-item-texts">
-                <p className="chatspg-item-title">{c.title}</p>
-                <p className="chatspg-item-last">
-                  <span>Last message: </span>
-                  {c.last}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </aside>
-
-      {/* Right: active conversation */}
-      <section className="chatspg-pane">
-        <h1 className="chatspg-title">{active.title}</h1>
-
-        <div className="chatspg-thread">
-          {active.messages.map((m) => (
-            <div
-              key={m.id}
-              className={`chatspg-bubble-row ${m.from === "me" ? "me" : "them"}`}
-            >
-              {m.from !== "me" && (
-                <div className="chatspg-label">{m.name}</div>
-              )}
-              <div className={`chatspg-bubble ${m.from === "me" ? "is-me" : ""}`}>
-                {m.text}
-              </div>
-              {m.from === "me" && (
-                <div className="chatspg-label me">{m.name}</div>
-              )}
+  <main className="chatspg">
+    {/* LEFT: conversation list */}
+    <aside className="chatspg-sidebar">
+      <h2 className="chatspg-heading">Chats</h2>
+      <ul className="chatspg-list">
+        {convos.length === 0 ? (
+          <li className="chatspg-item" style={{ opacity: 0.6 }}>
+            <div className="chatspg-item-texts">
+              <p className="chatspg-item-title">No conversations yet</p>
+              <p className="chatspg-item-last">Start a new chat</p>
             </div>
-          ))}
-        </div>
+          </li>
+        ) : (
+          convos.map((c) => {
+            const other = getCounterparty(c, me);
+            return (
+              <li
+                key={c.convoId}
+                className={`chatspg-item ${activeId === c.convoId ? "active" : ""}`}
+                onClick={() => setActiveId(c.convoId)}
+              >
+                <Avatar name={other?.name || c.title} src={other?.avatar} />
+                <div className="chatspg-item-texts">
+                  <p className="chatspg-item-title">{other?.name || c.title}</p>
+                  {/* Optional: last message preview here */}
+                </div>
+              </li>
+            );
+          })
+        )}
+      </ul>
+    </aside>
 
-        {/* Composer */}
-        <form className="chatspg-composer" onSubmit={send}>
-          <input
-            className="chatspg-input"
-            placeholder="Type  a message...   Hello"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <button className="chatspg-emoji" type="button" title="Emoji">😊</button>
-          <button className="primary-btn chatspg-send" type="submit">Send</button>
-        </form>
-      </section>
+      {/* RIGHT: active conversation */}
+      {active && me && (
+        <section className="chatspg-pane">
+          <h1 className="chatspg-title">{active.title}</h1>
+
+          <div className="chatspg-thread">
+            {messages.map((m) => {
+              const isMe = m.from?.id === me.id && m.from?.type === me.type;
+              return (
+                <div
+                  key={m.id}
+                  className={`chatspg-bubble-row ${isMe ? "me" : "them"}`}
+                >
+                  <div className={`chatspg-bubble ${isMe ? "is-me" : ""}`}>
+                    {m.text}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <form className="chatspg-composer" onSubmit={handleSend}>
+            <input
+              className="chatspg-input"
+              placeholder="Type a message…"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <button className="primary-btn chatspg-send" type="submit">
+              Send
+            </button>
+          </form>
+        </section>
+      )}
     </main>
   );
 }

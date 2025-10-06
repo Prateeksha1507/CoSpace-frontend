@@ -1,43 +1,91 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import "../styles/UserProfile.css";
 
-export default function UserProfile() {
-  const volunteer = {
-    name: "Sophia Bennett",
-    role: "Community Volunteer",
-    avatar: "/images/sophia.png", // replace with your asset
-    totalHours: 150,
-    totalDonations: 500,
-  };
+// dummy backend accessors — adjust the import path if your db file lives elsewhere
+import { getUserById, getFollows, getEvents } from "../dummy/db";
 
-  const volunteering = [
-    { event: "Community Cleanup Drive", date: "July 20, 2024", hours: 3 },
-    { event: "Food Bank Assistance", date: "June 15, 2024", hours: 5 },
-    { event: "Environmental Awareness Campaign", date: "May 5, 2024", hours: 4 },
-  ];
+function formatDateISOToNice(iso) {
+  // iso may be YYYY-MM-DD (from seed), make it nice
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  } catch {
+    return iso;
+  }
+}
 
-  const donations = [
-    { amount: 250, date: "August 10, 2024", receiptUrl: "#" },
-    { amount: 250, date: "July 5, 2024", receiptUrl: "#" },
-  ];
+export default function UserProfilePage() {
+  const { id } = useParams();            // /user/:id
+  const [user, setUser] = useState(null);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    const u = getUserById(id);
+    if (!u) setNotFound(true);
+    else setUser(u);
+  }, [id]);
+
+  // Volunteering = events hosted by orgs this user follows
+  const volunteering = useMemo(() => {
+    if (!user) return [];
+    const followingOrgIds = getFollows()
+      .filter(f => f.userId === Number(user.userId))
+      .map(f => f.orgId);
+
+    const eventsIMightAttend = getEvents().filter(e => followingOrgIds.includes(e.conductingOrgId));
+
+    // give each event a demo "hours" value (or derive from somewhere else later)
+    return eventsIMightAttend.map(e => ({
+      event: e.name,
+      date: formatDateISOToNice(e.date),
+      hours: 3, // simple demo number
+    }));
+  }, [user]);
+
+  // Donations (dummy list for now)
+  const donations = useMemo(() => {
+    if (!user) return [];
+    return [
+      { amount: 250, date: "Aug 10, 2024", receiptUrl: "#" },
+      { amount: 250, date: "Jul 5, 2024", receiptUrl: "#" },
+    ];
+  }, [user]);
+
+  if (notFound) {
+    return (
+      <main className="user-container">
+        <div className="user-card" style={{ padding: 24, textAlign: "center" }}>
+          <h2>User not found</h2>
+          <p>We couldn’t find a profile for ID <strong>{id}</strong>.</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!user) {
+    return <div className="user-loading">Loading profile…</div>;
+  }
 
   return (
     <main className="user-container">
-      {/* Header card */}
+      {/* Identity */}
       <section className="user-identity">
-        <img className="user-avatar" src={volunteer.avatar} alt={volunteer.name} />
-        <h2 className="user-name">{volunteer.name}</h2>
-        <p className="user-role">{volunteer.role}</p>
+        {/* Use your own avatar path or add an avatar field in seedData later */}
+        <img className="user-avatar" src={"/images/sophia.png"} alt={user.name} />
+        <h2 className="user-name">{user.name}</h2>
+        <p className="user-role">Community Volunteer</p>
       </section>
 
-      {/* KPI cards */}
+      {/* KPIs */}
       <section className="user-kpis">
         <div className="user-kpi">
-          <div className="user-kpi-value">{volunteer.totalHours}</div>
+          <div className="user-kpi-value">{volunteering.length * 3}</div>
           <div className="user-kpi-label">Total Volunteering Hours</div>
         </div>
         <div className="user-kpi">
-          <div className="user-kpi-value">${volunteer.totalDonations}</div>
+          <div className="user-kpi-value">$500</div>
           <div className="user-kpi-label">Total Donations</div>
         </div>
       </section>
@@ -56,12 +104,17 @@ export default function UserProfile() {
             </thead>
             <tbody>
               {volunteering.map((v, i) => (
-                <tr key={i}>
+                <tr key={`${v.event}-${i}`}>
                   <td>{v.event}</td>
                   <td className="user-muted">{v.date}</td>
                   <td>{v.hours}</td>
                 </tr>
               ))}
+              {volunteering.length === 0 && (
+                <tr>
+                  <td colSpan="3" className="user-muted">No volunteering history yet.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -81,7 +134,7 @@ export default function UserProfile() {
             </thead>
             <tbody>
               {donations.map((d, i) => (
-                <tr key={i}>
+                <tr key={`${d.date}-${i}`}>
                   <td className="user-amount">${d.amount}</td>
                   <td className="user-muted">{d.date}</td>
                   <td className="user-right">
@@ -91,6 +144,11 @@ export default function UserProfile() {
                   </td>
                 </tr>
               ))}
+              {donations.length === 0 && (
+                <tr>
+                  <td colSpan="3" className="user-muted">No donations yet.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

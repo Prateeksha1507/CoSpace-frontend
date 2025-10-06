@@ -2,8 +2,8 @@
 .chatspg {
   display: flex;
   gap: 24px;
-  max-width: 1100px;
-  margin: 24px auto 80px;
+  /* max-width: 1100px */
+  /* margin: 24px auto 80px; */
   padding: 0 16px;
 }
 

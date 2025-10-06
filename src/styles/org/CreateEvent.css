@@ -5,15 +5,13 @@
   padding: 2rem 1rem 4rem;
 }
 
-/* Title */
 .ce-title {
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 1.25rem;
-  color: var(--text-color); /* looks good over dark bg */
+  color: var(--text-color);
 }
 
-/* Form */
 .ce-form {
   display: flex;
   flex-direction: column;
@@ -22,7 +20,7 @@
 
 .ce-label {
   font-size: 0.9rem;
-  color: #a3a3a9; /* subtle like the mock */
+  color: var(--text-color);
 }
 
 .ce-input,

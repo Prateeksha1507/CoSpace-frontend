@@ -45,7 +45,7 @@ export default function UserProfile() {
   return (
     <main className="user-container">
       <section className="user-identity">
-        <img className="user-avatar" src="/images/sophia.png" alt={user.name} />
+        <img className="user-avatar" src="/person.png" alt={user.name} />
         <h2 className="user-name">{user.name}</h2>
         <p className="user-role">Community Volunteer</p>
       </section>

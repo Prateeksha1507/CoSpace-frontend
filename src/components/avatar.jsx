@@ -1,4 +1,4 @@
-export default function Avatar({ name = "", src = null, size = 44 }) {
+export default function Avatar({ name = "", src = "./person.png", size = 44 }) {
   const initials = (name || "")
     .trim()
     .split(/\s+/)

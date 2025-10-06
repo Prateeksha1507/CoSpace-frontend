@@ -39,7 +39,7 @@ function Header({loggedIn=false}) {
           alt="User Avatar"
           className="avatar"
         /> */}
-        <a href="/ny-profile"  className="avatar-container">
+        <a href="/my-profile"  className="avatar-container">
           <i class="fa-solid fa-user"></i>
         </a>
       </div>

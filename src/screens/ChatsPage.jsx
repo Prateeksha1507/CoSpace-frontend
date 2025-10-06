@@ -67,7 +67,9 @@ export default function ChatsPage() {
                 className={`chatspg-item ${activeId === c.convoId ? "active" : ""}`}
                 onClick={() => setActiveId(c.convoId)}
               >
-                <Avatar name={other?.name || c.title} src={other?.avatar} />
+                <Avatar name={other?.name || c.title} 
+                  // src={other?.avatar}
+                 />
                 <div className="chatspg-item-texts">
                   <p className="chatspg-item-title">{other?.name || c.title}</p>
                   {/* Optional: last message preview here */}

@@ -73,7 +73,7 @@ export default function UserProfilePage() {
       {/* Identity */}
       <section className="user-identity">
         {/* Use your own avatar path or add an avatar field in seedData later */}
-        <img className="user-avatar" src={"/images/sophia.png"} alt={user.name} />
+        <img className="user-avatar" src={"person.png"} alt={user.name} />
         <h2 className="user-name">{user.name}</h2>
         <p className="user-role">Community Volunteer</p>
       </section>

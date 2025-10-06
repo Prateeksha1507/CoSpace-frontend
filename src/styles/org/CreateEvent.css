@@ -10,7 +10,7 @@
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 1.25rem;
-  color: var(--footer-text-color, #fff); /* looks good over dark bg */
+  color: var(--text-color); /* looks good over dark bg */
 }
 
 /* Form */

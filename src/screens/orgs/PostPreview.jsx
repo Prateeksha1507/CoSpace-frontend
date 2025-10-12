@@ -20,7 +20,11 @@ export default function PostPreview({ data }) {
 
   const handlePublish = () => {
     // Wire this to your publish API
-    alert("Event published! (hook this up to your backend)");
+    alert(`Event published! Preview:\n${JSON.stringify(
+        { ...form, image: form.image ? form.image.name : null },
+        null,
+        2
+      )}`);
   };
 
   return (

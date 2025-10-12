@@ -1,10 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  Form,
+  FormField,
+  TextAreaField,
+  Button,
+  FormActions,
+} from "../components/Form";
 import "../styles/Contact.css";
 
 export default function ContactPage() {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Form submitted! (wire this up to backend/email API)");
+    console.log(form)
+    alert(`Form submitted! Preview:\n${JSON.stringify(
+        { ...form, image: form.image ? form.image.name : null },
+        null,
+        2
+      )}`);
   };
 
   return (
@@ -12,21 +36,49 @@ export default function ContactPage() {
       <section className="contact-form-section">
         <h1 className="contact-title">Contact</h1>
 
-        <form className="contact-form" onSubmit={handleSubmit}>
-          <label className="contact-label">Your Name</label>
-          <input type="text" placeholder="Enter your name" className="contact-input" required />
+        <Form className="contact-form" onSubmit={handleSubmit}>
+          <FormField
+            name="name"
+            label="Your Name"
+            placeholder="Enter your name"
+            value={form.name}
+            onChange={onChange}
+            required
+          />
 
-          <label className="contact-label">Your Email</label>
-          <input type="email" placeholder="Enter your email" className="contact-input" required />
+          <FormField
+            name="email"
+            type="email"
+            label="Your Email"
+            placeholder="Enter your email"
+            value={form.email}
+            onChange={onChange}
+            required
+          />
 
-          <label className="contact-label">Subject</label>
-          <input type="text" placeholder="Enter subject" className="contact-input" />
+          <FormField
+            name="subject"
+            label="Subject"
+            placeholder="Enter subject"
+            value={form.subject}
+            onChange={onChange}
+          />
 
-          <label className="contact-label">Message</label>
-          <textarea placeholder="Enter your message" className="contact-textarea" required></textarea>
+          <TextAreaField
+            name="message"
+            label="Message"
+            placeholder="Enter your message"
+            value={form.message}
+            onChange={onChange}
+            required
+          />
 
-          <button type="submit" className="primary-btn">Submit</button>
-        </form>
+          <FormActions align="center">
+            <Button type="submit" variant="primary" className="primary-btn">
+              Submit
+            </Button>
+          </FormActions>
+        </Form>
       </section>
 
       <section className="contact-info-section">
@@ -50,7 +102,11 @@ export default function ContactPage() {
           </div>
           <div>
             <h4>Address</h4>
-            <p>123 Community Drive,<br />Anytown, USA</p>
+            <p>
+              123 Community Drive,
+              <br />
+              Anytown, USA
+            </p>
           </div>
         </div>
       </section>

@@ -1,50 +1,150 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  Form,
+  FormField,
+  CheckboxField,
+  Button,
+  FormActions,
+} from "../../components/Form";
 import "../../styles/RoleRegister.css";
 
 export default function UserRegister() {
+  const [form, setForm] = useState({
+    username: "",
+    fullname: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    interests: "",
+    tos: false,
+    privacy: false,
+  });
+
+  const onChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (form.password !== form.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+    alert(`Sign Up submitted successfully! Preview:\n${JSON.stringify(
+        { ...form, image: form.image ? form.image.name : null },
+        null,
+        2
+      )}`);
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-box">
         <h2 className="auth-title">Join CoSpace</h2>
 
-        <form className="auth-form">
-          <label className="auth-label">Username</label>
-          <input type="text" placeholder="Enter your username" className="auth-input" />
+        <Form className="auth-form" onSubmit={handleSubmit}>
+          <FormField
+            name="username"
+            label="Username"
+            placeholder="Enter your username"
+            value={form.username}
+            onChange={onChange}
+            required
+          />
 
-          <label className="auth-label">Full Name</label>
-          <input type="text" placeholder="Enter your full name" className="auth-input" />
+          <FormField
+            name="fullname"
+            label="Full Name"
+            placeholder="Enter your full name"
+            value={form.fullname}
+            onChange={onChange}
+            required
+          />
 
-          <label className="auth-label">Email</label>
-          <input type="email" placeholder="Enter your email" className="auth-input" />
+          <FormField
+            name="email"
+            type="email"
+            label="Email"
+            placeholder="Enter your email"
+            value={form.email}
+            onChange={onChange}
+            required
+          />
 
-          <label className="auth-label">Password</label>
-          <input type="password" placeholder="Create a password" className="auth-input" />
+          <FormField
+            name="password"
+            type="password"
+            label="Password"
+            placeholder="Create a password"
+            value={form.password}
+            onChange={onChange}
+            required
+          />
 
-          <label className="auth-label">Confirm password</label>
-          <input type="password" placeholder="Confirm your password" className="auth-input" />
+          <FormField
+            name="confirmPassword"
+            type="password"
+            label="Confirm Password"
+            placeholder="Confirm your password"
+            value={form.confirmPassword}
+            onChange={onChange}
+            required
+          />
 
-          <label className="auth-label">Interests</label>
-          <input type="text" placeholder="Select your interests" className="auth-input" />
+          <FormField
+            name="interests"
+            label="Interests"
+            placeholder="Select your interests"
+            value={form.interests}
+            onChange={onChange}
+          />
 
-          <div className="auth-checkbox">
-            <input type="checkbox" id="tos" />
-            <label htmlFor="tos">
-              I agree to the <a href="/terms" className="auth-link">Terms of Service</a>
-            </label>
-          </div>
+          <CheckboxField
+            name="tos"
+            label={
+              <>
+                I agree to the{" "}
+                <a href="/terms" className="auth-link">
+                  Terms of Service
+                </a>
+              </>
+            }
+            checked={form.tos}
+            onChange={onChange}
+            required
+          />
 
-          <div className="auth-checkbox">
-            <input type="checkbox" id="privacy" />
-            <label htmlFor="privacy">
-              I have read and understand the <a href="/privacy" className="auth-link">Privacy Policy</a>
-            </label>
-          </div>
+          <CheckboxField
+            name="privacy"
+            label={
+              <>
+                I have read and understand the{" "}
+                <a href="/privacy" className="auth-link">
+                  Privacy Policy
+                </a>
+              </>
+            }
+            checked={form.privacy}
+            onChange={onChange}
+            required
+          />
 
-          <button type="submit" className="primary-btn">Sign Up</button>
-        </form>
+          <FormActions align="center">
+            <Button type="submit" variant="primary" className="primary-btn">
+              Sign Up
+            </Button>
+          </FormActions>
+        </Form>
 
         <p className="auth-footer">
-          Already have an account? <a href="/login" className="auth-link">Log In</a>
+          Already have an account?{" "}
+          <a href="/login" className="auth-link">
+            Log In
+          </a>
         </p>
       </div>
     </div>

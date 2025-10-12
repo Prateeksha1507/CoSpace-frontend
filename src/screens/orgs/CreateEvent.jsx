@@ -1,4 +1,13 @@
 import React, { useState } from "react";
+import {
+  Form,
+  FormField,
+  TextAreaField,
+  CheckboxField,
+  Button,
+  FormActions,
+  FileUploadField,
+} from "../../components/Form"; 
 import "../../styles/org/CreateEvent.css";
 
 export default function CreateEvent() {
@@ -18,13 +27,17 @@ export default function CreateEvent() {
     const { name, value, type, checked, files } = e.target;
     setForm((f) => ({
       ...f,
-      [name]: type === "checkbox" ? checked : type === "file" ? files?.[0] || null : value,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : type === "file"
+          ? files?.[0] || null
+          : value,
     }));
   };
 
   const handlePreview = (e) => {
     e.preventDefault();
-    // Replace with your preview modal / route
     alert(
       `Preview:\n${JSON.stringify(
         { ...form, image: form.image ? form.image.name : null },
@@ -36,121 +49,114 @@ export default function CreateEvent() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Replace with your API call (FormData)
     const data = new FormData();
     Object.entries(form).forEach(([k, v]) => data.append(k, v ?? ""));
-    alert("Publish Event clicked (wire to backend)");
+    alert(`Publish Event clicked\n 
+      Preview:\n${JSON.stringify(
+        { ...form, image: form.image ? form.image.name : null },
+        null,
+        2
+      )}`);
   };
 
   return (
     <main className="ce-container">
       <h1 className="ce-title">Create New Event</h1>
 
-      <form className="ce-form" onSubmit={handleSubmit}>
-        <label className="ce-label">Event Title</label>
-        <input
-          className="ce-input"
+      <Form className="ui-form ce-form" onSubmit={handleSubmit}>
+        <FormField
           name="title"
-          placeholder="Enter  event title"
+          label="Event Title"
+          placeholder="Enter event title"
           value={form.title}
           onChange={onChange}
           required
         />
 
-        <label className="ce-label">Event Description</label>
-        <textarea
-          className="ce-textarea"
+        <TextAreaField
           name="description"
-          placeholder="Enter  description"
+          label="Event Description"
+          placeholder="Enter description"
           value={form.description}
           onChange={onChange}
           required
         />
 
-        <label className="ce-label">Date</label>
-        <input
-          className="ce-input"
-          type="date"
+        <FormField
           name="date"
+          type="date"
+          label="Date"
           value={form.date}
           onChange={onChange}
           required
         />
 
-        <label className="ce-label">Time</label>
-        <input
-          className="ce-input"
-          type="time"
+        <FormField
           name="time"
+          type="time"
+          label="Time"
           value={form.time}
           onChange={onChange}
           required
         />
 
-        <label className="ce-label">Location</label>
-        <input
-          className="ce-input"
+        <FormField
           name="location"
-          placeholder="Enter  event location or select 'Virtual'"
+          label="Location"
+          placeholder="Enter event location or select 'Virtual'"
           value={form.location}
           onChange={onChange}
           required={!form.virtual}
+          helpText={form.virtual ? "Location not required for virtual events" : ""}
         />
 
-        <label className="ce-checkbox">
-          <input
-            type="checkbox"
-            name="virtual"
-            checked={form.virtual}
-            onChange={onChange}
-          />
-          <span>Virtual Event</span>
-        </label>
+        <CheckboxField
+          name="virtual"
+          label="Virtual Event"
+          checked={form.virtual}
+          onChange={onChange}
+        />
 
-        <label className="ce-label">Event Image/Poster</label>
-        <div className="ce-file">
-          <input
-            id="eventImage"
-            type="file"
-            name="image"
-            accept="image/*"
-            onChange={onChange}
-          />
-          <label htmlFor="eventImage" className="btn secondary-btn">Upload  image</label>
-          <span className="ce-file-name">
-            {form.image ? form.image.name : "No file chosen"}
-          </span>
-        </div>
+        <FileUploadField
+          name="image"
+          label="Event Image/Poster"
+          accept="image/*"
+          onChange={onChange}
+          value={form.image}
+        />
 
-        <label className="ce-label">Required Volunteer Skills/Roles</label>
-        <textarea
-          className="ce-textarea"
+        <TextAreaField
           name="skills"
+          label="Required Volunteer Skills/Roles"
           placeholder="e.g., First aid, registration desk, photography"
           value={form.skills}
           onChange={onChange}
         />
 
-        <label className="ce-label">Donation Goal (Optional)</label>
-        <input
-          className="ce-input"
-          type="number"
+        <FormField
           name="donationGoal"
-          placeholder="Enter  donation goal amount"
+          type="number"
+          label="Donation Goal (Optional)"
+          placeholder="Enter donation goal amount"
           value={form.donationGoal}
           onChange={onChange}
           min="0"
         />
 
-        <div className="ce-actions">
-          <button className="btn secondary-btn" onClick={handlePreview} type="button">
+        <FormActions align="end" className="ce-actions">
+          <Button
+            type="button"
+            variant="outline"
+            className="secondary-btn"
+            onClick={handlePreview}
+          >
             Preview
-          </button>
-          <button className="btn primary-btn" type="submit">
+          </Button>
+          <Button type="submit" variant="primary" className="primary-btn">
             Publish Event
-          </button>
-        </div>
-      </form>
+          </Button>
+        </FormActions>
+      </Form>
     </main>
   );
 }

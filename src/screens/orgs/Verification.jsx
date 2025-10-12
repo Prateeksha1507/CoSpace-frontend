@@ -15,8 +15,7 @@ export default function Verification() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: replace with your upload logic (FormData -> API)
-    alert("Submitted! (wire this up to your API)");
+    alert(`Submitted! (TO Change)`);
   };
 
   return (

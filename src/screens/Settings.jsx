@@ -1,4 +1,11 @@
 import React, { useState } from "react";
+import {
+  Form,
+  FormField,
+  CheckboxField,
+  Button,
+  FormActions,
+} from "../components/Form";
 import "../styles/Settings.css";
 
 export default function Settings() {
@@ -14,9 +21,13 @@ export default function Settings() {
             className={`set-tab ${tab === t ? "active" : ""}`}
             onClick={() => setTab(t)}
           >
-            {t === "account" ? "Account" :
-             t === "notifications" ? "Notifications" :
-             t === "security" ? "Security" : "Delete Account"}
+            {t === "account"
+              ? "Account"
+              : t === "notifications"
+              ? "Notifications"
+              : t === "security"
+              ? "Security"
+              : "Delete Account"}
           </button>
         ))}
       </nav>
@@ -28,31 +39,52 @@ export default function Settings() {
         <section className="set-section">
           <h3 className="set-subtitle">Profile Information</h3>
 
-          <label className="set-label">Name</label>
-          <input className="set-input" placeholder="Enter  name" />
+          <Form className="set-form" onSubmit={(e) => e.preventDefault()}>
+            <FormField
+              name="name"
+              label="Name"
+              placeholder="Enter name"
+              required
+            />
+            <FormField
+              name="username"
+              label="Username"
+              placeholder="Enter username"
+              required
+            />
+            <FormField
+              name="email"
+              type="email"
+              label="Email"
+              placeholder="Enter email"
+              required
+            />
 
-          <label className="set-label">Username</label>
-          <input className="set-input" placeholder="Enter  username" />
-
-          <label className="set-label">Email</label>
-          <input type="email" className="set-input" placeholder="Enter  email" />
-
-          <div className="set-row">
-            <button className="secondary-btn set-btn">Update Profile</button>
-            <button className="black-btn set-btn">Log Out</button>
-          </div>
+            <FormActions align="start" className="set-row">
+              <Button variant="outline" className="secondary-btn set-btn">
+                Update Profile
+              </Button>
+              <Button variant="primary" className="black-btn set-btn">
+                Log Out
+              </Button>
+            </FormActions>
+          </Form>
 
           <h3 className="set-subtitle">Linked Accounts</h3>
           <div className="set-linked">
             <div className="set-linked-item">
               <span className="set-linked-icon">🔗</span>
               <span>Connect with Facebook</span>
-              <button className="secondary-btn set-mini">Connect</button>
+              <Button variant="outline" className="secondary-btn set-mini">
+                Connect
+              </Button>
             </div>
             <div className="set-linked-item">
               <span className="set-linked-icon">🔗</span>
               <span>Connect with Twitter</span>
-              <button className="secondary-btn set-mini">Connect</button>
+              <Button variant="outline" className="secondary-btn set-mini">
+                Connect
+              </Button>
             </div>
           </div>
         </section>
@@ -63,17 +95,26 @@ export default function Settings() {
         <section className="set-section">
           <h3 className="set-subtitle">Notification Settings</h3>
 
-          <label className="set-check">
-            <input type="checkbox" /> Receive email notifications for new messages
-          </label>
-          <label className="set-check">
-            <input type="checkbox" /> Receive push notifications for event updates
-          </label>
-          <label className="set-check">
-            <input type="checkbox" /> Receive in-app notifications for activity
-          </label>
+          <Form className="set-form" onSubmit={(e) => e.preventDefault()}>
+            <CheckboxField
+              name="emailNotify"
+              label="Receive email notifications for new messages"
+            />
+            <CheckboxField
+              name="pushNotify"
+              label="Receive push notifications for event updates"
+            />
+            <CheckboxField
+              name="appNotify"
+              label="Receive in-app notifications for activity"
+            />
 
-          <button className="primary-btn set-btn">Save Notification Preferences</button>
+            <FormActions align="start">
+              <Button variant="primary" className="primary-btn set-btn">
+                Save Notification Preferences
+              </Button>
+            </FormActions>
+          </Form>
         </section>
       )}
 
@@ -82,16 +123,35 @@ export default function Settings() {
         <section className="set-section">
           <h3 className="set-subtitle">Security</h3>
 
-          <label className="set-label">Current Password</label>
-          <input type="password" className="set-input" placeholder="Enter  current password" />
+          <Form className="set-form" onSubmit={(e) => e.preventDefault()}>
+            <FormField
+              name="currentPassword"
+              type="password"
+              label="Current Password"
+              placeholder="Enter current password"
+              required
+            />
+            <FormField
+              name="newPassword"
+              type="password"
+              label="New Password"
+              placeholder="Enter new password"
+              required
+            />
+            <FormField
+              name="confirmPassword"
+              type="password"
+              label="Confirm New Password"
+              placeholder="Confirm new password"
+              required
+            />
 
-          <label className="set-label">New Password</label>
-          <input type="password" className="set-input" placeholder="Enter  new password" />
-
-          <label className="set-label">Confirm New Password</label>
-          <input type="password" className="set-input" placeholder="Confirm  new password" />
-
-          <button className="primary-btn set-btn">Change Password</button>
+            <FormActions align="start">
+              <Button variant="primary" className="primary-btn set-btn">
+                Change Password
+              </Button>
+            </FormActions>
+          </Form>
         </section>
       )}
 
@@ -100,10 +160,13 @@ export default function Settings() {
         <section className="set-section">
           <h3 className="set-subtitle">Delete Account</h3>
           <p className="set-note">
-            Deleting your account is permanent and cannot be undone. All your data,
-            including events, donations, and personal information, will be permanently removed.
+            Deleting your account is permanent and cannot be undone. All your
+            data, including events, donations, and personal information, will be
+            permanently removed.
           </p>
-          <button className="set-danger">Delete Account</button>
+          <Button variant="danger" className="set-danger">
+            Delete Account
+          </Button>
         </section>
       )}
     </main>

@@ -21,7 +21,7 @@ function Header({loggedIn=false}) {
         <span className="brand-name">CoSpace</span>
         <nav className="nav-links">
           <a href="/">Home</a>
-          <a href="/events">Events</a>
+          <a href="/settings">Events</a>
           <a href="/chats" className="btn-primary">Chats</a>
         </nav>
       </div>

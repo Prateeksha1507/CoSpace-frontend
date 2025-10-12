@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { login } from "../api/authAPI"; //
+import { login } from "../api/authAPI";
+import {
+  Form,
+  FormField,
+  Button,
+  FormActions,
+} from "../components/Form";
 import "../styles/Login.css";
 
 export default function Login() {
@@ -12,11 +18,8 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const { user } = await login({ email, password });
-      console.log("Logged in as:", user);
-      // Redirect to home or dashboard
       window.location.href = user.type === "org" ? "/org/home" : "/user/home";
     } catch (err) {
       setError(err.message || "Login failed");
@@ -30,31 +33,31 @@ export default function Login() {
       <div className="login-box">
         <h2 className="login-title">Login to your account</h2>
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          {/* Email */}
-          <input
-            type="text"
-            placeholder="Enter your Email"
-            className="login-input"
+        <Form className="login-form" onSubmit={handleSubmit}>
+          <FormField
+            name="email"
+            type="email"yy
+            placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
 
-          {/* Password */}
-          <input
+          <FormField
+            name="password"
             type="password"
-            placeholder="Password"
-            className="login-input"
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
 
-          {/* Error */}
-          {error && <p className="login-error">{error}</p>}
+          {error && (
+            <div className="login-error ui-field__error">
+              {error}
+            </div>
+          )}
 
-          {/* Not registered yet */}
           <p className="login-text">
             Not registered yet?{" "}
             <a href="/register" className="login-link">
@@ -62,13 +65,12 @@ export default function Login() {
             </a>
           </p>
 
-          {/* Login button */}
-          <div className="btn-container">
-            <button type="submit" className="black-btn" disabled={loading}>
+          <FormActions align="center" className="btn-container">
+            <Button type="submit" variant="primary" className="black-btn" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
-            </button>
-          </div>
-        </form>
+            </Button>
+          </FormActions>
+        </Form>
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ export default function EventDetails() {
             alt={org.name}
             className="ed-org-logo"
           />
-          <div onClick={() => handleClick(org.orgId)}>
+          <div onClick={() => handleClick(org.orgId)} className="clickable">
             <p className="ed-org-name">{org.name}</p>
             <p className="ed-org-type">{org.type}</p>
           </div>

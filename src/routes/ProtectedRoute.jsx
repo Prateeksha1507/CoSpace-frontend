@@ -23,7 +23,7 @@ export default function ProtectedRoute({ children, allowed, redirectToDashboard 
     return () => { alive = false; };
   }, []);
 
-  if (state.loading) return null; //Or some loader stuffz
+  if (state.loading) return null;
 
   if (!state.user) return <Navigate to="/login" replace />;
 

@@ -1,22 +1,64 @@
-/* Layout */
+/* ---- Layout: mobile-first, fill viewport ---- */
 .chatspg {
-  display: flex;
-  gap: 24px;
-  /* max-width: 1100px */
-  /* margin: 24px auto 80px; */
-  padding: 0 16px;
+  /* Use dynamic viewport to avoid URL bar jumpiness on mobile */
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr;       /* mobile: single column */
+  grid-template-areas:
+    "sidebar"
+    "pane";
+  gap: 16px;
+  padding: 12px 12px max(12px, env(safe-area-inset-bottom));
 }
+
+/* Two-pane on >= 980px */
+@media (min-width: 980px) {
+  .chatspg {
+    grid-template-columns: 320px 1fr;
+    grid-template-areas: "sidebar pane";
+    gap: 24px;
+    padding: 0 16px 16px;
+  }
+}
+
+/* ---- MOBILE VIEW TOGGLING ---- */
+/* On mobile, show either sidebar (no-active) or the pane (has-active) */
+.chatspg.is-mobile.no-active .chatspg-sidebar { display: block; }
+.chatspg.is-mobile.no-active .chatspg-pane { display: none; }
+
+.chatspg.is-mobile.has-active .chatspg-sidebar { display: none; }
+.chatspg.is-mobile.has-active .chatspg-pane { display: flex; }
 
 /* Sidebar */
 .chatspg-sidebar {
-  width: 320px;
+  grid-area: sidebar;
+  background: transparent;
+  width: 100%;
+}
+
+.chatspg-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .chatspg-heading {
   margin: 0 0 12px;
-  font-size: 22px;
+  font-size: clamp(18px, 2.2vw, 22px);
   font-weight: 700;
   color: var(--text-color);
+}
+
+/* Mobile: slide-away sidebar when hidden */
+.chatspg-sidebar.hidden { display: none; }
+.chatspg-sidebar.visible { display: block; }
+
+/* On desktop always show sidebar; hide the close button */
+@media (min-width: 980px) {
+  .chatspg-sidebar.hidden,
+  .chatspg-sidebar.visible {
+    display: block;
+  }
 }
 
 /* Conversation list */
@@ -34,60 +76,105 @@
   border-radius: 12px;
   cursor: pointer;
   transition: background .15s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.chatspg-item:hover {
-  background: rgba(0,0,0,.04);
-}
+.chatspg-item:hover { background: rgba(0,0,0,.04); }
+.chatspg-item.active { background: rgba(0,0,0,.06); }
 
-.chatspg-item.active {
-  background: rgba(0,0,0,.06);
-}
-
-.chatspg-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #e9eef3;
-}
-
-.chatspg-item-texts {
-  min-width: 0;
-}
-
+.chatspg-item-texts { min-width: 0; }
 .chatspg-item-title {
   margin: 0 0 2px;
   font-weight: 600;
   color: var(--text-color);
 }
-
 .chatspg-item-last {
   margin: 0;
   font-size: 13px;
   color: #6b7280;
 }
 
+/* Close button (sidebar) */
+.chatspg-hide-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: #e9eef3;
+  color: var(--text-color);
+  cursor: pointer;
+}
+@media (min-width: 980px) {
+  .chatspg-hide-btn { display: none; }
+}
+
 /* Right pane */
 .chatspg-pane {
-  flex: 1;
+  grid-area: pane;
   min-width: 0;
+  /* Make the pane a column so the thread can flex */
+  display: flex;
+  flex-direction: column;
+  /* Give it full height minus page padding */
+  min-height: 60dvh; /* mobile fallback if not two-pane */
 }
 
 .chatspg-title {
-  margin: 4px 0 16px;
-  font-size: 28px;
+  margin: 0;
+  font-size: clamp(18px, 2.8vw, 28px);
   font-weight: 800;
   color: var(--text-color);
 }
 
-/* Thread area */
+/* Empty state (desktop when no chat selected) */
+.chatspg-empty {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #f6f8fa;
+  color: #6b7280;
+}
+
+/* Mobile header in the pane (back + title) */
+.chatspg-mobile-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 8px;
+}
+.chatspg-back {
+  border: none;
+  background: #e9eef3;
+  height: 36px;
+  width: 40px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+@media (min-width: 980px) {
+  .chatspg-mobile-head .chatspg-back { display: none; }
+}
+
+/* Thread area: grows to fill space; no fixed height */
 .chatspg-thread {
-  height: 420px;
+  position: relative;
+  flex: 1 1 auto;
   overflow-y: auto;
   padding: 8px 6px 12px;
   border-radius: 12px;
-  background: #f6f8fa; /* subtle panel like the mock */
+  background: #f6f8fa;
+  scroll-behavior: smooth;
+  /* iOS momentum */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Add bottom spacing so bubbles don't sit under the composer on iOS */
+.chatspg-thread-bottom-pad {
+  height: max(8px, env(safe-area-inset-bottom));
 }
 
 /* Message rows */
@@ -97,18 +184,12 @@
   gap: 8px;
   margin: 10px 0;
 }
-
-.chatspg-bubble-row.them {
-  justify-content: flex-start;
-}
-
-.chatspg-bubble-row.me {
-  justify-content: flex-end;
-}
+.chatspg-bubble-row.them { justify-content: flex-start; }
+.chatspg-bubble-row.me { justify-content: flex-end; }
 
 /* Bubbles */
 .chatspg-bubble {
-  max-width: 70%;
+  max-width: 74%;
   padding: 10px 14px;
   border-radius: 16px;
   background: #e9eef3;         /* them */
@@ -116,32 +197,25 @@
   line-height: 1.35;
   word-break: break-word;
 }
-
 .chatspg-bubble.is-me {
   background: var(--primary-color);  /* me */
   color: #fff;
 }
 
-/* Name labels (optional) */
-.chatspg-label {
-  font-size: 12px;
-  color: #6b7280;
-  margin: 0 6px;
-}
-
-.chatspg-label.me {
-  text-align: right;
-}
-
-/* Composer */
+/* Composer: sticky to bottom, safe-area aware */
 .chatspg-composer {
+  position: sticky;
+  bottom: 0;
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 10px;
   padding: 10px;
   border-radius: 12px;
   background: #eef2f6;
+  /* keep it above iOS keyboard UI chrome if needed */
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  z-index: 1;
 }
 
 .chatspg-input {
@@ -155,20 +229,6 @@
   color: var(--text-color);
 }
 
-.chatspg-emoji {
-  border: none;
-  background: transparent;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.chatspg-send {
-  height: 40px;
-  padding: 0 18px;
-  border: none;
-  border-radius: 10px;
-}
-
 /* Buttons reuse your theme classes */
 .primary-btn {
   background: var(--primary-color);
@@ -178,25 +238,37 @@
   padding: 10px 16px;
   cursor: pointer;
 }
+.primary-btn:hover { background: var(--button-hover-color); }
 
-.primary-btn:hover {
-  background: var(--button-hover-color);
+/* Fine-tune breakpoints */
+@media (min-width: 600px) and (max-width: 979px) {
+  .chatspg { gap: 20px; }
 }
 
-/* Responsive */
-@media (max-width: 980px) {
-  .chatspg { gap: 16px; }
-  .chatspg-sidebar { width: 280px; }
+/* Reduce motions if user prefers */
+@media (prefers-reduced-motion: reduce) {
+  .chatspg-item { transition: none; }
+  .chatspg-thread { scroll-behavior: auto; }
 }
 
-@media (max-width: 760px) {
-  .chatspg {
-    flex-direction: column;
-  }
-  .chatspg-sidebar {
-    width: 100%;
-  }
-  .chatspg-thread {
-    height: 360px;
-  }
+/* Collapse to a single-row grid when a chat is open on mobile */
+.chatspg.is-mobile.has-active {
+  /* Only one area: the pane */
+  grid-template-areas: "pane";
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;   /* remove the phantom first row */
+  gap: 0;                    /* kill the row-gap that created the “big space” */
+  padding-top: 0;            /* optional: make it flush to the very top */
+  /* if you have a notched device and want safe padding, use:
+     padding-top: env(safe-area-inset-top, 0); */
+}
+
+/* Make sure the pane actually fills the screen in this state */
+.chatspg.is-mobile.has-active .chatspg-pane {
+  min-height: 100dvh;
+}
+
+/* Tighten the header so the thread sits right under it */
+.chatspg.is-mobile.has-active .chatspg-mobile-head {
+  margin: 0;
 }

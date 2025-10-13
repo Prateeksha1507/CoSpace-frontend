@@ -55,11 +55,11 @@ export function getCounterparty(convo, me) {
 
   if (other.type === "user") {
     const u = (getUsers() || []).find(x => x.userId === other.id);
-    return { ...other, name: u?.name || "User", avatar: u?.avatar || null };
+    return { ...other, name: u?.name || "User", avatar: u?.profilePicture || null };
   }
   if (other.type === "org") {
     const o = (getOrgs() || []).find(x => x.orgId === other.id);
-    return { ...other, name: o?.name || "Organization", avatar: o?.logo || null };
+    return { ...other, name: o?.name || "Organization", avatar: o?.profilePicture || null };
   }
   return other;
 }

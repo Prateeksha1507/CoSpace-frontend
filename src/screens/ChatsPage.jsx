@@ -7,7 +7,7 @@ import {
   getCounterparty
 } from "../api/chatAPI"; // <-- make sure file name/path matches
 import "../styles/ChatsPage.css";
-import Avatar from "../components/avatar";
+import Avatar from "../components/Avatar";
 
 export default function ChatsPage() {
   const [me, setMe] = useState(null);     // { id, type, name }
@@ -61,14 +61,14 @@ export default function ChatsPage() {
         ) : (
           convos.map((c) => {
             const other = getCounterparty(c, me);
+            console.log(other)
             return (
               <li
                 key={c.convoId}
                 className={`chatspg-item ${activeId === c.convoId ? "active" : ""}`}
                 onClick={() => setActiveId(c.convoId)}
               >
-                <Avatar name={other?.name || c.title} 
-                  // src={other?.avatar}
+                <Avatar src={other?.avatar}
                  />
                 <div className="chatspg-item-texts">
                   <p className="chatspg-item-title">{other?.name || c.title}</p>

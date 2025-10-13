@@ -1,19 +1,37 @@
-export default function Avatar({ name = "", src = "./person.png", size = 44 }) {
-  const initials = (name || "")
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map(w => w[0]?.toUpperCase() || "")
-    .join("");
+import React from "react";
 
-  const style = { width: size, height: size };
+function simpleHash(str, total = 100, chunkSize = 20) {
+  if (!str) return 0;
+  const tail = str.slice(-chunkSize);
+  let sum = 0;
+  for (let i = 0; i < tail.length; i++) sum += tail.charCodeAt(i);
+  return sum % total;
+}
 
-  if (src) {
-    return <img className="chatspg-avatar" style={style} src={src} alt={name} />;
-  }
+export default function Avatar({ src, size = 64, alt = "avatar", total = 100 }) {
+  const index = simpleHash(src, total);
+  const n = String(index).padStart(2, "0");
+  const fallback = `/avatars/avatar-${n}.svg`;
+
+  const imageUrl = src?.startsWith("http") ? src : fallback;
+
   return (
-    <div className="chatspg-avatar chatspg-avatar--fallback" style={style} aria-label={name}>
-      {initials || "?"}
-    </div>
+    <img
+      src={imageUrl}
+      alt={alt}
+      width={size}
+      height={size}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        objectFit: "cover",
+        backgroundColor: "#e8eef2", // subtle background behind SVGs
+      }}
+      onError={(e) => {
+        console.log(src)
+        if (e.target.src !== fallback) e.target.src = fallback;
+      }}
+    />
   );
 }

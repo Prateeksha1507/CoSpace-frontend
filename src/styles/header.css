@@ -1,201 +1,253 @@
+:root {
+  --surface: #e8f0f2;
+  --divider: #e5e8eb;
+  --sidebar-w: 84vw;
+  --sidebar-max: 360px;
+}
+
+/* === Desktop layout === */
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
   display: flex;
+  align-items: center;
   padding: 12px 40px;
-  justify-content: space-between;
-  align-items: center;
-  align-self: stretch;
-  border-bottom: 1px solid #E5E8EB;
+  border-bottom: 1px solid var(--divider);
   background: var(--background-color);
+  gap: 25px;
 }
 
-/* Left block: logo + brand + nav */
-.header-left {
+/* Logo block (left) */
+.brand-only {
   display: flex;
   align-items: center;
-  gap: 20px;
-  min-width: 0; /* allow flex shrink of nav on small widths */
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text-color);
 }
-
-.logo { height: 30px; }
-
+.logo {
+  height: 30px;
+}
 .brand-name {
-  font-weight: bold;
+  font-weight: 700;
   font-size: 16px;
-  margin-right: 20px;
-  white-space: nowrap;
 }
 
-/* Nav */
+/* Right section (nav + utilities) */
+.desktop-right {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-grow: 1;
+}
+
+.desktop-right > div {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
 .nav-links {
   display: flex;
-  gap: 20px;
   align-items: center;
-  flex-wrap: wrap;  /* allow wrap before stacking for mid widths */
+  gap: 20px;
 }
-
 .nav-links a {
   text-decoration: none;
   color: var(--text-color);
   font-size: 14px;
-  transition: color 0.3s ease;
-  white-space: nowrap;
 }
-
-.nav-links a:hover { color: var(--link-hover-color); }
-
-/* “Chats” button style */
-.btn-primary {
-  background-color: var(--primary-color);
-  color: #fff !important;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-weight: bold;
-}
-.nav-links > .btn-primary { font-weight: normal; }
-.btn-primary:hover { background-color: var(--link-hover-color); }
-
-/* Right block: search + bell + avatar */
-.header-right {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 32px;
-  min-width: 0; /* safety */
+.nav-links a:hover {
+  color: var(--link-hover-color);
 }
 
 .search-box {
   display: flex;
-  padding: 8px 16px 8px 8px;
   align-items: center;
-  flex: 1 0 auto;
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 8px 12px;
+  gap: 8px;
+  min-width: 220px;
   max-width: 420px;
-  border-radius: 0 8px 8px 0;
-  background: #E8F0F2;
 }
-
 .search-box input {
   border: none;
-  background: transparent;
   outline: none;
-  margin-left: 5px;
+  background: transparent;
   width: 100%;
+  color: var(--text-color);
 }
-
-.notification-icon {
-  font-size: 18px;
-  cursor: pointer;
-  color: #444;
-}
-
-.avatar { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
 
 .bell-container {
   display: flex;
-  height: 40px;
-  max-width: 480px;
-  padding: 0 10px;
-  justify-content: center;
   align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #E8F0F2;
-  color: var(--text-color);
-}
-
-.avatar-container {
+  justify-content: center;
+  height: 40px;
   width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  border-radius: 20px;
-  background: var(--primary-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-}
-
-i { display: flex; align-content: center; }
-
-.header-right > a {
+  border-radius: 8px;
+  background: var(--surface);
   color: var(--text-color);
   text-decoration: none;
 }
+.avatar-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
 
-/* ================= Responsive ================= */
+/* === Hamburger === */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 22px;
+  cursor: pointer;
+}
 
-/* Tablet & down: stack sections but keep nav links compact (no full-width button) */
+/* === Sidebar === */
+.backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+.backdrop.show {
+  display: block;
+}
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: min(var(--sidebar-w), var(--sidebar-max));
+  background: var(--background-color);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--divider);
+  font-weight: 600;
+}
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.sidebar-content {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sidebar-links a {
+  text-decoration: none;
+  color: var(--text-color);
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.sidebar-links a:hover {
+  background: #f3f4f6;
+}
+
+.mobile-search {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+.mobile-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+}
+
+/* === Responsive === */
 @media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 10px 20px;
-    gap: 10px;
+  .desktop-right {
+    display: none;
   }
 
-  .header-left {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  /* Put brand+logo left, keep nav below in a row that can wrap */
-  .nav-links {
-    width: 100%;
-    flex-direction: row;   /* keep in a row */
-    flex-wrap: wrap;       /* allow wrap on narrow screens */
-    align-items: center;
-    gap: 12px;
-    margin-top: 8px;
-  }
-
-  /* IMPORTANT: do NOT make “Chats” full width on mobile */
-  .nav-links .btn-primary {
-    width: auto;
+  .menu-toggle {
     display: inline-flex;
   }
 
-  .header-right {
-    width: 100%;
+  .header {
+    padding: 10px 16px;
     justify-content: space-between;
+  }
+
+  .logo {
+    height: 28px;
+  }
+  .brand-name {
+    font-size: 14px;
+  }
+}
+
+
+@media (max-width: 400px) {
+  .brand-name {
+    display: none;
+  }
+}
+
+/* Default: show topbar, hide sidebar */
+.topbar-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.sidebar-links {
+  display: none;
+}
+
+/* On mobile (below 768px): hide topbar, show sidebar */
+@media (max-width: 768px) {
+  .topbar-links {
+    display: none;
+  }
+
+  .sidebar-links {
+    display: flex;
+    flex-direction: column;
     gap: 12px;
   }
-
-  .search-box {
-    width: 50%;
-    max-width: none;
-  }
-
-  .brand-name { font-size: 14px; }
 }
 
-/* Phones */
-@media (max-width: 480px) {
-  .header { padding: 8px 16px; }
-
-  .logo { height: 25px; }
-
-  .nav-links {
-    gap: 10px;
-  }
-
-  .nav-links a {
-    font-size: 13px;
-  }
-
-  .bell-container,
-  .avatar-container {
-    height: 35px;
-    width: 35px;
-  }
-}
-
-/* Very small phones */
-@media (max-width: 360px) {
-  .nav-links { gap: 8px; }
-  .nav-links a { font-size: 12px; }
-
-  .brand-name { display: none; }
-
-  .search-box {
-    padding: 6px 10px 6px 6px;
-  }
-}

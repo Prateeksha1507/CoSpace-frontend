@@ -3,11 +3,19 @@ import { useParams } from "react-router-dom";
 import "../styles/EventDetails.css";
 import { fetchEventById } from "../api/eventAPI";
 import { getOrgById } from "../dummy/db"; // to fetch org info linked with event
+import Avatar from "../components/Avatar";
+import { useNavigate } from 'react-router-dom';
 
 export default function EventDetails() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [org, setOrg] = useState(null);
+
+  const navigate = useNavigate();
+
+  const handleClick = (orgId) => {
+    navigate(`/profile/org/${orgId}`);
+  };
 
   useEffect(() => {
     async function loadEvent() {
@@ -25,36 +33,33 @@ export default function EventDetails() {
     return <p style={{ textAlign: "center", marginTop: "2rem" }}>Loading event...</p>;
   }
 
-  const comments = [
-    {
-      name: "Olivia Carter",
-      time: "2 weeks ago",
-      text: "I’m excited to participate! Is there a specific meeting point within the venue?",
-      avatar: "/images/olivia.png",
-    },
-    {
-      name: "Liam Harper",
-      time: "1 week ago",
-      text: "Can we bring our own gloves and trash bags?",
-      avatar: "/images/liam.png",
-    },
-  ];
+  // const comments = [
+  //   {
+  //     name: "Olivia Carter",
+  //     time: "2 weeks ago",
+  //     text: "I’m excited to participate! Is there a specific meeting point within the venue?",
+  //     avatar: "/images/olivia.png",
+  //   },
+  //   {
+  //     name: "Liam Harper",
+  //     time: "1 week ago",
+  //     text: "Can we bring our own gloves and trash bags?",
+  //     avatar: "/images/liam.png",
+  //   },
+  // ];
 
   return (
     <main className="ed-container">
-      {/* Banner */}
-      <img src="/images/cleanup-banner.jpg" alt="Event banner" className="ed-banner" />
-
-      {/* Title + org */}
+      <img src="/banner.png" alt="Event banner" className="ed-banner" />
       <h1 className="ed-title">{event.name}</h1>
       {org && (
         <div className="ed-org">
-          <img
-            src="/images/helpinghands.png"
+          <Avatar
+            src={org.profilePicture}
             alt={org.name}
             className="ed-org-logo"
           />
-          <div>
+          <div onClick={() => handleClick(org.orgId)}>
             <p className="ed-org-name">{org.name}</p>
             <p className="ed-org-type">{org.type}</p>
           </div>
@@ -112,12 +117,12 @@ export default function EventDetails() {
       </div>
 
       {/* Comments */}
-      <section className="ed-section">
+      {/* <section className="ed-section">
         <h3 className="ed-heading">Comments & FAQs</h3>
         <div className="ed-comments">
           {comments.map((c, i) => (
             <div key={i} className="ed-comment">
-              <img src={c.avatar} alt={c.name} className="ed-avatar" />
+              <Avatar src={c.avatar} alt={c.name} className="ed-avatar" />
               <div>
                 <p className="ed-comment-meta">
                   <strong>{c.name}</strong> <span>{c.time}</span>
@@ -127,7 +132,7 @@ export default function EventDetails() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
     </main>
   );
 }

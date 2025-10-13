@@ -4,6 +4,7 @@ import "../styles/UserProfile.css";
 
 // dummy backend accessors — adjust the import path if your db file lives elsewhere
 import { getUserById, getFollows, getEvents } from "../dummy/db";
+import Avatar from "../components/Avatar";
 
 function formatDateISOToNice(iso) {
   // iso may be YYYY-MM-DD (from seed), make it nice
@@ -70,10 +71,8 @@ export default function UserProfilePage() {
 
   return (
     <main className="user-container">
-      {/* Identity */}
       <section className="user-identity">
-        {/* Use your own avatar path or add an avatar field in seedData later */}
-        <img className="user-avatar" src={"person.png"} alt={user.name} />
+        <Avatar className="user-avatar" src={user.profilePicture} alt={user.name} />
         <h2 className="user-name">{user.name}</h2>
         <p className="user-role">Community Volunteer</p>
       </section>

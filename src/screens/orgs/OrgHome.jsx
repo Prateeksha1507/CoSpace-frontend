@@ -1,26 +1,33 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/Home.css";
 import EventCard from "../../components/EventCard";
-import { fetchOrgEvents } from "../../api/orgAPI.js";
+import { fetchMyOrgEvents } from "../../api/orgAPI";  // no token param needed
 
 function OrgHome() {
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    async function loadEvents() {
-      const result = await fetchOrgEvents();
-      setEvents(result);
-    }
-    loadEvents();
+    (async () => {
+      try {
+        setLoading(true);
+        setError("");
+        // Already resolves current org from cospace_auth_token via authAPI.verify()
+        const { items } = await fetchMyOrgEvents({ sort: "date:asc", page: 1, limit: 20 });
+        setEvents(items || []);
+      } catch (e) {
+        setEvents([]);
+        setError(e?.message || "Failed to load events.");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
-
-  const handleScroll = () => {
-    const section = document.getElementById("event-section");
-    section?.scrollIntoView({ behavior: "smooth" });
-  };
 
   return (
     <div className="page-container">
+      {/* Hero */}
       <section className="hero">
         <div className="hero-content">
           <h1>Connect, Contribute, and Create Change</h1>
@@ -28,13 +35,15 @@ function OrgHome() {
             Reach volunteers, manage your events, and build your organization’s impact.
             Post new events, view analytics, and connect with contributors.
           </p>
-          <div>
+          <div className="hero-actions">
             <a href="/create-event" className="primary-btn">Post an Event</a>
             <a href="/dashboard" className="secondary-btn">See Dashboard</a>
           </div>
         </div>
+        <div className="hero-art" aria-hidden />
       </section>
 
+      {/* Events */}
       <section style={{ padding: "40px 20px" }} id="event-section">
         <h2>Upcoming Events</h2>
 
@@ -44,17 +53,28 @@ function OrgHome() {
           <select><option>Location</option></select>
         </div>
 
+        {loading && <p>Loading events...</p>}
+
+        {error && (
+          <div className="error">
+            <p style={{ color: "red", marginBottom: 8 }}>{error}</p>
+            {/* Likely cause is missing/expired token; give a friendly path forward */}
+            <a href="/login" className="secondary-btn">Login as Organization</a>
+          </div>
+        )}
+
         <div className="events">
-          {events.map((event, index) => (
+          {events.map((event) => (
             <EventCard
-              key={index}
+              key={event.eventId}
               title={event.name}
               description={event.description}
               image="/event-image.png"
               eventId={event.eventId}
             />
           ))}
-          {events.length === 0 && (
+
+          {!loading && !error && events.length === 0 && (
             <p style={{ opacity: 0.7 }}>You haven’t created any events yet.</p>
           )}
         </div>

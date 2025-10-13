@@ -28,15 +28,16 @@ function UserHome() {
             Join a vibrant network of organizations and individuals dedicated to making a difference.
             Post events, volunteer your time, or donate to causes you care about.
           </p>
-          <div>
+          <div className="hero-actions">
             <a href="/my-profile" className="primary-btn">
               Check your profile
             </a>
-            <button className="secondary-btn" onClick={handleScroll}>
+            <a className="secondary-btn" onClick={handleScroll}>
               Find Opportunities
-            </button>
+            </a>
           </div>
         </div>
+        <div className="hero-art" aria-hidden />
       </section>
 
       <section style={{ padding: "40px 20px" }} id="event-section">

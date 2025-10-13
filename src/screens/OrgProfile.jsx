@@ -1,111 +1,254 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/OrgProfile.css";
+import Avatar from "../components/Avatar";
+import {
+  fetchAllOrgs,
+  fetchOrgById,
+  fetchOrgFollowerCount,
+  fetchOrgEventsById,
+} from "../api/orgAPI";
+import { useSearchParams, useParams } from "react-router-dom";
+
+function formatNiceDate(iso) {
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    return iso;
+  }
+}
 
 export default function OrgProfile() {
-  const org = {
-    name: "Helping Hands Foundation",
-    type: "Non-profit organization",
-    followers: "10K followers",
-    logo: "/images/helpinghands.png",
-    contact: "contact@helpinghands.org",
-    website: "helpinghands.org",
-    founded: "2010",
-    about:
-      "Helping Hands Foundation is dedicated to providing support and resources to underserved communities. Our mission is to empower individuals and families through education, healthcare, and sustainable development programs.",
-  };
+  const [params] = useSearchParams();
+  const { id: pathId } = useParams();
+  const [tab, setTab] = useState("about");
 
-  const upcomingEvents = [
-    {
-      title: "Community Cleanup Drive",
-      date: "July 20, 2024",
-      desc: "Join us for a community cleanup drive to help keep our neighborhood clean and green. We’ll provide all the necessary supplies, including gloves and trash bags. Your participation will make a big difference!",
-      mode: "In-person",
-      image: "/images/cleanup.jpg",
-    },
-  ];
+  const queryId = params.get("id");
+  const resolvedId = queryId ?? pathId;
+  const numericId = resolvedId != null ? Number(resolvedId) : NaN;
 
-  const pastEvents = [
-    {
-      title: "Annual Charity Gala",
-      date: "March 15, 2024",
-      desc: "Our annual charity gala was a huge success, raising over $50,000 for our programs. Thank you to everyone who attended and supported our cause!",
-      mode: "In-person",
-      image: "/images/gala.jpg",
-    },
-    {
-      title: "Back-to-School Supply Drive",
-      date: "August 10, 2023",
-      desc: "We collected and distributed school supplies to over 500 students in need, ensuring they have the tools they need to succeed in the upcoming school year.",
-      mode: "In-person",
-      image: "/images/school.jpg",
-    },
-  ];
+  const fallbackOrgId = fetchAllOrgs()[0]?.orgId ?? null;
+  const orgId = Number.isFinite(numericId) ? numericId : fallbackOrgId;
+
+  const [org, setOrg] = useState(null);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [events, setEvents] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      setError("");
+      setOrg(null);
+      setFollowerCount(0);
+      setEvents([]);
+
+      if (!orgId) {
+        setError("Invalid organization ID.");
+        return;
+      }
+
+      try {
+        const orgData = await fetchOrgById(orgId);
+        setOrg(orgData);
+
+        const [count, page] = await Promise.all([
+          fetchOrgFollowerCount(orgId),                         // number
+          fetchOrgEventsById(orgId, { sort: "date:asc", page: 1, limit: 100 }),
+        ]);
+
+        setFollowerCount(typeof count === "number" ? count : 0);
+
+        const items = Array.isArray(page?.items) ? page.items : [];
+        const withNiceDate = items.map((e) => ({
+          ...e,
+          niceDate: formatNiceDate(e.date),
+        }));
+        setEvents(withNiceDate);
+      } catch (e) {
+        setError(e?.message || "Failed to load organization.");
+        setOrg(null);
+        setFollowerCount(0);
+        setEvents([]);
+      }
+    })();
+  }, [orgId]);
+
+  // Compute event lists directly
+  const today = new Date();
+  const upcomingEvents = (events || [])
+    .filter((e) => new Date(e.date) >= today)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  const pastEvents = (events || [])
+    .filter((e) => new Date(e.date) < today)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  if (error && !org) {
+    return (
+      <main className="org-container">
+        <section className="org-section">
+          <h3>Organization not found</h3>
+          <p>{error}</p>
+        </section>
+      </main>
+    );
+  }
+
+  if (!org) {
+    return (
+      <main className="org-container">
+        <section className="org-section">
+          <h3>Loading…</h3>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="org-container">
       {/* Header */}
       <section className="org-header">
-        <img src={org.logo} alt={org.name} className="org-logo" />
+        <Avatar
+          src={org.profilePicture}
+          alt={org.name}
+          className="org-logo"
+        />
         <div className="org-info">
           <h2 className="org-name">{org.name}</h2>
-          <p className="org-type">{org.type}</p>
-          <p className="org-followers">{org.followers}</p>
+          <p className="org-type">{org.type || "Non-profit organization"}</p>
+          <p className="org-followers">
+            {followerCount} follower{followerCount === 1 ? "" : "s"}
+          </p>
         </div>
         <div className="org-actions">
           <button className="secondary-btn">Follow</button>
           <button className="primary-btn">Donate</button>
-          <button className="secondary-btn">Chat with us</button>
+          <a className="secondary-btn" href={`/chats`}>Chat with us</a>
         </div>
       </section>
 
       {/* Tabs */}
       <div className="org-tabs">
-        <button className="org-tab active">About</button>
-        <button className="org-tab">Events</button>
+        <button
+          className={`org-tab ${tab === "about" ? "active" : ""}`}
+          onClick={() => setTab("about")}
+        >
+          About
+        </button>
+        <button
+          className={`org-tab ${tab === "events" ? "active" : ""}`}
+          onClick={() => setTab("events")}
+        >
+          Events
+        </button>
       </div>
 
       {/* About */}
-      <section className="org-section">
-        <h3>About</h3>
-        <p>{org.about}</p>
-        <div className="org-details">
-          <p><strong>Contact</strong><br />{org.contact}</p>
-          <p><strong>Website</strong><br />{org.website}</p>
-          <p><strong>Founded</strong><br />{org.founded}</p>
-        </div>
-      </section>
-
-      {/* Upcoming Events */}
-      <section className="org-section">
-        <h3>Upcoming Events</h3>
-        {upcomingEvents.map((e, i) => (
-          <div key={i} className="org-event">
-            <div>
-              <p className="org-event-mode">{e.mode}</p>
-              <h4>{e.title}</h4>
-              <p>{e.desc}</p>
-              <button className="secondary-btn">View Details</button>
-            </div>
-            <img src={e.image} alt={e.title} className="org-event-img" />
+      {tab === "about" && (
+        <section className="org-section">
+          <h3>About</h3>
+          <p>
+            {org.about ||
+              "This organization is dedicated to impactful community initiatives and collaboration."}
+          </p>
+          <div className="org-details">
+            <p>
+              <strong>Contact</strong>
+              <br />
+              {org.email || "—"}
+            </p>
+            <p>
+              <strong>Website</strong>
+              <br />
+              {org.website || "—"}
+            </p>
+            <p>
+              <strong>Registration ID</strong>
+              <br />
+              {org.regId || "—"}
+            </p>
+            {org.headName && (
+              <p>
+                <strong>Head</strong>
+                <br />
+                {org.headName}
+              </p>
+            )}
+            {org.affiliation && (
+              <p>
+                <strong>Affiliation</strong>
+                <br />
+                {org.affiliation}
+              </p>
+            )}
           </div>
-        ))}
-      </section>
+        </section>
+      )}
 
-      {/* Past Events */}
-      <section className="org-section">
-        <h3>Past Events</h3>
-        {pastEvents.map((e, i) => (
-          <div key={i} className="org-event">
-            <div>
-              <p className="org-event-mode">{e.mode}</p>
-              <h4>{e.title}</h4>
-              <p>{e.desc}</p>
-              <button className="secondary-btn">View Details</button>
-            </div>
-            <img src={e.image} alt={e.title} className="org-event-img" />
-          </div>
-        ))}
-      </section>
+      {/* Events */}
+      {tab === "events" && (
+        <>
+          {/* Upcoming */}
+          <section className="org-section">
+            <h3>Upcoming Events</h3>
+            {upcomingEvents.length === 0 && (
+              <p className="org-empty">No upcoming events.</p>
+            )}
+            {upcomingEvents.map((e) => (
+              <div key={e.eventId} className="org-event">
+                <div>
+                  <p className="org-event-mode">
+                    {e.collaboratingOrgId ? "Collaboration" : "In-person"}
+                  </p>
+                  <h4>{e.name}</h4>
+                  <p className="org-event-date">{e.niceDate}</p>
+                  <p className="org-event-venue">{e.venue}</p>
+                  <a className="secondary-btn" href={`/event/${e.eventId}`}>
+                    View Details
+                  </a>
+                </div>
+                <Avatar
+                  src={"/images/cleanup.jpg"}
+                  alt={e.name}
+                  className="org-event-img"
+                />
+              </div>
+            ))}
+          </section>
+
+          {/* Past */}
+          <section className="org-section">
+            <h3>Past Events</h3>
+            {pastEvents.length === 0 && (
+              <p className="org-empty">No past events.</p>
+            )}
+            {pastEvents.map((e) => (
+              <div key={e.eventId} className="org-event">
+                <div>
+                  <p className="org-event-mode">
+                    {e.collaboratingOrgId ? "Collaboration" : "In-person"}
+                  </p>
+                  <h4>{e.name}</h4>
+                  <p className="org-event-date">{e.niceDate}</p>
+                  <p className="org-event-venue">{e.venue}</p>
+                  <a className="secondary-btn" href={`/event/${e.eventId}`}>
+                    View Details
+                  </a>
+                </div>
+                <Avatar
+                  src={"/images/gala.jpg"}
+                  alt={e.name}
+                  className="org-event-img"
+                />
+              </div>
+            ))}
+          </section>
+        </>
+      )}
     </main>
   );
 }

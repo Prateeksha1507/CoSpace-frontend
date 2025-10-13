@@ -9,7 +9,7 @@ import { verify } from "../api/authAPI";
  * <ProtectedRoute allowed={["user"]}><UserHome/></ProtectedRoute>
  * <ProtectedRoute><Settings/></ProtectedRoute> // any logged-in type
  */
-export default function ProtectedRoute({ children, allowed }) {
+export default function ProtectedRoute({ children, allowed, redirectToDashboard = false}) {
   const [state, setState] = useState({ loading: true, user: null });
 
   useEffect(() => {
@@ -26,6 +26,8 @@ export default function ProtectedRoute({ children, allowed }) {
   if (state.loading) return null; //Or some loader stuffz
 
   if (!state.user) return <Navigate to="/login" replace />;
+
+  if (redirectToDashboard && state.user.type == "org")  return <Navigate to="/dashboard" replace />;
   
   if (Array.isArray(allowed) && allowed.length > 0 && !allowed.includes(state.user.type)) {
     const home = state.user.type === "org" ? "/org/home" : "/user/home";

@@ -105,6 +105,16 @@
   align-items: center;
 }
 
+.org-event > div{
+  display: flex;
+  flex-direction: column;
+}
+
+
+.org-event > div > a{
+  max-width: 100px;
+}
+
 .org-event-mode {
   font-size: 0.85rem;
   color: var(--link-color);

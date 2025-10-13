@@ -94,3 +94,36 @@ flex-wrap: wrap;
   width: 100%;
   max-width: 1200px;        /* consistent width for all children */
 }
+
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+/* Default: buttons side by side */
+.hero-actions a {
+  flex: 0 0 auto;
+}
+
+/* On small screens: stack buttons vertically */
+@media (max-width: 600px) {
+  .hero-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hero-actions a {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+  }
+}
+
+.hero-actions > a {
+  max-width: 60%;
+}

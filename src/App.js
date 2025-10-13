@@ -54,9 +54,9 @@ function App() {
 
           {/* General info, same for all users, not necessarily logged in */}
           <Route path="/details/eventid/*" element={<NotificationsPage />} />
-          <Route path="/profile/org/*" element={<OrgProfile />} />
-          <Route path="/profile/user/*" element={<UserProfile />} />
-          <Route path="/user/:id" element={<UserProfilePage />} />
+          <Route path="/event/:id" element={<EventDetails />} />
+          <Route path="profile/user/:id" element={<UserProfilePage />} />
+          <Route path="/profile/org/:id" element={<OrgProfile />} />
 
           {/* Info specif to user/orgs */}
           <Route path="/notifications" element={
@@ -82,7 +82,7 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="/my-profile" element={
-            <ProtectedRoute allowed={["user"]}>
+            <ProtectedRoute allowed={["user"]} redirectToDashboard={true}>
               <MyProfile />
             </ProtectedRoute>
           } />

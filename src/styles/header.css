@@ -197,7 +197,7 @@
 }
 
 /* === Responsive === */
-@media (max-width: 768px) {
+@media (max-width: 824px) {
   .desktop-right {
     display: none;
   }
@@ -225,29 +225,3 @@
     display: none;
   }
 }
-
-/* Default: show topbar, hide sidebar */
-.topbar-links {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.sidebar-links {
-  display: none;
-}
-
-/* On mobile (below 768px): hide topbar, show sidebar */
-@media (max-width: 768px) {
-  .topbar-links {
-    display: none;
-  }
-
-  .sidebar-links {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-}
-

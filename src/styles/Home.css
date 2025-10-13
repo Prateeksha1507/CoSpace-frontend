@@ -127,3 +127,29 @@ flex-wrap: wrap;
 .hero-actions > a {
   max-width: 60%;
 }
+
+@media (max-width: 400px) {
+  .hero-content h1 {
+    font-family: 'Public Sans', sans-serif;
+    font-weight: 900;
+    font-size: 40px;
+  }
+
+  .hero p {
+    width: 90%;
+    margin-left: 5%;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
+  } 
+
+  
+.hero {
+  background-image: url("../../public/hero-bg.png");
+  background-size: cover;
+  background-position: center;
+  padding: 20px 20px;
+  height: 80vh;
+}
+
+}

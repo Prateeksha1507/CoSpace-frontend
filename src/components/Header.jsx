@@ -37,7 +37,7 @@ function Header({ loggedIn = false }) {
             <nav className="nav-links">
               <a href="/">Home</a>
               <a href="/settings">Settings</a>
-              <a href="/chats">Chats</a>
+              <a href="/chats" className="primary-btn">Chats</a>
             </nav>
             <div>
               <div className="search-box">

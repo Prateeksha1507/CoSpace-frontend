@@ -33,21 +33,6 @@ export default function EventDetails() {
     return <p style={{ textAlign: "center", marginTop: "2rem" }}>Loading event...</p>;
   }
 
-  // const comments = [
-  //   {
-  //     name: "Olivia Carter",
-  //     time: "2 weeks ago",
-  //     text: "I’m excited to participate! Is there a specific meeting point within the venue?",
-  //     avatar: "/images/olivia.png",
-  //   },
-  //   {
-  //     name: "Liam Harper",
-  //     time: "1 week ago",
-  //     text: "Can we bring our own gloves and trash bags?",
-  //     avatar: "/images/liam.png",
-  //   },
-  // ];
-
   return (
     <main className="ed-container">
       <img src="/banner.png" alt="Event banner" className="ed-banner" />

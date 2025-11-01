@@ -43,8 +43,7 @@ function OrgHome() {
         <div className="hero-art" aria-hidden />
       </section>
 
-      {/* Events */}
-      <section style={{ padding: "40px 20px" }} id="event-section">
+      {/* <section style={{ padding: "40px 20px" }} id="event-section">
         <h2>Upcoming Events</h2>
 
         <div className="filters">
@@ -58,7 +57,6 @@ function OrgHome() {
         {error && (
           <div className="error">
             <p style={{ color: "red", marginBottom: 8 }}>{error}</p>
-            {/* Likely cause is missing/expired token; give a friendly path forward */}
             <a href="/login" className="secondary-btn">Login as Organization</a>
           </div>
         )}
@@ -78,7 +76,9 @@ function OrgHome() {
             <p style={{ opacity: 0.7 }}>You haven’t created any events yet.</p>
           )}
         </div>
-      </section>
+      </section>  */}
+
+
     </div>
   );
 }

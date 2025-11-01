@@ -26,6 +26,7 @@ import MyProfile from './screens/users/MyProfile';
 
 import ProtectedRoute from "./routes/ProtectedRoute"
 import UserProfilePage from './screens/UserProfile';
+import EditEvent from './screens/orgs/EditEvent';
 
 function App() {
   return (
@@ -101,6 +102,11 @@ function App() {
           <Route path="/create-event" element={
             <ProtectedRoute allowed={["org"]}>
               <CreateEvent />
+            </ProtectedRoute>
+          } />
+          <Route path="/edit-event/:eventId" element={
+            <ProtectedRoute allowed={["org"]}>
+              <EditEvent />
             </ProtectedRoute>
           } />
         </Routes>

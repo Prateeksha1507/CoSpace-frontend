@@ -17,8 +17,9 @@ export default function ProtectedRoute({ children, allowed, redirectToDashboard 
     (async () => {
       const token = getToken();
       if (!token) { if (alive) setState({ loading: false, user: null }); return; }
-      const { user } = await verify(); // returns { user } or { user: null }
-      if (alive) setState({ loading: false, user });
+      const res = await verify();
+      const actor = res?.actor;
+      if (alive) setState({ loading: false, user: actor });
     })();
     return () => { alive = false; };
   }, []);

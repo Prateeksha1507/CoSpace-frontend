@@ -1,123 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import "../styles/EventDetails.css";
 import { fetchEventById } from "../api/eventAPI";
-import { getOrgById } from "../dummy/db"; // to fetch org info linked with event
-import Avatar from "../components/Avatar";
-import { useNavigate } from 'react-router-dom';
+import { fetchOrgById } from "../api/orgAPI"; // to fetch org info linked with event
+import EventSection from "../components/EventSection";
 
 export default function EventDetails() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
   const [org, setOrg] = useState(null);
 
-  const navigate = useNavigate();
-
-  const handleClick = (orgId) => {
-    navigate(`/profile/org/${orgId}`);
-  };
 
   useEffect(() => {
     async function loadEvent() {
       const data = await fetchEventById(id);
       if (!data) return;
-
       setEvent(data);
-      const orgInfo = getOrgById(data.conductingOrgId);
+      const orgInfo = await fetchOrgById(data.conductingOrgId);
       setOrg(orgInfo);
     }
     loadEvent();
   }, [id]);
 
-  if (!event) {
+  if (!event || !org) {
     return <p style={{ textAlign: "center", marginTop: "2rem" }}>Loading event...</p>;
   }
 
   return (
-    <main className="ed-container">
-      <img src="/banner.png" alt="Event banner" className="ed-banner" />
-      <h1 className="ed-title">{event.name}</h1>
-      {org && (
-        <div className="ed-org">
-          <Avatar
-            src={org.profilePicture}
-            alt={org.name}
-            className="ed-org-logo"
-          />
-          <div onClick={() => handleClick(org.orgId)} className="clickable">
-            <p className="ed-org-name">{org.name}</p>
-            <p className="ed-org-type">{org.type}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Details */}
-      <section className="ed-section">
-        <h3 className="ed-heading">Event Details</h3>
-        <div className="ed-details-grid">
-          <div>
-            <span className="ed-label">Date</span>
-            <span className="ed-value">{event.date}</span>
-          </div>
-          <div>
-            <span className="ed-label">Venue</span>
-            <span className="ed-value">{event.venue}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Map */}
-      <div className="ed-map">
-        <iframe
-          title="Event location"
-          width="100%"
-          height="300"
-          style={{ border: 0, borderRadius: "8px" }}
-          loading="lazy"
-          allowFullScreen
-          src={`https://www.google.com/maps?q=${encodeURIComponent(event.venue)}&output=embed`}
-        ></iframe>
-      </div>
-
-      {/* Description */}
-      <p className="ed-desc">{event.description}</p>
-
-      {/* Skills (optional, dummy placeholder) */}
-      <section className="ed-section">
-        <h3 className="ed-heading">Required Skills</h3>
-        <div className="ed-tags">
-          {["Teamwork", "Communication", "Time Management"].map((s, i) => (
-            <span key={i} className="ed-tag">
-              {s}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* Actions */}
-      <div className="ed-actions">
-        <button className="secondary-btn">Volunteer</button>
-        <button className="primary-btn">Donate</button>
-        <button className="secondary-btn">Participate</button>
-      </div>
-
-      {/* Comments */}
-      {/* <section className="ed-section">
-        <h3 className="ed-heading">Comments & FAQs</h3>
-        <div className="ed-comments">
-          {comments.map((c, i) => (
-            <div key={i} className="ed-comment">
-              <Avatar src={c.avatar} alt={c.name} className="ed-avatar" />
-              <div>
-                <p className="ed-comment-meta">
-                  <strong>{c.name}</strong> <span>{c.time}</span>
-                </p>
-                <p className="ed-comment-text">{c.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section> */}
-    </main>
-  );
+  <EventSection
+    banner={event.image}
+    name={event.name}
+    orgName={org.name}
+    orgType={org.type}
+    date={event.date}
+    isVirtual={event.isVirtual}
+    venue={event.venue}
+    description={event.description}
+    skills={event.skills}
+    clickable={true}
+    orgId={org._id}
+  />  );
 }

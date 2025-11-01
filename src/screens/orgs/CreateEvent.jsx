@@ -1,162 +1,149 @@
-import React, { useState } from "react";
-import {
-  Form,
-  FormField,
-  TextAreaField,
-  CheckboxField,
-  Button,
-  FormActions,
-  FileUploadField,
-} from "../../components/Form"; 
+// src/pages/org/CreateEvent.jsx
+import React, { useEffect, useMemo, useState } from "react";
+import EventForm from "../../components/EventForm";
+import EventSection from "../../components/EventSection";
+import Modal from "../../components/Modal";
+import { authFetch } from "../../api/authAPI";
 import "../../styles/org/CreateEvent.css";
 
 export default function CreateEvent() {
   const [form, setForm] = useState({
-    title: "",
+    name: "",
     description: "",
     date: "",
     time: "",
-    location: "",
-    virtual: false,
+    venue: "",
+    isVirtual: false,
     skills: "",
-    donationGoal: "",
     image: null,
   });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [imagePreviewURL, setImagePreviewURL] = useState(null);
+
+  // Build a single datetime string for display (or leave just date)
+  const displayDate = useMemo(() => {
+    if (!form.date) return "";
+    try {
+      // Combine date+time for nicer preview if time present
+      if (form.time) {
+        const iso = `${form.date}T${form.time}`;
+        const d = new Date(iso);
+        return d.toLocaleString(undefined, {
+          year: "numeric", month: "short", day: "numeric",
+          hour: "2-digit", minute: "2-digit",
+        });
+      }
+      const d = new Date(form.date);
+      return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    } catch { return form.date; }
+  }, [form.date, form.time]);
+
+  // Keep an object URL for the selected image for preview
+  useEffect(() => {
+    if (!form.image) {
+      if (imagePreviewURL) {
+        URL.revokeObjectURL(imagePreviewURL);
+        setImagePreviewURL(null);
+      }
+      return;
+    }
+    const url = URL.createObjectURL(form.image);
+    setImagePreviewURL(url);
+    return () => URL.revokeObjectURL(url);
+  }, [form.image]);
 
   const onChange = (e) => {
     const { name, value, type, checked, files } = e.target;
-    setForm((f) => ({
-      ...f,
+    setForm((prev) => ({
+      ...prev,
       [name]:
-        type === "checkbox"
-          ? checked
-          : type === "file"
-          ? files?.[0] || null
-          : value,
+        type === "checkbox" ? checked : type === "file" ? files?.[0] || null : value,
     }));
   };
 
-  const handlePreview = (e) => {
+  const handlePreview = () => setPreviewOpen(true);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(
-      `Preview:\n${JSON.stringify(
-        { ...form, image: form.image ? form.image.name : null },
-        null,
-        2
-      )}`
-    );
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const data = new FormData();
+      data.append("name", form.name);
+      data.append("description", form.description);
+      data.append("date", form.date);
+      data.append("time", form.time);
+      data.append("venue", form.venue);
+      data.append("isVirtual", form.isVirtual);
+      data.append("skills", form.skills);
+      if (form.image) data.append("image", form.image);
+
+      const res = await authFetch("/api/events/create", {
+        method: "POST",
+        body: data,
+      });
+
+      setMessage(`Event created successfully: ${res.event.name}`);
+      setForm({
+        name: "",
+        description: "",
+        date: "",
+        time: "",
+        venue: "",
+        isVirtual: false,
+        skills: "",
+        image: null,
+      });
+    } catch (err) {
+      console.error("Event creation failed:", err);
+      setMessage(`${err.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const data = new FormData();
-    Object.entries(form).forEach(([k, v]) => data.append(k, v ?? ""));
-    alert(`Publish Event clicked\n 
-      Preview:\n${JSON.stringify(
-        { ...form, image: form.image ? form.image.name : null },
-        null,
-        2
-      )}`);
-  };
+  const skillsArray = useMemo(
+    () =>
+      String(form.skills || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    [form.skills]
+  );
 
   return (
     <main className="ce-container">
       <h1 className="ce-title">Create New Event</h1>
 
-      <Form className="ui-form ce-form" onSubmit={handleSubmit}>
-        <FormField
-          name="title"
-          label="Event Title"
-          placeholder="Enter event title"
-          value={form.title}
-          onChange={onChange}
-          required
-        />
+      <EventForm
+        form={form}
+        loading={loading}
+        onChange={onChange}
+        onPreview={handlePreview}
+        onSubmit={handleSubmit}
+      />
 
-        <TextAreaField
-          name="description"
-          label="Event Description"
-          placeholder="Enter description"
-          value={form.description}
-          onChange={onChange}
-          required
-        />
+      {message && <p className="ce-message">{message}</p>}
 
-        <FormField
-          name="date"
-          type="date"
-          label="Date"
-          value={form.date}
-          onChange={onChange}
-          required
+      {/* Preview Modal */}
+      <Modal open={previewOpen} onClose={() => setPreviewOpen(false)}>
+        <EventSection
+          banner={imagePreviewURL}
+          name={form.name}
+          orgProfilePicture={null}
+          orgName={"Your Organization"}     /* optional placeholder */
+          orgType={"Non-Profit"}            /* optional placeholder */
+          date={displayDate}
+          isVirtual={form.isVirtual}
+          venue={form.venue}
+          description={form.description}
+          skills={skillsArray}
+          clickable={false}
         />
-
-        <FormField
-          name="time"
-          type="time"
-          label="Time"
-          value={form.time}
-          onChange={onChange}
-          required
-        />
-
-        <FormField
-          name="location"
-          label="Location"
-          placeholder="Enter event location or select 'Virtual'"
-          value={form.location}
-          onChange={onChange}
-          required={!form.virtual}
-          helpText={form.virtual ? "Location not required for virtual events" : ""}
-        />
-
-        <CheckboxField
-          name="virtual"
-          label="Virtual Event"
-          checked={form.virtual}
-          onChange={onChange}
-        />
-
-        <FileUploadField
-          name="image"
-          label="Event Image/Poster"
-          accept="image/*"
-          onChange={onChange}
-          value={form.image}
-        />
-
-        <TextAreaField
-          name="skills"
-          label="Required Volunteer Skills/Roles"
-          placeholder="e.g., First aid, registration desk, photography"
-          value={form.skills}
-          onChange={onChange}
-        />
-
-        <FormField
-          name="donationGoal"
-          type="number"
-          label="Donation Goal (Optional)"
-          placeholder="Enter donation goal amount"
-          value={form.donationGoal}
-          onChange={onChange}
-          min="0"
-        />
-
-        <FormActions align="end" className="ce-actions">
-          <Button
-            type="button"
-            variant="outline"
-            className="secondary-btn"
-            onClick={handlePreview}
-          >
-            Preview
-          </Button>
-          <Button type="submit" variant="primary" className="primary-btn">
-            Publish Event
-          </Button>
-        </FormActions>
-      </Form>
+      </Modal>
     </main>
   );
 }

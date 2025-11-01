@@ -62,7 +62,7 @@ function UserHome() {
               title={event.name}
               description={event.description}
               image="/event-image.png"
-              eventId={event.eventId}
+              eventId={event._id}
             />
           ))}
           {events.length === 0 && <p>No upcoming events available.</p>}

@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import "../styles/OrgProfile.css";
 import Avatar from "../components/Avatar";
 import {
-  fetchAllOrgs,
   fetchOrgById,
   fetchOrgFollowerCount,
   fetchOrgEventsById,
 } from "../api/orgAPI";
 import { useSearchParams, useParams } from "react-router-dom";
+import FollowSection from "../components/FollowSection";
 
 function formatNiceDate(iso) {
   try {
@@ -27,24 +27,16 @@ export default function OrgProfile() {
   const [params] = useSearchParams();
   const { id: pathId } = useParams();
   const [tab, setTab] = useState("about");
-
-  const queryId = params.get("id");
-  const resolvedId = queryId ?? pathId;
-  const numericId = resolvedId != null ? Number(resolvedId) : NaN;
-
-  const fallbackOrgId = fetchAllOrgs()[0]?.orgId ?? null;
-  const orgId = Number.isFinite(numericId) ? numericId : fallbackOrgId;
+  const orgId = pathId || null;
 
   const [org, setOrg] = useState(null);
-  const [followerCount, setFollowerCount] = useState(0);
-  const [events, setEvents] = useState([]);
   const [error, setError] = useState("");
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
     (async () => {
       setError("");
       setOrg(null);
-      setFollowerCount(0);
       setEvents([]);
 
       if (!orgId) {
@@ -56,23 +48,18 @@ export default function OrgProfile() {
         const orgData = await fetchOrgById(orgId);
         setOrg(orgData);
 
-        const [count, page] = await Promise.all([
-          fetchOrgFollowerCount(orgId),                         // number
-          fetchOrgEventsById(orgId, { sort: "date:asc", page: 1, limit: 100 }),
-        ]);
+        const res = await fetchOrgEventsById(orgId, { sort: "date:asc", page: 1, limit: 100 })
+        const events = res.events
 
-        setFollowerCount(typeof count === "number" ? count : 0);
-
-        const items = Array.isArray(page?.items) ? page.items : [];
-        const withNiceDate = items.map((e) => ({
+        const withNiceDate = events.map((e) => ({
           ...e,
           niceDate: formatNiceDate(e.date),
         }));
+        console.log(withNiceDate)
         setEvents(withNiceDate);
       } catch (e) {
         setError(e?.message || "Failed to load organization.");
         setOrg(null);
-        setFollowerCount(0);
         setEvents([]);
       }
     })();
@@ -120,14 +107,14 @@ export default function OrgProfile() {
         <div className="org-info">
           <h2 className="org-name">{org.name}</h2>
           <p className="org-type">{org.type || "Non-profit organization"}</p>
-          <p className="org-followers">
-            {followerCount} follower{followerCount === 1 ? "" : "s"}
-          </p>
+          {/* <p className="org-followers">
+            {followersCount} follower{followersCount === 1 ? "" : "s"}
+          </p> */}
         </div>
         <div className="org-actions">
-          <button className="secondary-btn">Follow</button>
-          <button className="primary-btn">Donate</button>
-          <a className="secondary-btn" href={`/chats`}>Chat with us</a>
+        <FollowSection orgId={org._id} />
+        <button className="primary-btn">Donate</button>
+        <a className="secondary-btn" href={`/chats`}>Chat with us</a>
         </div>
       </section>
 
@@ -152,9 +139,9 @@ export default function OrgProfile() {
         <section className="org-section">
           <h3>About</h3>
           <p>
-            {org.about ||
-              "This organization is dedicated to impactful community initiatives and collaboration."}
+            {org.about || <i>This organization does not have any description.</i>}
           </p>
+
           <div className="org-details">
             <p>
               <strong>Contact</strong>
@@ -199,7 +186,7 @@ export default function OrgProfile() {
               <p className="org-empty">No upcoming events.</p>
             )}
             {upcomingEvents.map((e) => (
-              <div key={e.eventId} className="org-event">
+              <div key={e._id} className="org-event">
                 <div>
                   <p className="org-event-mode">
                     {e.collaboratingOrgId ? "Collaboration" : "In-person"}
@@ -207,7 +194,7 @@ export default function OrgProfile() {
                   <h4>{e.name}</h4>
                   <p className="org-event-date">{e.niceDate}</p>
                   <p className="org-event-venue">{e.venue}</p>
-                  <a className="secondary-btn" href={`/event/${e.eventId}`}>
+                  <a className="secondary-btn" href={`/event/${e._id}`}>
                     View Details
                   </a>
                 </div>
@@ -227,7 +214,7 @@ export default function OrgProfile() {
               <p className="org-empty">No past events.</p>
             )}
             {pastEvents.map((e) => (
-              <div key={e.eventId} className="org-event">
+              <div key={e._id} className="org-event">
                 <div>
                   <p className="org-event-mode">
                     {e.collaboratingOrgId ? "Collaboration" : "In-person"}
@@ -235,7 +222,7 @@ export default function OrgProfile() {
                   <h4>{e.name}</h4>
                   <p className="org-event-date">{e.niceDate}</p>
                   <p className="org-event-venue">{e.venue}</p>
-                  <a className="secondary-btn" href={`/event/${e.eventId}`}>
+                  <a className="secondary-btn" href={`/event/${e._id}`}>
                     View Details
                   </a>
                 </div>

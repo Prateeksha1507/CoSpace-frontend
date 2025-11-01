@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../../styles/org/OrgDashboard.css";
-import { fetchMyOrgDashboard, fetchMyOrgEvents } from "../../api/orgAPI";
+import { fetchMyOrgDashboard } from "../../api/orgAPI";
 import { useNavigate } from 'react-router-dom';
+import Warning from "../../components/Warning";
 
 export default function OrgDashboard() {
   const navigate = useNavigate();
@@ -14,6 +15,24 @@ export default function OrgDashboard() {
   const [org, setOrg] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isWarningOpen, setIsWarningOpen] = useState(false)
+  const [eventToDelete, setEventToDelete] = useState(null)
+
+  const handleDelete = (eventId) => {
+    setEventToDelete(eventId);
+    setIsWarningOpen(true);
+  };
+
+  const confirmDelete = () => {
+    console.log(`Event with ID ${eventToDelete} deleted.`);
+    setIsWarningOpen(false);
+    setEventToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setIsWarningOpen(false);
+    setEventToDelete(null);
+  };
 
   useEffect(() => {
     (async () => {
@@ -21,27 +40,21 @@ export default function OrgDashboard() {
         setLoading(true);
         setError("");
 
-        // 1) Dashboard bundle for meta + followerCount/totals
-        // 2) Paged events for the table (you can raise limit as needed)
-        const [dash, evPage] = await Promise.all([
-          fetchMyOrgDashboard(),                                  // -> { org, followerCount, totals: { events, followers }, upcomingEvents }
-          fetchMyOrgEvents({ sort: "date:asc", page: 1, limit: 200 }) // -> { items, page, total, ... }
-        ]);
-
-        const items = Array.isArray(evPage?.items) ? evPage.items : [];
+        const dash = await fetchMyOrgDashboard();
         setOrg(dash.org);
 
-        // Build the stats array your UI expects
-        const today = new Date();
-        const activeCount = items.filter(e => new Date(e.date) >= today).length;
+        const allEvents = [
+          ...(dash.upcomingEvents || []),
+          ...(dash.pastEvents || [])
+        ];
+
+        setEvents(allEvents);
 
         setStats([
           { label: "Total Followers", value: dash.followerCount ?? 0 },
-          { label: "Total Events", value: dash.totals?.events ?? items.length },
-          { label: "Active Events", value: activeCount },
+          { label: "Total Events", value: dash.totals?.events ?? allEvents.length },
+          { label: "Active Events", value: dash.upcomingEvents?.length ?? 0 },
         ]);
-
-        setEvents(items);
       } catch (err) {
         console.error("Error loading dashboard:", err);
         setError(err?.message || "Failed to load dashboard.");
@@ -54,11 +67,13 @@ export default function OrgDashboard() {
     })();
   }, []);
 
+
   const now = new Date();
-  const filteredEvents =
-    tab === "upcoming"
-      ? events.filter(e => new Date(e.date) >= now)
-      : events.filter(e => new Date(e.date) < now);
+  const filteredEvents = tab === "upcoming"
+    ? (events.filter(e => new Date(e.date) >= now))
+    : (events.filter(e => new Date(e.date) < now));
+
+  const hasOpenEvents = filteredEvents.some(e => new Date(e.date) > now);
 
   const fmt = (iso) => {
     try {
@@ -72,7 +87,7 @@ export default function OrgDashboard() {
 
   return (
     <main className="od-container">
-      <h1 className="od-title">{org ? `${org.name} Dashboard` : "Organization Dashboard"}</h1>
+      <h1 className="od-title">{org ? `${org.name}'s Dashboard` : "My Dashboard"}</h1>
       <p className="od-subtitle">Manage your events, volunteers, and track your impact.</p>
 
       {loading && <p>Loading…</p>}
@@ -98,7 +113,6 @@ export default function OrgDashboard() {
         </button>
       </div>
 
-      {/* Events */}
       <section className="od-section">
         <table className="od-table">
           <thead>
@@ -108,15 +122,15 @@ export default function OrgDashboard() {
               <th>Venue</th>
               <th>Participants</th>
               <th>Status</th>
-              <th>Actions</th>
+              {hasOpenEvents && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
             {filteredEvents.map((e) => {
               const isOpen = new Date(e.date) > now;
               return (
-                <tr key={e.eventId}>
-                  <td><a href={`event/${e.eventId}`}>{e.name}</a></td>
+                <tr key={e._id}>
+                  <td><a href={`event/${e._id}`}>{e.name}</a></td>
                   <td>{fmt(e.date)}</td>
                   <td>{e.venue}</td>
                   <td>{e.totalAttending}</td>
@@ -125,15 +139,29 @@ export default function OrgDashboard() {
                       {isOpen ? "Open" : "Closed"}
                     </span>
                   </td>
-                  <td>
-                    <button className="secondary-btn od-small-btn">Edit</button>
-                  </td>
+                  {isOpen && hasOpenEvents && (
+                    <td>
+                      <button 
+                        className="secondary-btn od-small-btn "
+                        onClick={() => { if (isOpen) navigate(`/edit-event/${e._id}`); }}
+                      >
+                        Edit
+                      </button>
+                      
+                      <button 
+                        className="secondary-btn od-small-btn "
+                        onClick={(eventId) => { handleDelete(eventId) }}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  )}
                 </tr>
               );
             })}
             {!loading && !error && filteredEvents.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ opacity: 0.7, textAlign: "center" }}>
+                <td colSpan={hasOpenEvents ? 6 : 5} style={{ opacity: 0.7, textAlign: "center" }}>
                   No {tab === "upcoming" ? "upcoming" : "past"} events.
                 </td>
               </tr>
@@ -155,6 +183,13 @@ export default function OrgDashboard() {
           ))}
         </div>
       </section>
+      <Warning
+        isOpen={isWarningO
+          pen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        message="Are you sure you want to delete this event? This action is non-reversible"
+      />
     </main>
   );
 }

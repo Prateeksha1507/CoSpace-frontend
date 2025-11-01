@@ -1,92 +1,70 @@
 // src/api/orgAPI.js
+import { authFetch, publicFetch, verify } from './authAPI';
 
-import {
-  // raw lists for explore
-  getOrgs,
-  getOrgByEmail,
-
-  // backend-style facades
-  apiGetOrgById,               // GET /orgs/:id
-  apiGetOrgEvents,             // GET /orgs/:id/events?...
-  apiGetOrgFollowerCount,      // GET /orgs/:id/followers/count
-  apiGetOrgDashboard,          // GET /orgs/:id/dashboard
-} from "../dummy/db";
-
-import { verify } from "./authAPI"; // <- uses cospace_auth_token internally
-
-/* ---------------- helpers ---------------- */
-
-async function resolveCurrentOrg() {
-  // ask authAPI to verify the stored token; it returns { user } or { user: null }
-  const { user } = await verify();
-  if (!user || user.type !== "org") {
-    throw new Error("Unauthorized"); // consistent with your dummy backend
-  }
-  const org = getOrgByEmail(user.email);
-  if (!org) throw new Error("Org not found");
-  return org;
+/* -------------- helpers -------------- */
+async function getCurrentOrgActor() {
+  const { actor } = await verify();         // verify() should normalize to { actor } = user || org
+  if (!actor || actor.type !== 'org') throw new Error('Unauthorized (org only)');
+  // actor has: { email, type: 'org', id, username, ... }
+  return actor;
 }
 
-/* ---------------- by-ID endpoints (routing-friendly) ---------------- */
+/* -------------- by-ID endpoints -------------- */
 
-/** Get an org by ID (async). */
+// GET /api/orgs/:id
 export async function fetchOrgById(id) {
-  return apiGetOrgById(Number(id));
+  return publicFetch(`/api/orgs/${encodeURIComponent(id)}`);
 }
 
-/** Get events for a specific orgId (paged). */
-export async function fetchOrgEventsById(
-  orgId,
-  {
-    role,            // "conducting" | "collab" | undefined (both)
-    from,            // ISO inclusive
-    to,              // ISO inclusive
-    sort = "date:asc",
-    page = 1,
-    limit = 20,
-  } = {}
-) {
-  return apiGetOrgEvents(Number(orgId), { role, from, to, sort, page, limit });
+// GET /api/events/org/:orgId   (your events route is under /api/events)
+export async function fetchOrgEventsById(orgId, { role, from, to, sort = 'date:asc', page = 1, limit = 20 } = {}) {
+  const params = new URLSearchParams({ sort, page, limit });
+  if (role) params.set('role', role);
+  if (from) params.set('from', from);
+  if (to) params.set('to', to);
+  const qs = params.toString() ? `?${params.toString()}` : '';
+  return publicFetch(`/api/events/org/${encodeURIComponent(orgId)}${qs}`);
 }
 
-/** Get follower count for an orgId. */
+// Followers — your follow routes are under /api/follow
+// GET /api/follow/org/:id/followers
+export async function fetchOrgFollowers(orgId) {
+  return publicFetch(`/api/org/${encodeURIComponent(orgId)}/followers`);
+}
+
 export async function fetchOrgFollowerCount(orgId) {
-  const { count } = await apiGetOrgFollowerCount(Number(orgId));
-  return count;
+  const followers = await fetchOrgFollowers(orgId);
+  return Array.isArray(followers) ? followers.length : (followers?.count ?? 0);
 }
 
-/** Dashboard bundle by orgId. */
+// If you really have: GET /api/orgs/:id/dashboard (protected)
 export async function fetchOrgDashboardData(orgId) {
-  return apiGetOrgDashboard(Number(orgId));
+  return authFetch(`/api/orgs/${encodeURIComponent(orgId)}/dashboard`);
 }
 
-/** Explore/Directory: list all orgs. */
-export function fetchAllOrgs() {
-  return getOrgs() || [];
+// GET /api/orgs
+export async function fetchAllOrgs() {
+  return publicFetch('/api/orgs');
 }
 
-/* ---------------- current-org endpoints (resolve via token) ---------------- */
+/* -------------- current-org shortcuts -------------- */
 
-/** Current org (derived from stored token). */
 export async function fetchCurrentOrg() {
-  return resolveCurrentOrg();
+  const actor = await getCurrentOrgActor();
+  return actor;
 }
 
-/** Current org's events (paged). */
 export async function fetchMyOrgEvents(opts = {}) {
-  const org = await resolveCurrentOrg();
-  return apiGetOrgEvents(org.orgId, opts);
+  const actor = await getCurrentOrgActor();
+  return fetchOrgEventsById(actor.id, opts);
 }
 
-/** Current org's follower count. */
 export async function fetchMyOrgFollowerCount() {
-  const org = await resolveCurrentOrg();
-  const { count } = await apiGetOrgFollowerCount(org.orgId);
-  return count;
+  const actor = await getCurrentOrgActor();
+  return fetchOrgFollowerCount(actor.id);
 }
 
-/** Current org dashboard bundle. */
+// Preferred: you implemented GET /api/orgs/me/dashboard
 export async function fetchMyOrgDashboard() {
-  const org = await resolveCurrentOrg();
-  return apiGetOrgDashboard(org.orgId);
+  return authFetch('/api/orgs/dashboard');
 }

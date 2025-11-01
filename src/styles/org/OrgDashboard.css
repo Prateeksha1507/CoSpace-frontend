@@ -87,12 +87,12 @@
   font-weight: 600;
 }
 
-.od-status.open {
+.open {
   background: #dcfce7;
   color: #166534;
 }
 
-.od-status.closed {
+.closed {
   background: #fee2e2;
   color: #991b1b;
 }

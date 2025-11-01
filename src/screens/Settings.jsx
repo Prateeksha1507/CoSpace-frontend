@@ -7,6 +7,7 @@ import {
   FormActions,
 } from "../components/Form";
 import "../styles/Settings.css";
+import LogoutButton from "../components/Logout";
 
 export default function Settings() {
   const [tab, setTab] = useState("account");
@@ -64,9 +65,7 @@ export default function Settings() {
               <Button variant="outline" className="secondary-btn set-btn">
                 Update Profile
               </Button>
-              <Button variant="primary" className="black-btn set-btn">
-                Log Out
-              </Button>
+              <LogoutButton/>
             </FormActions>
           </Form>
 

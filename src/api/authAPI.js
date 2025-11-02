@@ -1,3 +1,6 @@
+import { fetchOrgById } from "./orgAPI";
+import {fetchUserById} from "./userAPI"
+
 const TOKEN_KEY = "cospace_auth_token";
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "";
 
@@ -25,10 +28,8 @@ async function jsonFetch(path, { method = "GET", body, auth = false } = {}) {
   let headers = {};
   let finalBody = body;
 
-  // ✅ Detect FormData automatically
   const isFormData = body instanceof FormData;
 
-  // Set JSON header only if not FormData
   if (!isFormData) {
     headers["Content-Type"] = "application/json";
   }
@@ -90,7 +91,60 @@ export async function login({ email, password }) {
   return { user: data?.user ?? null };
 }
 
-// GET /api/auth/verify
+export async function signup(payload) {
+  const data = await publicFetch('/api/auth/signup', {
+    method: 'POST',
+    body: payload,
+  });
+
+  const token = data?.token || data?.accessToken || data?.jwt;
+  if (token) setToken(token);
+
+  const actor = data?.user || null;
+  return { token, actor };
+}
+
+export async function updateMyProfile(fields = {}) {
+  const {name, username, bio, interests, headName, website, regId, affiliation, profileImage, currentPassword, newPassword, mission, type
+  } = fields;
+
+
+  let body;
+    const fd = new FormData();
+    if (name)     fd.append("name", name);
+    if (username) fd.append("username", username);
+    if (bio)      fd.append("bio", bio);
+    if (interests) {
+      const csv = Array.isArray(interests) ? interests.join(",") : String(interests);
+      fd.append("interests", csv);
+    }
+    if (headName)     fd.append("headName", headName);
+    if (website)      fd.append("website", website);
+    if (regId)        fd.append("regId", regId);
+    if (mission)      fd.append("mission", mission);
+    if (affiliation)  fd.append("affiliation", affiliation);
+    if (type)         fd.append("orgType", type);
+    if (currentPassword) fd.append("currentPassword", currentPassword);
+    if (newPassword)     fd.append("newPassword", newPassword);
+
+    if (profileImage instanceof File || profileImage instanceof Blob) {
+      fd.append("profileImage", profileImage);
+    }
+    body = fd;  
+
+  // Backend: PUT /api/auth/me (with multer.single('profileImage') support)
+  return await authFetch("/api/auth/update", {
+    method: "PUT",
+    body,
+  });
+}
+
+export async function deleteMyProfile() {
+  const res = await authFetch("/api/auth/delete", { method: "DELETE" });
+  logout();
+  return res;
+}
+
 export async function verify() {
   const token = getToken();
   if (!token) return { actor: null };
@@ -107,7 +161,16 @@ export async function verify() {
 }
 
 // Shortcut to get current user/org
-export async function getCurrentUser() {
+export async function getCurrentActor() {
   const { actor } = await verify();
   return actor;
+}
+
+export async function getCurrentActorDocument() {
+  const { actor } = await verify();
+  const doc =
+    actor?.type === "org"
+      ? await fetchOrgById(actor.id)
+      : await fetchUserById(actor.id);
+  return { ...doc, type: actor?.type, id: actor?.id };
 }

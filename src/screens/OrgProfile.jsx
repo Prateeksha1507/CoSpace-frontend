@@ -106,7 +106,7 @@ export default function OrgProfile() {
         />
         <div className="org-info">
           <h2 className="org-name">{org.name}</h2>
-          <p className="org-type">{org.type || "Non-profit organization"}</p>
+          <p className="org-type">{org.orgType || "Other"}</p>
           {/* <p className="org-followers">
             {followersCount} follower{followersCount === 1 ? "" : "s"}
           </p> */}

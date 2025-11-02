@@ -1,12 +1,14 @@
-// src/pages/org/CreateEvent.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import EventForm from "../../components/EventForm";
 import EventSection from "../../components/EventSection";
 import Modal from "../../components/Modal";
 import { authFetch } from "../../api/authAPI";
+import { toast } from "react-toastify";
 import "../../styles/org/CreateEvent.css";
+import { useNavigate } from "react-router-dom";  // Correct import for useNavigate
 
 export default function CreateEvent() {
+  const navigate = useNavigate();  // Correct usage of useNavigate
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -18,15 +20,12 @@ export default function CreateEvent() {
     image: null,
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [imagePreviewURL, setImagePreviewURL] = useState(null);
 
-  // Build a single datetime string for display (or leave just date)
   const displayDate = useMemo(() => {
     if (!form.date) return "";
     try {
-      // Combine date+time for nicer preview if time present
       if (form.time) {
         const iso = `${form.date}T${form.time}`;
         const d = new Date(iso);
@@ -40,7 +39,6 @@ export default function CreateEvent() {
     } catch { return form.date; }
   }, [form.date, form.time]);
 
-  // Keep an object URL for the selected image for preview
   useEffect(() => {
     if (!form.image) {
       if (imagePreviewURL) {
@@ -58,8 +56,7 @@ export default function CreateEvent() {
     const { name, value, type, checked, files } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]:
-        type === "checkbox" ? checked : type === "file" ? files?.[0] || null : value,
+      [name]: type === "checkbox" ? checked : type === "file" ? files?.[0] || null : value,
     }));
   };
 
@@ -68,7 +65,6 @@ export default function CreateEvent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
 
     try {
       const data = new FormData();
@@ -86,7 +82,7 @@ export default function CreateEvent() {
         body: data,
       });
 
-      setMessage(`Event created successfully: ${res.event.name}`);
+      toast.success(`Event created: ${res?.event?.name || "Success"}`);
       setForm({
         name: "",
         description: "",
@@ -97,9 +93,14 @@ export default function CreateEvent() {
         skills: "",
         image: null,
       });
+      navigate("/dashboard");  // Correct usage of navigate
     } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Event creation failed";
+      toast.error(msg);
       console.error("Event creation failed:", err);
-      setMessage(`${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -126,22 +127,20 @@ export default function CreateEvent() {
         onSubmit={handleSubmit}
       />
 
-      {message && <p className="ce-message">{message}</p>}
-
-      {/* Preview Modal */}
       <Modal open={previewOpen} onClose={() => setPreviewOpen(false)}>
         <EventSection
           banner={imagePreviewURL}
           name={form.name}
           orgProfilePicture={null}
-          orgName={"Your Organization"}     /* optional placeholder */
-          orgType={"Non-Profit"}            /* optional placeholder */
+          orgName={"Your Organization"}
+          orgType={"Non-Profit"}
           date={displayDate}
           isVirtual={form.isVirtual}
           venue={form.venue}
           description={form.description}
           skills={skillsArray}
           clickable={false}
+          actorType={"user"}  //So it looks like what user will see
         />
       </Modal>
     </main>

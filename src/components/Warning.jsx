@@ -10,8 +10,8 @@ const Warning = ({ isOpen, onClose, onConfirm, message }) => {
         <h3>Are you sure?</h3>
         <p>{message}</p>
         <div className="warning-actions">
-          <button className="primary-btn" onClick={onClose}>Cancel</button>
-          <button className="secondary-btn" onClick={onConfirm}>Delete</button>
+          <button className="secondary-btn" onClick={onClose}>Cancel</button>
+          <button className="primary-btn" onClick={onConfirm}>Delete</button>
         </div>
       </div>
     </div>

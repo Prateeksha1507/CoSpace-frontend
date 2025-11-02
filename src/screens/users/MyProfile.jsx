@@ -1,117 +1,122 @@
-import React, { useEffect, useState } from "react";
+// src/pages/profile/MyUserProfilePage.jsx
+import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import UserProfileView from "../../components/UserProfileView";
+import { getCurrentActorDocument } from "../../api/authAPI";
+import { listUserVolunteered } from "../../api/volunteerAPI";
+import { getUserDonations } from "../../api/donationAPI";
+import { getAttendingDetails } from "../../api/attendanceAPI";
 import "../../styles/UserProfile.css";
-import { getUserById, getEvents, getFollows } from "../../dummy/db";
-import { verify } from "../../api/authAPI";
 
-export default function UserProfile() {
+export default function MyUserProfilePage() {
   const [user, setUser] = useState(null);
+  const [attending, setAttending] = useState([]);
   const [volunteering, setVolunteering] = useState([]);
   const [donations, setDonations] = useState([]);
+  const [activeTab, setActiveTab] = useState("attends");
+  const [loading, setLoading] = useState(true);
+
+  // --- Normalize volunteers response ---
+  const normalizeVolunteers = (raw) => {
+    const arr = Array.isArray(raw?.records)
+      ? raw.records
+      : Array.isArray(raw?.events)
+      ? raw.events
+      : Array.isArray(raw)
+      ? raw
+      : [];
+
+    return arr.map((v, i) => {
+      const eventId = v?.eventId ?? i;
+      return {
+        id: String(eventId),
+        eventId: String(eventId),
+        name: v?.eventName ?? v?.name ?? "—",
+        date: v?.date ?? null,
+        time: v?.time ?? null,
+        venue: v?.venue ?? "",
+        isVirtual: Boolean(v?.isVirtual),
+        image: v?.image ?? null,
+        status: String(v?.status ?? "pending").toLowerCase(), // pending | approved | rejected
+        appliedAt: v?.appliedAt ?? null,
+      };
+    });
+  };
 
   useEffect(() => {
-    // Simulate logged-in user
     (async () => {
-      const { user } = await verify(localStorage.getItem("auth_token"));
-      if (user) {
-        const u = getUserById(1); // replace with lookup by email later
-        setUser(u);
+      try {
+        const actor = await getCurrentActorDocument();
+        if (!actor || actor.type !== "user") {
+          toast.error("Not logged in as user");
+          return;
+        }
+        setUser(actor);
 
-        // Volunteering: user follows some orgs, show events by those orgs
-        const following = getFollows().filter(f => f.userId === u.userId).map(f => f.orgId);
-        const myEvents = getEvents().filter(e => following.includes(e.conductingOrgId));
-        setVolunteering(
-          myEvents.map(e => ({
-            event: e.name,
-            date: new Date(e.date).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            }),
-            hours: Math.floor(Math.random() * 5) + 1, // demo value
-          }))
-        );
-
-        // Fake donations list
-        setDonations([
-          { amount: 250, date: "Aug 10, 2024", receiptUrl: "#" },
-          { amount: 250, date: "Jul 5, 2024", receiptUrl: "#" },
+        const [att, vol, dons] = await Promise.allSettled([
+          getAttendingDetails(actor.id),
+          listUserVolunteered(actor.id),
+          getUserDonations(actor.id),
         ]);
+
+        if (att.status === "fulfilled") {
+          setAttending(Array.isArray(att.value?.events) ? att.value.events : []);
+        } else {
+          toast.error(att.reason?.message || "Failed to load attending");
+        }
+
+        if (vol.status === "fulfilled") {
+          setVolunteering(normalizeVolunteers(vol.value));
+        } else {
+          toast.error(vol.reason?.message || "Failed to load volunteering");
+        }
+
+        if (dons.status === "fulfilled") {
+          const arr =
+            (Array.isArray(dons.value?.events) && dons.value.events) ||
+            (Array.isArray(dons.value) && dons.value) ||
+            [];
+          setDonations(arr);
+        } else {
+          toast.error(dons.reason?.message || "Failed to load donations");
+        }
+      } catch (err) {
+        toast.error(err?.message || "Failed to load profile");
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
 
-  if (!user) return <div className="user-loading">Loading profile...</div>;
+  const stats = useMemo(() => {
+    const totalDonations = (Array.isArray(donations) ? donations : []).reduce(
+      (acc, d) => acc + Number(d?.amount || 0),
+      0
+    );
+    // ✅ Only count approved volunteer events
+    const volunteeredApproved = (Array.isArray(volunteering) ? volunteering : []).filter(
+      (v) => (v.status || "") === "approved"
+    ).length;
+
+    return {
+      attendedCount: attending?.length || 0,
+      volunteeredCount: volunteeredApproved,
+      totalDonations,
+    };
+  }, [attending, volunteering, donations]);
+
+  if (loading) return <div className="user-loading">Loading profile...</div>;
+  if (!user) return <div className="user-loading">No user</div>;
 
   return (
-    <main className="user-container">
-      <section className="user-identity">
-        <img className="user-avatar" src="/person.png" alt={user.name} />
-        <h2 className="user-name">{user.name}</h2>
-        <p className="user-role">Community Volunteer</p>
-      </section>
-
-      <section className="user-kpis">
-        <div className="user-kpi">
-          <div className="user-kpi-value">{volunteering.length * 4}</div>
-          <div className="user-kpi-label">Total Volunteering Hours</div>
-        </div>
-        <div className="user-kpi">
-          <div className="user-kpi-value">$500</div>
-          <div className="user-kpi-label">Total Donations</div>
-        </div>
-      </section>
-
-      <section className="user-section">
-        <h3 className="user-section-title">Volunteering History</h3>
-        <div className="user-card">
-          <table className="user-table">
-            <thead>
-              <tr>
-                <th>Event Name</th>
-                <th>Date</th>
-                <th>Hours Contributed</th>
-              </tr>
-            </thead>
-            <tbody>
-              {volunteering.map((v, i) => (
-                <tr key={i}>
-                  <td>{v.event}</td>
-                  <td className="user-muted">{v.date}</td>
-                  <td>{v.hours}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="user-section">
-        <h3 className="user-section-title">Donation History</h3>
-        <div className="user-card">
-          <table className="user-table">
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Date</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {donations.map((d, i) => (
-                <tr key={i}>
-                  <td className="user-amount">${d.amount}</td>
-                  <td className="user-muted">{d.date}</td>
-                  <td className="user-right">
-                    <a className="user-receipt-btn primary-btn" href={d.receiptUrl}>
-                      Download Receipt
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </main>
+    <UserProfileView
+      user={user}
+      stats={stats}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      attending={attending}
+      volunteering={volunteering}
+      donations={donations}
+    />
   );
 }

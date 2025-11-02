@@ -27,6 +27,7 @@ import MyProfile from './screens/users/MyProfile';
 import ProtectedRoute from "./routes/ProtectedRoute"
 import UserProfilePage from './screens/UserProfile';
 import EditEvent from './screens/orgs/EditEvent';
+import AppToastContainer from './components/ToastContainer';
 
 function App() {
   return (
@@ -56,7 +57,7 @@ function App() {
           {/* General info, same for all users, not necessarily logged in */}
           <Route path="/details/eventid/*" element={<NotificationsPage />} />
           <Route path="/event/:id" element={<EventDetails />} />
-          <Route path="profile/user/:id" element={<UserProfilePage />} />
+          <Route path="/profile/user/:id" element={<UserProfilePage />} />
           <Route path="/profile/org/:id" element={<OrgProfile />} />
 
           {/* Info specif to user/orgs */}
@@ -112,6 +113,7 @@ function App() {
         </Routes>
         <Footer/>
       </BrowserRouter>
+      <AppToastContainer />
     </>
   );
 }

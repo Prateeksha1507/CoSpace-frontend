@@ -1,5 +1,5 @@
 // src/api/usersAPI.js
-import { authFetch } from './authAPI';
+import { authFetch, publicFetch } from './authAPI';
 
 // GET /api/users/feed
 export async function getUserFeed() {
@@ -9,4 +9,8 @@ export async function getUserFeed() {
     console.error('Error fetching user feed:', err.message);
     throw err;
   }
+}
+
+export async function fetchUserById(id) {
+  return publicFetch(`/api/users/${encodeURIComponent(id)}`);
 }

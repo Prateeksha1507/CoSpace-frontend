@@ -11,12 +11,10 @@ async function getCurrentOrgActor() {
 
 /* -------------- by-ID endpoints -------------- */
 
-// GET /api/orgs/:id
 export async function fetchOrgById(id) {
   return publicFetch(`/api/orgs/${encodeURIComponent(id)}`);
 }
 
-// GET /api/events/org/:orgId   (your events route is under /api/events)
 export async function fetchOrgEventsById(orgId, { role, from, to, sort = 'date:asc', page = 1, limit = 20 } = {}) {
   const params = new URLSearchParams({ sort, page, limit });
   if (role) params.set('role', role);

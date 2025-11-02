@@ -1,58 +1,126 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import "../styles/UserProfile.css";
+import { toast } from "react-toastify";
 
-// dummy backend accessors — adjust the import path if your db file lives elsewhere
-import { getUserById, getFollows, getEvents } from "../dummy/db";
-import Avatar from "../components/Avatar";
+import UserProfileView from "../components/UserProfileView";
 
-function formatDateISOToNice(iso) {
-  // iso may be YYYY-MM-DD (from seed), make it nice
-  try {
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return iso;
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  } catch {
-    return iso;
-  }
-}
+import { fetchUserById } from "../api/userAPI"; // export async function fetchUserById(id){ return publicFetch(`/api/users/${encodeURIComponent(id)}`) }
+import { listUserVolunteered } from "../api/volunteerAPI";
+import { getUserDonations } from "../api/donationAPI";
+import { getAttendingDetails } from "../api/attendanceAPI";
 
-export default function UserProfilePage() {
-  const { id } = useParams();            // /user/:id
+// --- Normalizers ---
+const normalizeVolunteers = (raw) => {
+  const arr = Array.isArray(raw?.records)
+    ? raw.records
+    : Array.isArray(raw?.events)
+    ? raw.events
+    : Array.isArray(raw)
+    ? raw
+    : [];
+
+  return arr.map((v, i) => {
+    const eventId = v?.eventId ?? i;
+    return {
+      id: String(eventId),
+      eventId: String(eventId),
+      name: v?.eventName ?? v?.name ?? "—",
+      date: v?.date ?? null,
+      time: v?.time ?? null,
+      venue: v?.venue ?? "",
+      isVirtual: Boolean(v?.isVirtual),
+      image: v?.image ?? null,
+      status: String(v?.status ?? "pending").toLowerCase(), // pending | approved | rejected
+      appliedAt: v?.appliedAt ?? null,
+    };
+  });
+};
+
+const normalizeAttending = (raw) =>
+  Array.isArray(raw?.events) ? raw.events : Array.isArray(raw) ? raw : [];
+
+const normalizeDonations = (raw) =>
+  Array.isArray(raw?.events) ? raw.events : Array.isArray(raw) ? raw : [];
+
+export default function PublicUserProfilePage() {
+  const { id } = useParams();
+
   const [user, setUser] = useState(null);
+  const [attending, setAttending] = useState([]);
+  const [volunteering, setVolunteering] = useState([]);
+  const [donations, setDonations] = useState([]);
+  const [activeTab, setActiveTab] = useState("attends");
+  const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    const u = getUserById(id);
-    if (!u) setNotFound(true);
-    else setUser(u);
+    let mounted = true;
+    (async () => {
+      try {
+        const u = await fetchUserById(id);
+        if (!mounted) return;
+        if (!u) {
+          setNotFound(true);
+          return;
+        }
+        setUser(u);
+
+        const [att, vol, dons] = await Promise.allSettled([
+          getAttendingDetails(id),
+          listUserVolunteered(id),
+          getUserDonations(id),
+        ]);
+
+        if (!mounted) return;
+
+        if (att.status === "fulfilled") {
+          setAttending(normalizeAttending(att.value));
+        } else {
+          toast.error(att.reason?.response?.data?.message || att.reason?.message || "Failed to load attending");
+        }
+
+        if (vol.status === "fulfilled") {
+          setVolunteering(normalizeVolunteers(vol.value));
+        } else {
+          toast.error(vol.reason?.response?.data?.message || vol.reason?.message || "Failed to load volunteering");
+        }
+
+        if (dons.status === "fulfilled") {
+          setDonations(normalizeDonations(dons.value));
+        } else {
+          toast.error(dons.reason?.response?.data?.message || dons.reason?.message || "Failed to load donations");
+        }
+      } catch (err) {
+        if (mounted) {
+          setNotFound(true);
+          toast.error(err?.response?.data?.message || err?.message || "Failed to load user");
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
-  // Volunteering = events hosted by orgs this user follows
-  const volunteering = useMemo(() => {
-    if (!user) return [];
-    const followingOrgIds = getFollows()
-      .filter(f => f.userId === Number(user.userId))
-      .map(f => f.orgId);
+  const stats = useMemo(() => {
+    const totalDonations = (Array.isArray(donations) ? donations : []).reduce(
+      (acc, d) => acc + Number(d?.amount || 0),
+      0
+    );
+    const volunteeredApproved = (Array.isArray(volunteering) ? volunteering : []).filter(
+      (v) => (v.status || "") === "approved"
+    ).length;
 
-    const eventsIMightAttend = getEvents().filter(e => followingOrgIds.includes(e.conductingOrgId));
+    return {
+      attendedCount: Array.isArray(attending) ? attending.length : 0,
+      volunteeredCount: volunteeredApproved,
+      totalDonations,
+    };
+  }, [attending, volunteering, donations]);
 
-    // give each event a demo "hours" value (or derive from somewhere else later)
-    return eventsIMightAttend.map(e => ({
-      event: e.name,
-      date: formatDateISOToNice(e.date),
-      hours: 3, // simple demo number
-    }));
-  }, [user]);
-
-  // Donations (dummy list for now)
-  const donations = useMemo(() => {
-    if (!user) return [];
-    return [
-      { amount: 250, date: "Aug 10, 2024", receiptUrl: "#" },
-      { amount: 250, date: "Jul 5, 2024", receiptUrl: "#" },
-    ];
-  }, [user]);
+  if (loading) return <div className="user-loading">Loading profile...</div>;
 
   if (notFound) {
     return (
@@ -65,93 +133,15 @@ export default function UserProfilePage() {
     );
   }
 
-  if (!user) {
-    return <div className="user-loading">Loading profile…</div>;
-  }
-
   return (
-    <main className="user-container">
-      <section className="user-identity">
-        <Avatar className="user-avatar" src={user.profilePicture} alt={user.name} />
-        <h2 className="user-name">{user.name}</h2>
-        <p className="user-role">Community Volunteer</p>
-      </section>
-
-      {/* KPIs */}
-      <section className="user-kpis">
-        <div className="user-kpi">
-          <div className="user-kpi-value">{volunteering.length * 3}</div>
-          <div className="user-kpi-label">Total Volunteering Hours</div>
-        </div>
-        <div className="user-kpi">
-          <div className="user-kpi-value">$500</div>
-          <div className="user-kpi-label">Total Donations</div>
-        </div>
-      </section>
-
-      {/* Volunteering History */}
-      <section className="user-section">
-        <h3 className="user-section-title">Volunteering History</h3>
-        <div className="user-card">
-          <table className="user-table">
-            <thead>
-              <tr>
-                <th>Event Name</th>
-                <th>Date</th>
-                <th>Hours Contributed</th>
-              </tr>
-            </thead>
-            <tbody>
-              {volunteering.map((v, i) => (
-                <tr key={`${v.event}-${i}`}>
-                  <td>{v.event}</td>
-                  <td className="user-muted">{v.date}</td>
-                  <td>{v.hours}</td>
-                </tr>
-              ))}
-              {volunteering.length === 0 && (
-                <tr>
-                  <td colSpan="3" className="user-muted">No volunteering history yet.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Donation History */}
-      <section className="user-section">
-        <h3 className="user-section-title">Donation History</h3>
-        <div className="user-card">
-          <table className="user-table">
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Date</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {donations.map((d, i) => (
-                <tr key={`${d.date}-${i}`}>
-                  <td className="user-amount">${d.amount}</td>
-                  <td className="user-muted">{d.date}</td>
-                  <td className="user-right">
-                    <a className="user-receipt-btn primary-btn" href={d.receiptUrl}>
-                      Download Receipt
-                    </a>
-                  </td>
-                </tr>
-              ))}
-              {donations.length === 0 && (
-                <tr>
-                  <td colSpan="3" className="user-muted">No donations yet.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </main>
+    <UserProfileView
+      user={user}
+      stats={stats}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      attending={attending}
+      volunteering={volunteering}
+      donations={donations}
+    />
   );
 }

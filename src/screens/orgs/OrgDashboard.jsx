@@ -3,6 +3,7 @@ import "../../styles/org/OrgDashboard.css";
 import { fetchMyOrgDashboard } from "../../api/orgAPI";
 import { useNavigate } from 'react-router-dom';
 import Warning from "../../components/Warning";
+import { deleteEvent } from "../../api/eventAPI";
 
 export default function OrgDashboard() {
   const navigate = useNavigate();
@@ -19,16 +20,35 @@ export default function OrgDashboard() {
   const [eventToDelete, setEventToDelete] = useState(null)
 
   const handleDelete = (eventId) => {
+    console.log(eventId)
+    alert(eventId)
     setEventToDelete(eventId);
     setIsWarningOpen(true);
   };
 
-  const confirmDelete = () => {
-    console.log(`Event with ID ${eventToDelete} deleted.`);
+const confirmDelete = async () => {
+  try {
+    if (!eventToDelete) return;
+    await deleteEvent(eventToDelete);
+
+    setEvents(prev => prev.filter(ev => ev._id !== eventToDelete));
+
+    setStats(prev => prev.map(s => {
+      if (s.label === "Total Events") return { ...s, value: Math.max(0, s.value - 1) };
+      if (s.label === "Active Events") return{ ...s, value: Math.max(0, s.value - 1) };
+      return s;
+    }));
+
     setIsWarningOpen(false);
     setEventToDelete(null);
-  };
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    alert(error?.message || 'Failed to delete event. Please try again.');
+  }
+};
 
+
+  
   const cancelDelete = () => {
     setIsWarningOpen(false);
     setEventToDelete(null);
@@ -149,8 +169,8 @@ export default function OrgDashboard() {
                       </button>
                       
                       <button 
-                        className="secondary-btn od-small-btn "
-                        onClick={(eventId) => { handleDelete(eventId) }}
+                        className="red-btn od-small-btn "
+                        onClick={() => { handleDelete(e._id) }}
                       >
                         Delete
                       </button>
@@ -184,8 +204,7 @@ export default function OrgDashboard() {
         </div>
       </section>
       <Warning
-        isOpen={isWarningO
-          pen}
+        isOpen={isWarningOpen}
         onClose={cancelDelete}
         onConfirm={confirmDelete}
         message="Are you sure you want to delete this event? This action is non-reversible"

@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "./Avatar.jsx";
 import "../styles/EventDetails.css";
 import { useNavigate } from "react-router-dom";
+import { attend, unattend, isMeAttending } from "../api/attendanceAPI";
+import { volunteer, unvolunteer, isMeVolunteering } from "../api/volunteerAPI";
+import { toast } from "react-toastify";
 
 export default function EventSection({
   banner,
@@ -16,32 +19,101 @@ export default function EventSection({
   skills = [],
   clickable = true,
   orgId,
+  userId,
+  eventId,
+  actorType
 }) {
-    const navigate = useNavigate();
-    const handleClick = () => {
-      navigate(`/profile/org/${orgId}`);
-    };
+  const navigate = useNavigate();
+
+  const [isVolunteering, setIsVolunteering] = useState(false);
+  const [isAttending, setIsAttending] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const errMsg = (e, fallback) =>
+    e?.response?.data?.message || e?.message || fallback;
+
+  useEffect(() => {
+    (async () => {
+      if (!clickable || !eventId || actorType!="user") {
+        setLoading(false);
+        return;
+      }
+      try {
+        const attendingResp = await isMeAttending(eventId);
+        const attending =
+          typeof attendingResp === "boolean"
+            ? attendingResp
+            : !!attendingResp?.attending;
+        setIsAttending(attending);
+
+        const volunteeringResp = await isMeVolunteering(eventId);
+        const volunteering =
+          typeof volunteeringResp === "boolean"
+            ? volunteeringResp
+            : !!volunteeringResp?.volunteering;
+        setIsVolunteering(volunteering);
+      } catch (e) {
+        toast.error(errMsg(e, "Error loading event status"));
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [eventId, clickable]);
+
+  const handleClick = () => {
+    if (clickable && orgId) navigate(`/profile/org/${orgId}`);
+  };
+
+  const handleVolunteer = async () => {
+    if (!clickable || !eventId) return;
+    try {
+      if (isVolunteering) {
+        await unvolunteer(eventId);
+        setIsVolunteering(false);
+      } else {
+        await volunteer(eventId);
+        setIsVolunteering(true);
+      }
+    } catch (e) {
+      toast.error(errMsg(e, "Error updating volunteer status"));
+    }
+  };
+
+  const handleAttend = async () => {
+    if (!clickable || !eventId) return;
+    try {
+      if (isAttending) {
+        await unattend(eventId);
+        setIsAttending(false);
+      } else {
+        await attend(eventId);
+        setIsAttending(true);
+      }
+    } catch (e) {
+      toast.error(errMsg(e, "Error updating attendance status"));
+    }
+  };
+
+  const handleDonate = () => {
+    if (!clickable) return;
+    if (userId && eventId) navigate(`/donate/${userId}/${eventId}`);
+  };
+
+  if (loading) return <div className="ed-loading">Loading event details...</div>;
 
   return (
     <main className="ed-container">
-      {/* Banner */}
       <img
         src={banner || "/default-event.jpg"}
         alt="Event banner"
         className="ed-banner"
       />
 
-      {/* Title */}
       <h1 className="ed-title">{name}</h1>
 
-      {/* Organization Info */}
       {orgName && (
         <div className={`ed-org ${clickable ? "clickable" : ""}`}>
-          <Avatar
-            src={orgProfilePicture}
-            alt={orgName}
-            className="ed-org-logo"
-          />
+          <Avatar src={orgProfilePicture} alt={orgName} className="ed-org-logo" />
           {clickable ? (
             <div onClick={handleClick} className="clickable">
               <p className="ed-org-name">{orgName}</p>
@@ -56,7 +128,6 @@ export default function EventSection({
         </div>
       )}
 
-      {/* Event Details */}
       <section className="ed-section">
         <h3 className="ed-heading">Event Details</h3>
         <div className="ed-details-grid">
@@ -75,7 +146,6 @@ export default function EventSection({
         </div>
       </section>
 
-      {/* Map / Virtual Info */}
       <div className="ed-map">
         {isVirtual ? (
           <div className="ed-virtual-box">
@@ -93,31 +163,26 @@ export default function EventSection({
                 </a>
               </p>
             ) : (
-              <p>
-                This is a virtual event. The organizer will share a meeting link
-                soon.
-              </p>
+              <p>This is a virtual event. The organizer will share a meeting link soon.</p>
             )}
           </div>
         ) : (
-          <iframe
-            title="Event location"
-            width="100%"
-            height="300"
-            style={{ border: 0, borderRadius: "8px" }}
-            loading="lazy"
-            allowFullScreen
-            src={`https://www.google.com/maps?q=${encodeURIComponent(
-              venue
-            )}&output=embed`}
-          ></iframe>
+          venue && (
+            <iframe
+              title="Event location"
+              width="100%"
+              height="300"
+              style={{ border: 0, borderRadius: "8px" }}
+              loading="lazy"
+              allowFullScreen
+              src={`https://www.google.com/maps?q=${encodeURIComponent(venue)}&output=embed`}
+            ></iframe>
+          )
         )}
       </div>
 
-      {/* Description */}
       <p className="ed-desc">{description}</p>
 
-      {/* Skills */}
       {skills?.length > 0 && (
         <section className="ed-section">
           <h3 className="ed-heading">Required Skills</h3>
@@ -130,19 +195,19 @@ export default function EventSection({
           </div>
         </section>
       )}
-
-      {/* Actions */}
+      {actorType=="user" && (
       <div className="ed-actions">
-        <button className="secondary-btn" disabled={!clickable}>
-          Volunteer
+        <button className="secondary-btn" onClick={handleVolunteer} disabled={!clickable}>
+          {isVolunteering ? "Unvolunteer" : "Volunteer"}
         </button>
-        <button className="primary-btn" disabled={!clickable}>
+        <button className="primary-btn" onClick={handleDonate} disabled={!clickable}>
           Donate
         </button>
-        <button className="secondary-btn" disabled={!clickable}>
-          Participate
+        <button className="secondary-btn" onClick={handleAttend} disabled={!clickable}>
+          {isAttending ? "Unattend" : "Attend"}
         </button>
       </div>
+      )}
     </main>
   );
 }

@@ -104,7 +104,7 @@ export default function EventSection({
   return (
     <main className="ed-container">
       <img
-        src={banner || "/default-event.jpg"}
+        src={banner || "/event-image.png"}
         alt="Event banner"
         className="ed-banner"
       />

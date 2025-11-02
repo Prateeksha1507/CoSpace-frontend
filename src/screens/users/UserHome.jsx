@@ -61,7 +61,7 @@ function UserHome() {
               key={index}
               title={event.name}
               description={event.description}
-              image="/event-image.png"
+              image={event.image || "/event-image.png"}
               eventId={event._id}
             />
           ))}

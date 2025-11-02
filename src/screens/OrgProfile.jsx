@@ -114,7 +114,7 @@ export default function OrgProfile() {
         <div className="org-actions">
         <FollowSection orgId={org._id} />
         <button className="primary-btn">Donate</button>
-        <a className="secondary-btn" href={`/chats`}>Chat with us</a>
+        <a className="secondary-btn" href={`/chats?org=${org._id}`}>Chat with us</a>
         </div>
       </section>
 

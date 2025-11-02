@@ -6,17 +6,7 @@ import "../../styles/org/PostPreview.css";
  * If nothing is passed, it falls back to sample content.
  */
 export default function PostPreview({ data }) {
-  const event = data || {
-    banner: "/images/preview-banner.jpg",
-    title: "Community Cleanup Drive",
-    description:
-      "Join us for a community cleanup drive at Central Park. We’ll be picking up litter, planting trees, and making our park a cleaner, greener space for everyone. All volunteers are welcome!",
-    date: "July 20, 2024",
-    time: "10:00 AM - 2:00 PM",
-    location: "Central Park, New York",
-    roles: "Cleanup Crew, Tree Planters, Event Coordinators",
-    goal: "$500",
-  };
+  const event = data
 
   const handlePublish = () => {
     // Wire this to your publish API

@@ -161,3 +161,44 @@
   text-decoration: underline;
   font-weight: 500;
 }
+
+
+.event-stats-simple {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.event-stats-simple h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+.event-stats-boxes {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.event-stat-box {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1.2rem 2rem;
+  min-width: 160px;
+  transition: 0.2s ease;
+}
+
+.event-stat-box .count {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0099ff;
+}
+
+.event-stat-box .label {
+  font-size: 0.95rem;
+  color: #666;
+  margin-top: 0.25rem;
+}

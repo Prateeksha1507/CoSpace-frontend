@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchEventById } from "../api/eventAPI";
+import { fetchEventById, fetchEventStats } from "../api/eventAPI";
 import { fetchOrgById } from "../api/orgAPI";
 import { verify } from "../api/authAPI";
 import EventSection from "../components/EventSection";
 import { getAttendeeDetails } from "../api/attendanceAPI";
+import "../styles/EventDetails.css"
 import {
   listVolunteers,
   approveVolunteer,
@@ -14,7 +15,7 @@ import { toast } from "react-toastify";
 
 export default function EventDetails() {
   const { id } = useParams();
-
+  const [stats, setStats] = useState({ participants: 0, volunteers: 0 });
   const [event, setEvent] = useState(null);
   const [org, setOrg] = useState(null);
   const [actorId, setActorId] = useState(null);
@@ -25,6 +26,14 @@ export default function EventDetails() {
   const [volunteers, setVolunteers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingLists, setLoadingLists] = useState(false);
+
+  const isOwner = useMemo(() => {
+    if (actorType !== "org") return false;
+    const me = String(actorId || "");
+    const conducting = String(event?.conductingOrgId || "");
+    const collaborating = String(event?.collaboratingOrgId || "");
+    return !!me && (me === conducting || me === collaborating);
+  }, [actorType, actorId, event?.conductingOrgId, event?.collaboratingOrgId]);
 
   const isConductingOrg = useMemo(
     () =>
@@ -100,6 +109,17 @@ export default function EventDetails() {
     })();
   }, [id]);
 
+  useEffect(() => {
+    (async () => {
+      if (!event?._id) return;
+      if (isOwner) return;
+      try {
+        const s = await fetchEventStats(event._id);
+        setStats({ participants: s.participants || 0, volunteers: s.volunteers || 0 });
+      } catch { setStats({ participants: 0, volunteers: 0 }); }
+    })();
+  }, [event?._id, isOwner]);
+
   const loadLists = async () => {
     if (!event?._id) return;
     setLoadingLists(true);
@@ -118,9 +138,8 @@ export default function EventDetails() {
   };
 
   useEffect(() => {
-    if (event?._id) loadLists();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [event?._id]);
+    if (event?._id && isOwner) loadLists();
+  }, [event?._id, isOwner]);
 
   const getVolunteerById = (uid) =>
     volunteers.find((x) => String(x.userId) === String(uid));
@@ -185,134 +204,157 @@ export default function EventDetails() {
         actorType={actorType}
       />
 
-      <section style={{ marginTop: "2rem" }}>
-        <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
-          <button
-            className={activeTab === "participants" ? "primary-btn" : "secondary-btn"}
-            onClick={() => setActiveTab("participants")}
-          >
-            Participants ({participants.length})
-          </button>
-          <button
-            className={activeTab === "volunteers" ? "primary-btn" : "secondary-btn"}
-            onClick={() => setActiveTab("volunteers")}
-          >
-            Volunteers ({volunteers.length})
-          </button>
-          <button className="secondary-btn" onClick={loadLists} disabled={loadingLists}>
-            {loadingLists ? "Refreshing..." : "Refresh"}
-          </button>
-        </div>
-
-        {activeTab === "participants" && (
-          <div className="user-card">
-            <table className="user-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Joined</th>
-                </tr>
-              </thead>
-              <tbody>
-                {participants.length ? (
-                  participants.map((p) => (
-                    <tr key={p.id || p.email}>
-                      <td>
-                        {p.id ? (
-                          <a href={`/profile/user/${p.id}`} className="user-link">
-                            {p.name}
-                          </a>
-                        ) : (
-                          p.name
-                        )}
-                      </td>
-                      <td className="user-muted">{p.email}</td>
-                      <td className="user-muted">
-                        {p.joinedAt ? new Date(p.joinedAt).toLocaleString() : "—"}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="3" className="user-muted">
-                      No participants yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+      {isOwner && (
+        <section style={{ marginTop: "2rem" }}>
+          <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+            <button
+              className={activeTab === "participants" ? "primary-btn" : "secondary-btn"}
+              onClick={() => setActiveTab("participants")}
+            >
+              Participants ({participants.length})
+            </button>
+            <button
+              className={activeTab === "volunteers" ? "primary-btn" : "secondary-btn"}
+              onClick={() => setActiveTab("volunteers")}
+            >
+              Volunteers ({volunteers.length})
+            </button>
+            <button className="secondary-btn" onClick={loadLists} disabled={loadingLists}>
+              {loadingLists ? "Refreshing..." : "Refresh"}
+            </button>
           </div>
-        )}
 
-        {activeTab === "volunteers" && (
-          <div className="user-card">
-            <table className="user-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Status</th>
-                  {isConductingOrg && <th>Actions</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {volunteers.length ? (
-                  volunteers.map((v, i) => (
-                    <tr key={v.userId || v.email || i}>
-                      <td>{v.name}</td>
-                      <td className="user-muted">{v.email}</td>
-                      <td>
-                        <span
-                          className={`tag ${v.status}`}
-                          style={{
-                            padding: "2px 8px",
-                            borderRadius: 12,
-                            textTransform: "capitalize",
-                          }}
-                        >
-                          {v.status}
-                        </span>
-                      </td>
-                      {isConductingOrg && (
-                        <td
-                          className="user-right"
-                          style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}
-                        >
-                          {v.status === "pending" ? (
-                            <>
-                              <button
-                                className="secondary-btn"
-                                onClick={() => onConfirm(v.userId)}
-                              >
-                                Confirm
-                              </button>
-                              <button
-                                className="secondary-btn"
-                                onClick={() => onReject(v.userId)}
-                              >
-                                Reject
-                              </button>
-                            </>
+          {activeTab === "participants" && (
+            <div className="user-card">
+              <table className="user-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Joined</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {participants.length ? (
+                    participants.map((p) => (
+                      <tr key={p.id || p.email}>
+                        <td>
+                          {p.id ? (
+                            <a href={`/profile/user/${p.id}`} className="user-link">
+                              {p.name}
+                            </a>
                           ) : (
-                            <span className="user-muted">—</span>
+                            p.name
                           )}
                         </td>
-                      )}
+                        <td className="user-muted">{p.email}</td>
+                        <td className="user-muted">
+                          {p.joinedAt ? new Date(p.joinedAt).toLocaleString() : "—"}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="3" className="user-muted">
+                        No participants yet.
+                      </td>
                     </tr>
-                  ))
-                ) : (
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {activeTab === "volunteers" && (
+            <div className="user-card">
+              <table className="user-table">
+                <thead>
                   <tr>
-                    <td colSpan={isConductingOrg ? 4 : 3} className="user-muted">
-                      No volunteers yet.
-                    </td>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    {isConductingOrg && <th>Actions</th>}
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+                </thead>
+                <tbody>
+                  {volunteers.length ? (
+                    volunteers.map((v, i) => (
+                      <tr key={v.userId || v.email || i}>
+                        <td>{v.name}</td>
+                        <td className="user-muted">{v.email}</td>
+                        <td>
+                          <span
+                            className={`tag ${v.status}`}
+                            style={{
+                              padding: "2px 8px",
+                              borderRadius: 12,
+                              textTransform: "capitalize",
+                            }}
+                          >
+                            {v.status}
+                          </span>
+                        </td>
+                        {isConductingOrg && (
+                          <td
+                            className="user-right"
+                            style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}
+                          >
+                            {v.status === "pending" ? (
+                              <>
+                                <button
+                                  className="secondary-btn"
+                                  onClick={() => onConfirm(v.userId)}
+                                >
+                                  Confirm
+                                </button>
+                                <button
+                                  className="secondary-btn"
+                                  onClick={() => onReject(v.userId)}
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            ) : (
+                              <span className="user-muted">—</span>
+                            )}
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={isConductingOrg ? 4 : 3} className="user-muted">
+                        No volunteers yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
+
+{!isOwner && (
+  <section className="event-stats-simple">
+    <h3>Event Stats</h3>
+    <div className="event-stats-boxes">
+      <div className="event-stat-box">
+        <span className="stat-value">{stats.participants}</span>
+        <div className="label">Participants</div>
+      </div>
+      <div className="event-stat-box">
+        <span className="stat-value">{stats.volunteers}</span>
+        <div className="label">Volunteers</div>
+      </div>
+    </div>
+  </section>
+)}
+
+
+
+
+
     </main>
   );
 }

@@ -64,3 +64,7 @@ export async function deleteEvent(id) {
     method: "DELETE",
   });
 }
+
+export async function fetchEventStats(id) {
+  return await publicFetch(`/api/events/${id}/stats`);
+}

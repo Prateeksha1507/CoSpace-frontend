@@ -8,6 +8,7 @@ import {
 } from "../api/orgAPI";
 import { useSearchParams, useParams } from "react-router-dom";
 import FollowSection from "../components/FollowSection";
+import { verify } from "../api/authAPI";
 
 function formatNiceDate(iso) {
   try {
@@ -33,11 +34,17 @@ export default function OrgProfile() {
   const [error, setError] = useState("");
   const [events, setEvents] = useState([]);
 
+  // NEW: actor + followers
+  const [actorType, setActorType] = useState(null); // 'user' | 'org' | null
+  const [followersCount, setFollowersCount] = useState(0);
+
   useEffect(() => {
     (async () => {
       setError("");
       setOrg(null);
       setEvents([]);
+      setFollowersCount(0);
+      setActorType(null);
 
       if (!orgId) {
         setError("Invalid organization ID.");
@@ -45,18 +52,24 @@ export default function OrgProfile() {
       }
 
       try {
-        const orgData = await fetchOrgById(orgId);
+        // Load org + events in parallel
+        const [orgData, eventsRes, auth, followers] = await Promise.all([
+          fetchOrgById(orgId),
+          fetchOrgEventsById(orgId, { sort: "date:asc", page: 1, limit: 100 }),
+          verify().catch(() => null),
+          fetchOrgFollowerCount(orgId).catch(() => 0),
+        ]);
+
         setOrg(orgData);
-
-        const res = await fetchOrgEventsById(orgId, { sort: "date:asc", page: 1, limit: 100 })
-        const events = res.events
-
+        const events = eventsRes?.events || [];
         const withNiceDate = events.map((e) => ({
           ...e,
           niceDate: formatNiceDate(e.date),
         }));
-        console.log(withNiceDate)
         setEvents(withNiceDate);
+
+        setActorType(auth?.actor?.type || null);
+        setFollowersCount(Number.isFinite(followers) ? followers : Number(followers || 0));
       } catch (e) {
         setError(e?.message || "Failed to load organization.");
         setOrg(null);
@@ -107,14 +120,22 @@ export default function OrgProfile() {
         <div className="org-info">
           <h2 className="org-name">{org.name}</h2>
           <p className="org-type">{org.orgType || "Other"}</p>
-          {/* <p className="org-followers">
+
+          {/* Followers count (always visible) */}
+          <p className="org-followers">
             {followersCount} follower{followersCount === 1 ? "" : "s"}
-          </p> */}
+          </p>
         </div>
+
+        {/* Actions: only for user actors */}
         <div className="org-actions">
-        <FollowSection orgId={org._id} />
-        <button className="primary-btn">Donate</button>
-        <a className="secondary-btn" href={`/chats?org=${org._id}`}>Chat with us</a>
+          {actorType === "user" && (
+            <>
+              <FollowSection orgId={org._id} />
+              <button className="primary-btn">Donate</button>
+            </>
+          )}
+          <a className="secondary-btn" href={`/chats?org=${org._id}`}>Chat with us</a>
         </div>
       </section>
 

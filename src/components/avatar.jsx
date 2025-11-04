@@ -8,8 +8,8 @@ function simpleHash(str, total = 100, chunkSize = 20) {
   return sum % total;
 }
 
-export default function Avatar({ src, size = 64, alt = "avatar", total = 100 }) {
-  const index = simpleHash(src, total);
+export default function Avatar({ src, backup, size = 64, alt = "avatar", total = 100 }) {
+  const index = simpleHash(backup, total);
   const n = String(index).padStart(2, "0");
   const fallback = `/avatars/avatar-${n}.svg`;
 

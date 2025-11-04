@@ -1,9 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../styles/header.css";
+import { suggestSearch } from "../api/searchAPI";
+import { SearchBox } from "../components/SearchBox"; // <— import the extracted SearchBox component
 
 function Header({ loggedIn = false }) {
   const [open, setOpen] = useState(false);
 
+  // Search state
+  const [q, setQ] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSug, setShowSug] = useState(false);
+  const [loadingSug, setLoadingSug] = useState(false);
+
+  const debounceRef = useRef(null);
+
+  // Lock scroll when sidebar open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => (document.body.style.overflow = "");
@@ -12,26 +23,57 @@ function Header({ loggedIn = false }) {
   const toggle = () => setOpen((v) => !v);
   const close = () => setOpen(false);
 
+  // Debounced suggestion fetching
+  useEffect(() => {
+    const term = q.trim();
+    if (!term) {
+      setSuggestions([]);
+      setShowSug(false);
+      return;
+    }
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        setLoadingSug(true);
+        const res = await suggestSearch(term, 6);
+        setSuggestions(Array.isArray(res?.suggestions) ? res.suggestions : []);
+        setShowSug(true);
+      } catch {
+        setSuggestions([]);
+        setShowSug(false);
+      } finally {
+        setLoadingSug(false);
+      }
+    }, 200);
+
+    return () => debounceRef.current && clearTimeout(debounceRef.current);
+  }, [q]);
+
+  const term = q.trim();
+  const goToResultsHref = `/search?q=${encodeURIComponent(term)}`;
+
   return (
     <>
-      <header className="header">
+      <header className="header" style={{ position: "relative", zIndex: 1001 }}>
         {/* Left: Logo */}
         <a href="/" className="brand-only">
           <img src="/logo.png" alt="CoSpace Logo" className="logo" />
           <span className="brand-name">CoSpace</span>
         </a>
 
-        {/* Hamburger visible only on small screens */}
+        {/* Hamburger (visible on mobile) */}
         <button
           className="menu-toggle"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={toggle}
+          type="button"
         >
           <i className={open ? "fa-solid fa-xmark" : "fa fa-bars"} />
         </button>
 
-        {/* Right: Full nav (hidden on mobile) */}
+        {/* Desktop Nav */}
         {loggedIn && (
           <div className="desktop-right">
             <nav className="nav-links">
@@ -39,11 +81,18 @@ function Header({ loggedIn = false }) {
               <a href="/settings">Settings</a>
               <a href="/chats" className="primary-btn">Chats</a>
             </nav>
+
             <div>
-              <div className="search-box">
-                <i className="fas fa-search"></i>
-                <input type="text" placeholder="Search" />
-              </div>
+              {/* Desktop search */}
+              <SearchBox
+                q={q}
+                setQ={setQ}
+                showSug={showSug}
+                setShowSug={setShowSug}
+                loadingSug={loadingSug}
+                suggestions={suggestions}
+                goToResultsHref={goToResultsHref}
+              />
 
               <a href="/notifications" className="bell-container">
                 <i className="fa-regular fa-bell"></i>
@@ -56,27 +105,47 @@ function Header({ loggedIn = false }) {
         )}
       </header>
 
+      {/* Backdrop */}
+      {open && <div className="backdrop show" onClick={close}></div>}
+
       {/* Sidebar (mobile) */}
-      <div className={`backdrop ${open ? "show" : ""}`} onClick={close}></div>
-      <aside className={`sidebar ${open ? "open" : ""}`} aria-hidden={!open}>
+      <aside
+        className={`sidebar ${open ? "open" : ""}`}
+        aria-hidden={!open}
+        style={{
+          pointerEvents: open ? "auto" : "none",
+          zIndex: 1002,
+        }}
+      >
         <div className="sidebar-header">
           <span>Menu</span>
-          <button className="close-btn" aria-label="Close" onClick={close}>
+          <button className="close-btn" aria-label="Close" onClick={close} type="button">
             <i className="fa-solid fa-xmark" />
           </button>
         </div>
 
         <div className="sidebar-content" onClick={(e) => e.stopPropagation()}>
+          {/* Mobile search */}
           <div className="mobile-search">
-            <i className="fas fa-search"></i>
-            <input type="text" placeholder="Search" />
+            {open && (
+              <SearchBox
+                q={q}
+                setQ={setQ}
+                showSug={showSug}
+                setShowSug={setShowSug}
+                loadingSug={loadingSug}
+                suggestions={suggestions}
+                goToResultsHref={goToResultsHref}
+              />
+            )}
           </div>
+
           <nav className="sidebar-links">
-              <a href="/" onClick={close}>Home</a>
-              <a href="/settings" onClick={close}>Settings</a>
-              <a href="/chats" onClick={close}>Chats</a>
-              <a href="/notifications" onClick={close}>Notifications</a>
-              <a href="/my-profile" onClick={close}>My Profile</a>
+            <a href="/" onClick={close}>Home</a>
+            <a href="/settings" onClick={close}>Settings</a>
+            <a href="/chats" onClick={close}>Chats</a>
+            <a href="/notifications" onClick={close}>Notifications</a>
+            <a href="/my-profile" onClick={close}>My Profile</a>
           </nav>
         </div>
       </aside>

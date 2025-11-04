@@ -11,7 +11,7 @@ function Footer() {
         <a href="/terms" className="footer-link">Terms of Service</a>
       </div>
       <div className="footer-copyright">
-        <p>&#169; 2025 CoSPace. All Rights Reserved.</p>
+        <p>&#169; 2025 CoSpace. All Rights Reserved.</p>
       </div>
     </footer>
   );

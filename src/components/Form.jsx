@@ -65,7 +65,7 @@ export function TextAreaField({
 }) {
   const areaId = id || name;
   return (
-    <div className={`ui-field ${error ? "has-error" : ""}`}>
+    <div className={`ui-field ${error ? "has-error" : ""}`} >
       {label && (
         <label className="ui-field__label" htmlFor={areaId}>
           {label} {required && <span aria-hidden="true">*</span>}

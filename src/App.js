@@ -28,6 +28,7 @@ import ProtectedRoute from "./routes/ProtectedRoute"
 import UserProfilePage from './screens/UserProfile';
 import EditEvent from './screens/orgs/EditEvent';
 import AppToastContainer from './components/ToastContainer';
+import SearchResults from './screens/SearchResults';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
           <Route path="/register/organization" element={<OrgRegister />} />
           <Route path="/register/organisation" element={<OrgRegister />} />
           <Route path="/register/verification" element={<Verification />} />
+          <Route path="/search" element={<SearchResults />} />
 
           {/* Product detai;s, avaulable for all */}
           <Route path="/about" element={<AboutPage />} />

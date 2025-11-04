@@ -225,3 +225,56 @@
     display: none;
   }
 }
+
+/* Ensure suggestions float above everything and are clickable */
+.search-box { position: relative; display: flex; align-items: center; gap: 8px; }
+.search-box input { border: none; outline: none; width: 220px; background: transparent; }
+.search-icon-btn { border: none; background: transparent; cursor: pointer; }
+
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.sug-item {
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid #f3f3f3;
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer;
+}
+.sug-item:last-child { border-bottom: 0; }
+.sug-item.active { background: #f6f8ff; }
+.sug-kind { width: 18px; text-align: center; opacity: .7; }
+.sug-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sug-sub { margin-left: 6px; color: #888; }
+.sug-loading, .sug-empty { color: #666; cursor: default; }
+.sug-viewall { font-weight: 600; }
+
+
+/* Make sure the suggestions can receive clicks without blurring input */
+.search-suggestions {
+  /* layout already inline-styled; these are safety tweaks */
+  will-change: transform;
+}
+
+.sug-item {
+  cursor: pointer;
+}
+
+/* Optional: keep dropdown visible only when input is focused and state is on.
+   (If you rely solely on React state, you can omit this.) */
+.search-box {
+  position: relative;
+}

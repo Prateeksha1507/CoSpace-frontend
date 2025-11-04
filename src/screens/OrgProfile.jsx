@@ -115,6 +115,7 @@ export default function OrgProfile() {
         <Avatar
           src={org.profilePicture}
           alt={org.name}
+          backup={org._id}
           className="org-logo"
         />
         <div className="org-info">

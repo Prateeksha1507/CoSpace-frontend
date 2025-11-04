@@ -37,7 +37,7 @@ export default function UserProfileView({
     <main className="user-container">
       {/* Header */}
       <section className="user-identity">
-        <Avatar src={user?.profilePicture} />
+        <Avatar src={user?.profilePicture} backup={user?._id} />
         <h2 className="user-name">{user?.name}</h2>
         <p className="user-role">{user?.bio}</p>
       </section>

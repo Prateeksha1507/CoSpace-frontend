@@ -1,3 +1,4 @@
+// EventDetails.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchEventById, fetchEventStats } from "../api/eventAPI";
@@ -5,12 +6,22 @@ import { fetchOrgById } from "../api/orgAPI";
 import { verify } from "../api/authAPI";
 import EventSection from "../components/EventSection";
 import { getAttendeeDetails } from "../api/attendanceAPI";
-import "../styles/EventDetails.css"
+import "../styles/EventDetails.css";
 import {
   listVolunteers,
   approveVolunteer,
   rejectVolunteer,
 } from "../api/volunteerAPI";
+import {
+  requestCollab,
+  getMyCollabStatus,
+  listCollabRequests,
+  acceptCollabRequest,
+  rejectCollabRequest,
+  cancelMyCollabRequest,
+  COLLAB_STATUS,
+  canRequestFromStatus,
+} from "../api/collabAPI";
 import { toast } from "react-toastify";
 
 export default function EventDetails() {
@@ -27,6 +38,12 @@ export default function EventDetails() {
   const [loading, setLoading] = useState(true);
   const [loadingLists, setLoadingLists] = useState(false);
 
+  // --- Collaboration UI state ---
+  const [collabStatus, setCollabStatus] = useState(null);
+  const [collabRequests, setCollabRequests] = useState([]);
+  const [collabLoading, setCollabLoading] = useState(false);
+  const [requestNote, setRequestNote] = useState("");
+
   const isOwner = useMemo(() => {
     if (actorType !== "org") return false;
     const me = String(actorId || "");
@@ -41,6 +58,15 @@ export default function EventDetails() {
       actorId &&
       event?.conductingOrgId &&
       String(actorId) === String(event.conductingOrgId),
+    [actorType, actorId, event]
+  );
+
+  const isOtherOrg = useMemo(
+    () =>
+      actorType === "org" &&
+      actorId &&
+      event?.conductingOrgId &&
+      String(actorId) !== String(event.conductingOrgId),
     [actorType, actorId, event]
   );
 
@@ -85,6 +111,21 @@ export default function EventDetails() {
     });
   };
 
+  const isEventInPast = (e) => {
+    if (!e?.date) return false;
+    try {
+      const date = new Date(e.date);
+      // if time provided as HH:mm, combine for a stricter check
+      if (e.time && /^\d{2}:\d{2}$/.test(e.time)) {
+        const [hh, mm] = e.time.split(":").map((x) => parseInt(x, 10));
+        date.setHours(hh, mm, 0, 0);
+      }
+      return date.getTime() < Date.now();
+    } catch {
+      return false;
+    }
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -116,7 +157,9 @@ export default function EventDetails() {
       try {
         const s = await fetchEventStats(event._id);
         setStats({ participants: s.participants || 0, volunteers: s.volunteers || 0 });
-      } catch { setStats({ participants: 0, volunteers: 0 }); }
+      } catch {
+        setStats({ participants: 0, volunteers: 0 });
+      }
     })();
   }, [event?._id, isOwner]);
 
@@ -141,6 +184,109 @@ export default function EventDetails() {
     if (event?._id && isOwner) loadLists();
   }, [event?._id, isOwner]);
 
+  // ---------- Collaboration: data loaders ----------
+  const loadMyCollabStatus = async () => {
+    if (!event?._id || !isOtherOrg) return;
+    try {
+      setCollabLoading(true);
+      const res = await getMyCollabStatus(event._id);
+      setCollabStatus(res?.status || null);
+    } catch (e) {
+      toast.error(errMsg(e, "Failed to fetch collaboration status"));
+    } finally {
+      setCollabLoading(false);
+    }
+  };
+
+  const loadIncomingRequests = async () => {
+    if (!event?._id || !isConductingOrg) return;
+    try {
+      setCollabLoading(true);
+      const res = await listCollabRequests(event._id);
+      setCollabRequests(Array.isArray(res?.items) ? res.items : []);
+    } catch (e) {
+      toast.error(errMsg(e, "Failed to fetch collaboration requests"));
+    } finally {
+      setCollabLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!event?._id) return;
+    if (isConductingOrg) {
+      loadIncomingRequests();
+    } else if (isOtherOrg) {
+      loadMyCollabStatus();
+    }
+  }, [event?._id, isConductingOrg, isOtherOrg]);
+
+  // ---------- Collaboration: actions ----------
+  const onSendRequest = async () => {
+    if (!event?._id) return;
+    try {
+      setCollabLoading(true);
+      await requestCollab(event._id, { note: requestNote?.trim() || undefined });
+      toast.success("Collaboration request sent");
+      setRequestNote("");
+      await loadMyCollabStatus();
+    } catch (e) {
+      toast.error(errMsg(e, "Failed to send request"));
+    } finally {
+      setCollabLoading(false);
+    }
+  };
+
+  const onCancelMyRequest = async () => {
+    // For simplicity, we’ll cancel the most recent pending request by fetching the list from status endpoint again.
+    // If you want a dedicated “requestId” in status, update backend to return it and wire here.
+    try {
+      setCollabLoading(true);
+      // Quick fetch to find pending request (conducting-only list won't help here).
+      const res = await getMyCollabStatus(event._id);
+      const reqId = res?.request?._id || res?.request?.id;
+      if (!reqId || res?.status !== COLLAB_STATUS.PENDING) {
+        toast.info("No pending request to cancel");
+      } else {
+        await cancelMyCollabRequest(event._id, reqId);
+        toast.success("Request cancelled");
+        await loadMyCollabStatus();
+      }
+    } catch (e) {
+      toast.error(errMsg(e, "Failed to cancel request"));
+    } finally {
+      setCollabLoading(false);
+    }
+  };
+
+  const onAccept = async (requestId) => {
+    try {
+      setCollabLoading(true);
+      await acceptCollabRequest(event._id, requestId);
+      toast.success("Collaboration accepted");
+      await Promise.all([loadIncomingRequests()]);
+      // also refresh event to see collaborator reflected
+      const fresh = await fetchEventById(event._id);
+      setEvent(fresh);
+    } catch (e) {
+      toast.error(errMsg(e, "Failed to accept request"));
+    } finally {
+      setCollabLoading(false);
+    }
+  };
+
+  const onReject = async (requestId) => {
+    try {
+      setCollabLoading(true);
+      await rejectCollabRequest(event._id, requestId);
+      toast.success("Request rejected");
+      await loadIncomingRequests();
+    } catch (e) {
+      toast.error(errMsg(e, "Failed to reject request"));
+    } finally {
+      setCollabLoading(false);
+    }
+  };
+
   const getVolunteerById = (uid) =>
     volunteers.find((x) => String(x.userId) === String(uid));
 
@@ -162,7 +308,7 @@ export default function EventDetails() {
     }
   };
 
-  const onReject = async (userId) => {
+  const onRejectVolunteer = async (userId) => {
     const v = getVolunteerById(userId);
     if (!v) return toast.error("Volunteer not found");
     if (v.status !== "pending")
@@ -184,6 +330,12 @@ export default function EventDetails() {
     return <p style={{ textAlign: "center", marginTop: "2rem" }}>Loading event...</p>;
   }
 
+  const past = isEventInPast(event);
+  const collaboratorChosen =
+    !!event.collaboratingOrgId &&
+    String(event.collaboratingOrgId) !== String(actorId || "");
+
+  // ---------- UI ----------
   return (
     <main>
       <EventSection
@@ -204,9 +356,69 @@ export default function EventDetails() {
         actorType={actorType}
       />
 
+      {/* --- Collaboration box for non-conducting orgs --- */}
+      {isOtherOrg && (
+        <section className="user-card" style={{ marginTop: 16 }}>
+          <h3 style={{ marginBottom: 8 }}>Collaboration</h3>
+
+          {collabStatus === COLLAB_STATUS.ACCEPTED && (
+            <p className="user-muted">You are the accepted collaborator for this event.</p>
+          )}
+
+          {collabStatus === COLLAB_STATUS.PENDING && (
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <span className="user-muted">Your request is pending.</span>
+              <button
+                className="secondary-btn"
+                onClick={onCancelMyRequest}
+                disabled={collabLoading}
+              >
+                {collabLoading ? "Cancelling..." : "Cancel Request"}
+              </button>
+            </div>
+          )}
+
+          {collabStatus === COLLAB_STATUS.REJECTED && (
+            <p className="user-muted">Your previous request was rejected.</p>
+          )}
+
+          {collabStatus === COLLAB_STATUS.CANCELLED && (
+            <p className="user-muted">Your previous request was cancelled.</p>
+          )}
+
+          {collabStatus === COLLAB_STATUS.BLOCKED && (
+            <p className="user-muted">
+              Collaboration closed: another organization has already been accepted.
+            </p>
+          )}
+
+          {(canRequestFromStatus(collabStatus) && !collaboratorChosen) ? (
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
+              <input
+                type="text"
+                placeholder="Optional note to conducting org"
+                value={requestNote}
+                onChange={(e) => setRequestNote(e.target.value)}
+                style={{ flex: 1, padding: "8px 10px" }}
+                disabled={collabLoading}
+              />
+              <button
+                className="primary-btn"
+                onClick={onSendRequest}
+                disabled={collabLoading || past}
+                title={past ? "Event is in the past" : undefined}
+              >
+                {collabLoading ? "Sending..." : "Request Collaboration"}
+              </button>
+            </div>
+          ) : null}
+        </section>
+      )}
+
+      {/* --- Owner panels (participants/volunteers + conducting-only collaboration tab) --- */}
       {isOwner && (
         <section style={{ marginTop: "2rem" }}>
-          <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+          <div style={{ display: "flex", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
             <button
               className={activeTab === "participants" ? "primary-btn" : "secondary-btn"}
               onClick={() => setActiveTab("participants")}
@@ -219,6 +431,19 @@ export default function EventDetails() {
             >
               Volunteers ({volunteers.length})
             </button>
+
+            {isConductingOrg && (
+              <button
+                className={activeTab === "collab" ? "primary-btn" : "secondary-btn"}
+                onClick={() => {
+                  setActiveTab("collab");
+                  loadIncomingRequests();
+                }}
+              >
+                Collaboration {collabRequests.length ? `(${collabRequests.length})` : ""}
+              </button>
+            )}
+
             <button className="secondary-btn" onClick={loadLists} disabled={loadingLists}>
               {loadingLists ? "Refreshing..." : "Refresh"}
             </button>
@@ -309,7 +534,7 @@ export default function EventDetails() {
                                 </button>
                                 <button
                                   className="secondary-btn"
-                                  onClick={() => onReject(v.userId)}
+                                  onClick={() => onRejectVolunteer(v.userId)}
                                 >
                                   Reject
                                 </button>
@@ -332,29 +557,102 @@ export default function EventDetails() {
               </table>
             </div>
           )}
+
+          {activeTab === "collab" && isConductingOrg && (
+            <div className="user-card">
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                <h3>Collaboration Requests</h3>
+                <button className="secondary-btn" onClick={loadIncomingRequests} disabled={collabLoading}>
+                  {collabLoading ? "Refreshing..." : "Refresh"}
+                </button>
+              </div>
+
+              <table className="user-table">
+                <thead>
+                  <tr>
+                    <th>Organization</th>
+                    <th>Note</th>
+                    <th>Status</th>
+                    <th className="user-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {collabRequests.length ? (
+                    collabRequests.map((r) => (
+                      <tr key={r._id || r.id}>
+                        <td>
+                          {r.requesterOrgId?._id ? (
+                            <a
+                              className="user-link"
+                              href={`/profile/org/${r.requesterOrgId._id}`}
+                            >
+                              {r.requesterOrgId?.name || "Org"}
+                            </a>
+                          ) : (
+                            r.requesterOrgId?.name || "Org"
+                          )}
+                        </td>
+                        <td className="user-muted" style={{ maxWidth: 360 }}>
+                          {r.note || "—"}
+                        </td>
+                        <td>
+                          <span className={`tag ${r.status}`} style={{ padding: "2px 8px", borderRadius: 12 }}>
+                            {r.status}
+                          </span>
+                        </td>
+                        <td className="user-right" style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                          {r.status === COLLAB_STATUS.PENDING ? (
+                            <>
+                              <button
+                                className="secondary-btn"
+                                onClick={() => onAccept(r._id || r.id)}
+                                disabled={collabLoading}
+                              >
+                                Accept
+                              </button>
+                              <button
+                                className="secondary-btn"
+                                onClick={() => onReject(r._id || r.id)}
+                                disabled={collabLoading}
+                              >
+                                Reject
+                              </button>
+                            </>
+                          ) : (
+                            <span className="user-muted">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="user-muted">
+                        No collaboration requests yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       )}
 
-{!isOwner && (
-  <section className="event-stats-simple">
-    <h3>Event Stats</h3>
-    <div className="event-stats-boxes">
-      <div className="event-stat-box">
-        <span className="stat-value">{stats.participants}</span>
-        <div className="label">Participants</div>
-      </div>
-      <div className="event-stat-box">
-        <span className="stat-value">{stats.volunteers}</span>
-        <div className="label">Volunteers</div>
-      </div>
-    </div>
-  </section>
-)}
-
-
-
-
-
+      {!isOwner && (
+        <section className="event-stats-simple">
+          <h3>Event Stats</h3>
+          <div className="event-stats-boxes">
+            <div className="event-stat-box">
+              <span className="stat-value">{stats.participants}</span>
+              <div className="label">Participants</div>
+            </div>
+            <div className="event-stat-box">
+              <span className="stat-value">{stats.volunteers}</span>
+              <div className="label">Volunteers</div>
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

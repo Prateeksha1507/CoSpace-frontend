@@ -71,6 +71,7 @@ export default function ContactPage() {
             value={form.message}
             onChange={onChange}
             required
+            style={{ fontFamily: "inherit" }}
           />
 
           <FormActions align="center">

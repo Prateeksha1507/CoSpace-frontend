@@ -113,7 +113,7 @@ export default function EventSection({
 
       {orgName && (
         <div className={`ed-org ${clickable ? "clickable" : ""}`}>
-          <Avatar src={orgProfilePicture} alt={orgName} className="ed-org-logo" />
+          <Avatar src={orgProfilePicture} backup={orgId} alt={orgName} className="ed-org-logo" />
           {clickable ? (
             <div onClick={handleClick} className="clickable">
               <p className="ed-org-name">{orgName}</p>

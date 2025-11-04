@@ -54,6 +54,7 @@ export default function ChatsPage() {
       name: profile.name || profile.username || chat.title || "Conversation",
       avatar: profile.profilePicture || null,
       raw: other || null,
+      _id: profile._id
     };
   }
 
@@ -392,7 +393,7 @@ export default function ChatsPage() {
             </li>
           ) : (
             convos.map((c) => {
-              const { name, avatar, raw } = pickCounterparty(c, me);
+              const { name, avatar, raw, _id } = pickCounterparty(c, me);
               const unread = isUnread(c, me);
 
               const isOrg = raw?.kind === "Organization";
@@ -417,7 +418,7 @@ export default function ChatsPage() {
                 >
                   {/* Avatar links to profile, without triggering row selection */}
                   <a href={profileHref} onClick={(e) => e.stopPropagation()} tabIndex={-1}>
-                    <Avatar src={avatar} />
+                    <Avatar src={avatar} backup={_id} />
                   </a>
 
                   <div className="chatspg-item-texts">

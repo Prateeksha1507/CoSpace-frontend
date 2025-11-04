@@ -68,6 +68,7 @@ body {
 }
 
 .ui-textarea {
+  font-family: inherit;
   resize: vertical;
   min-height: 120px;
   line-height: 1.4;
@@ -174,7 +175,7 @@ footer {
 }
 
 @media (max-width: 520px) {
-  .ui-btn { width: 100%; }
+  .ui-btn { width: 90%; }
 }
 
 .ui-file {
@@ -228,7 +229,7 @@ footer {
   }
 
   .ui-file label.ui-btn {
-    width: 100%;
+    width: 90%;
     text-align: center;
   }
 }

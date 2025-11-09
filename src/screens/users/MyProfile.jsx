@@ -7,6 +7,7 @@ import { listUserVolunteered } from "../../api/volunteerAPI";
 import { getUserDonations } from "../../api/donationAPI";
 import { getAttendingDetails } from "../../api/attendanceAPI";
 import "../../styles/UserProfile.css";
+import CenterSpinner from "../../components/LoadingSpinner";
 
 export default function MyUserProfilePage() {
   const [user, setUser] = useState(null);
@@ -105,7 +106,7 @@ export default function MyUserProfilePage() {
     };
   }, [attending, volunteering, donations]);
 
-  if (loading) return <div className="user-loading">Loading profile...</div>;
+  if (loading) return <CenterSpinner label="Loading Profile" />
   if (!user) return <div className="user-loading">No user</div>;
 
   return (

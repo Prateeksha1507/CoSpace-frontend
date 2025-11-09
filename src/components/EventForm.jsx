@@ -8,6 +8,7 @@ import {
   FormActions,
   FileUploadField,
 } from "./Form";
+import { InlineSpinner } from "./LoadingSpinner";
 
 export default function EventForm({
   form,
@@ -101,7 +102,7 @@ export default function EventForm({
           className="primary-btn"
           disabled={loading}
         >
-          {loading ? "Publishing..." : "Publish Event"}
+          {loading ? <InlineSpinner label="" /> : "Publish Event"}
         </Button>
       </FormActions>
     </Form>

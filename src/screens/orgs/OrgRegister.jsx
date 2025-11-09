@@ -7,6 +7,7 @@ import {
 import "../../styles/RoleRegister.css";
 import { setToken, signup } from "../../api/authAPI";
 import { showToast } from "../../components/ToastContainer";
+import { InlineSpinner } from "../../components/LoadingSpinner";
 
 const ORG_TYPES = [
   { value: "", label: "Select organization type" },
@@ -125,7 +126,7 @@ export default function OrgRegister() {
 
           <FormActions align="center">
             <Button type="submit" variant="primary" className="primary-btn" disabled={loading}>
-              {loading ? "Creating..." : "Create Account"}
+              {loading ? <InlineSpinner label=""/> : "Create Account"}
             </Button>
           </FormActions>
         </Form>

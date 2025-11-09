@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../../styles/Home.css";
 import EventCard from "../../components/EventCard";
 import { fetchMyOrgEvents } from "../../api/orgAPI";  // no token param needed
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 function OrgHome() {
   const [events, setEvents] = useState([]);
@@ -24,6 +25,10 @@ function OrgHome() {
       }
     })();
   }, []);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="page-container">

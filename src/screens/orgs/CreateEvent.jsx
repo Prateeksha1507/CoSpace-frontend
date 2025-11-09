@@ -6,6 +6,7 @@ import { authFetch } from "../../api/authAPI";
 import { toast } from "react-toastify";
 import "../../styles/org/CreateEvent.css";
 import { useNavigate } from "react-router-dom";  // Correct import for useNavigate
+import CenterSpinner from "../../components/LoadingSpinner";
 
 export default function CreateEvent() {
   const navigate = useNavigate();  // Correct usage of useNavigate
@@ -114,6 +115,8 @@ export default function CreateEvent() {
         .filter(Boolean),
     [form.skills]
   );
+
+  if (loading) return <CenterSpinner label="Loading" />;
 
   return (
     <section className="ce-container">

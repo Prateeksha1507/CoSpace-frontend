@@ -8,6 +8,7 @@ import { fetchUserById } from "../api/userAPI"; // export async function fetchUs
 import { listUserVolunteered } from "../api/volunteerAPI";
 import { getUserDonations } from "../api/donationAPI";
 import { getAttendingDetails } from "../api/attendanceAPI";
+import CenterSpinner from "../components/LoadingSpinner";
 
 // --- Normalizers ---
 const normalizeVolunteers = (raw) => {
@@ -120,7 +121,7 @@ export default function PublicUserProfilePage() {
     };
   }, [attending, volunteering, donations]);
 
-  if (loading) return <div className="user-loading">Loading profile...</div>;
+  if (loading) return <CenterSpinner label="Loading Profile..." />;
 
   if (notFound) {
     return (

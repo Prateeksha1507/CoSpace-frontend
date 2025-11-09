@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { authFetch } from '../api/authAPI';
 import { doIFollow, unfollowOrg, followOrg } from '../api/followAPI';
 import { fetchOrgFollowerCount } from '../api/orgAPI';
+import { InlineSpinner } from './LoadingSpinner';
 
 export default function FollowSection({ orgId }) {
   const [loading, setLoading] = useState(true);
@@ -75,7 +76,7 @@ export default function FollowSection({ orgId }) {
           onClick={handleFollowToggle}
           disabled={loading}
         >
-          {loading ? '...' : (following ? 'Following' : 'Follow')}
+          {loading ? <InlineSpinner label="" color="secondary" /> : (following ? 'Following' : 'Follow')}
         </button>
       </div>
     </div>

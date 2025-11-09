@@ -4,6 +4,7 @@ import EventForm from "../../components/EventForm";
 import EventSection from "../../components/EventSection";
 import Modal from "../../components/Modal";
 import { publicFetch, authFetch } from "../../api/authAPI";
+import LoadingSpinner, { CenterSpinner } from "../../components/LoadingSpinner"
 import "../../styles/org/CreateEvent.css";
 
 function toInputDate(value) {
@@ -168,7 +169,7 @@ export default function EditEvent() {
 
   const bannerForPreview = imagePreviewURL || serverImage || "/default-event.jpg";
 
-  if (loading) return <section className="ce-container"><h1 className="ce-title">Edit Event</h1><p>Loading…</p></section>;
+  if (loading) return <CenterSpinner label="Loading…" />;
   if (error) return <section className="ce-container"><h1 className="ce-title">Edit Event</h1><p style={{ color: "red" }}>{error}</p></section>;
 
   return (

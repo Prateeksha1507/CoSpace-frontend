@@ -7,6 +7,7 @@ import {
   FormActions,
 } from "../components/Form";
 import "../styles/Login.css";
+import { InlineSpinner } from "../components/LoadingSpinner";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -67,7 +68,7 @@ export default function Login() {
 
           <FormActions align="center" className="btn-container">
             <Button type="submit" variant="primary" className="black-btn" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
+              {loading ? <InlineSpinner label=""/> : "Login"}
             </Button>
           </FormActions>
         </Form>

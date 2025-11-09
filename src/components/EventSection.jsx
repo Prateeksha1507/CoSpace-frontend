@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { attend, unattend, isMeAttending } from "../api/attendanceAPI";
 import { volunteer, unvolunteer, isMeVolunteering } from "../api/volunteerAPI";
 import { toast } from "react-toastify";
+import CenterSpinner from "./LoadingSpinner.jsx";
 
 export default function EventSection({
   banner,
@@ -99,7 +100,8 @@ export default function EventSection({
     if (userId && eventId) navigate(`/donate/${userId}/${eventId}`);
   };
 
-  if (loading) return <div className="ed-loading">Loading event details...</div>;
+  //TODO: LoadingSpinner
+  if (loading) return <CenterSpinner label="Loading event details…" />;
 
   return (
     <section className="ed-container">

@@ -24,6 +24,7 @@ import {
 } from "../api/collabAPI";
 import { showToast } from "../components/ToastContainer.jsx"
 import EventReviews from "../components/EventReviews";
+import CenterSpinner from "../components/LoadingSpinner.jsx";
 
 
 export default function EventDetails() {
@@ -329,7 +330,7 @@ export default function EventDetails() {
   };
 
   if (loading || !event || !org) {
-    return <p style={{ textAlign: "center", marginTop: "2rem" }}>Loading event...</p>;
+    return <CenterSpinner label="Loading event…" />;
   }
 
   const past = isEventInPast(event);

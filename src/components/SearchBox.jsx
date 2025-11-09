@@ -1,6 +1,9 @@
 import React, { useRef } from "react";
+import { InlineSpinner } from "./LoadingSpinner";
 
 export function Suggestions({ loading, suggestions, term, onHide, goToResultsHref }) {
+
+  
   return (
     <div
       className="search-suggestions"
@@ -9,7 +12,7 @@ export function Suggestions({ loading, suggestions, term, onHide, goToResultsHre
                background: "#fff", border: "1px solid #e6e6e6", borderRadius: 8,
                boxShadow: "0 8px 24px rgba(0,0,0,0.08)", overflow: "hidden" }}
     >
-      {loading && <div className="sug-item sug-loading">Searching…</div>}
+      {loading && <InlineSpinner />}
       {!loading && !suggestions.length && (
         <div className="sug-item sug-empty">No suggestions</div>
       )}

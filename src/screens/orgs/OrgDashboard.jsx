@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Warning from "../../components/Warning";
 import { deleteEvent } from "../../api/eventAPI";
 import { showToast } from "../../components/ToastContainer";
+import LoadingSpinner, { CenterSpinner } from "../../components/LoadingSpinner";
 
 export default function OrgDashboard() {
   const navigate = useNavigate();
@@ -101,6 +102,8 @@ const confirmDelete = async () => {
       return iso;
     }
   };
+
+  if (loading) return <CenterSpinner label="Loading dashboard…" />;
 
   return (
     <section className="od-container">

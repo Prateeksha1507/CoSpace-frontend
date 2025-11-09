@@ -2,9 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import "../styles/header.css";
 import { suggestSearch } from "../api/searchAPI";
 import { SearchBox } from "../components/SearchBox"; // <— import the extracted SearchBox component
+import { getCurrentActorDocument } from "../api/authAPI";
+import Avatar from "./Avatar"
 
-function Header({ loggedIn = false }) {
+function Header() {
   const [open, setOpen] = useState(false);
+  const [actor, setActor] = useState(null);
+
+  useEffect(() => {
+    const fetchActor = async () => {
+      const actorData = await getCurrentActorDocument();
+      setActor(actorData);
+    };
+
+    fetchActor();
+  }, []);
 
   // Search state
   const [q, setQ] = useState("");
@@ -74,7 +86,7 @@ function Header({ loggedIn = false }) {
         </button>
 
         {/* Desktop Nav */}
-        {loggedIn && (
+        {actor && (
           <div className="desktop-right">
             <nav className="nav-links">
               <a href="/">Home</a>
@@ -98,7 +110,7 @@ function Header({ loggedIn = false }) {
                 <i className="fa-regular fa-bell"></i>
               </a>
               <a href="/my-profile" className="avatar-container">
-                <i className="fa-solid fa-user"></i>
+                <Avatar src={actor?.profilePicture} backup={actor?._id} />
               </a>
             </div>
           </div>

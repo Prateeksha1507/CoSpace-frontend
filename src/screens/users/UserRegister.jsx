@@ -11,6 +11,7 @@ import {
 import "../../styles/RoleRegister.css";
 import { signup } from "../../api/authAPI";
 import { useNavigate } from "react-router-dom";
+import { showToast } from "../../components/ToastContainer";
 
 export default function UserRegister() {
 
@@ -39,11 +40,11 @@ export default function UserRegister() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
+      showToast("Passwords do not match", "error");
       return;
     }
     if (!form.tos || !form.privacy) {
-      alert("You must accept Terms and Privacy Policy");
+      showToast("You must accept Terms and Privacy Policy", "error");
       return;
     }
 
@@ -64,7 +65,7 @@ export default function UserRegister() {
       else
         navigate("/org/home")
     } catch (err) {
-      alert(err.message || "Signup failed");
+      showToast(err.message || "Signup failed", "error");
     }
   };
 

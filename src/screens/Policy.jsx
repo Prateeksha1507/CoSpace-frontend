@@ -71,7 +71,7 @@ export default function PrivacyPolicy() {
   };
 
   return (
-    <main className="privacy-container">
+    <section className="privacy-container">
       <h1 className="privacy-title">Privacy Policy</h1>
       <p className="privacy-meta">Effective Date: July 26, 2024</p>
 
@@ -111,6 +111,6 @@ export default function PrivacyPolicy() {
           contact us at <a href="mailto:privacy@cospace.com">privacy@cospace.com</a>.
         </p>
       </section>
-    </main>
+    </section>
   );
 }

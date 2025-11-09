@@ -1,5 +1,5 @@
 .ed-container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem 4rem;
 }
@@ -201,4 +201,124 @@
   font-size: 0.95rem;
   color: #666;
   margin-top: 0.25rem;
+}
+
+
+/* contain cards like reviews to avoid full-width sprawl */
+.user-card.ed-collab {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding: 16px;
+}
+
+/* header */
+.ed-collab-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* input + button row */
+.ed-collab-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+@media (max-width: 720px) {
+  .ed-collab-row { grid-template-columns: 1fr; }
+}
+
+.ed-input {
+  padding: 10px 12px;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.ed-primary-btn { min-width: 220px; }
+
+/* small inline button inside alerts */
+.ed-inline-btn {
+  margin-left: 10px;
+  padding: 4px 10px;
+  height: 28px;
+  line-height: 20px;
+}
+
+/* chips & alerts */
+.ed-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: #eef2f7;
+  color: #2b3a4e;
+}
+.ed-chip.muted { background: #f3f4f6; color: #6b7280; }
+
+.ed-alert {
+  margin: 8px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+}
+.ed-alert.info {
+  background: #eef6ff; border-color: #cfe6ff; color: #084e8a;
+}
+.ed-alert.success {
+  background: #ecfdf5; border-color: #c7f3e3; color: #047857;
+}
+.ed-alert.warn {
+  background: #fff7ed; border-color: #ffe3c0; color: #92400e;
+}
+.ed-alert.neutral {
+  background: #f5f7fb; border-color: #e4e7ee; color: #4b5563;
+}
+.ed-alert.muted {
+  background: #f3f4f6; border-color: #e5e7eb; color: #6b7280;
+}
+
+.ed-owner {
+  max-width: 1200px;
+  margin: 2rem auto 0;
+  padding: 16px;
+}
+
+.ed-owner-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.ed-owner-card {
+  padding: 0;
+}
+
+.ed-note-cell { max-width: 420px; }
+
+.ed-pill {
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: capitalize;
+}
+
+.ed-row-actions {
+  display: inline-flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.ed-owner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 0 12px;
 }

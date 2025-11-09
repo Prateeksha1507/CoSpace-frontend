@@ -111,3 +111,20 @@ body {
   color: var(--link-hover-color);
   text-decoration: underline;
 }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+*/
+.app-layout {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+*/
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}

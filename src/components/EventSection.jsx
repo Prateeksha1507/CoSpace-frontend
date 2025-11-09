@@ -102,7 +102,7 @@ export default function EventSection({
   if (loading) return <div className="ed-loading">Loading event details...</div>;
 
   return (
-    <main className="ed-container">
+    <section className="ed-container">
       <img
         src={banner || "/event-image.png"}
         alt="Event banner"
@@ -208,6 +208,6 @@ export default function EventSection({
         </button>
       </div>
       )}
-    </main>
+    </section>
   );
 }

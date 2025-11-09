@@ -3,7 +3,7 @@ import "../styles/Terms.css";
 
 export default function TermsAndConditions() {
   return (
-    <main className="tnc-container">
+    <section className="tnc-container">
       <h1 className="tnc-title">Terms and Conditions</h1>
 
       <section className="tnc-section">
@@ -70,6 +70,6 @@ export default function TermsAndConditions() {
         <h3>7. Version History</h3>
         <p>Version 1.0: Effective Date - January 1, 2024</p>
       </section>
-    </main>
+    </section>
   );
 }

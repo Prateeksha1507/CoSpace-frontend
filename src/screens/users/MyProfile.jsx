@@ -73,7 +73,7 @@ export default function MyUserProfilePage() {
 
         if (dons.status === "fulfilled") {
           const arr =
-            (Array.isArray(dons.value?.events) && dons.value.events) ||
+            (Array.isArray(dons.value?.data) && dons.value.data) ||
             (Array.isArray(dons.value) && dons.value) ||
             [];
           setDonations(arr);

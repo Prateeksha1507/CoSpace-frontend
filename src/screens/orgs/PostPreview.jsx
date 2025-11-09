@@ -18,7 +18,7 @@ export default function PostPreview({ data }) {
   };
 
   return (
-    <main className="pp-container">
+    <section className="pp-container">
       {/* Banner */}
       <div className="pp-banner-wrap">
         <img src={event.banner} alt="Event banner" className="pp-banner" />
@@ -71,6 +71,6 @@ export default function PostPreview({ data }) {
         <a href="/create-event" className="secondary-btn ep-btn">Edit</a>
         <button onClick={handlePublish} className="primary-btn ep-btn">Publish</button>
       </div>
-    </main>
+    </section>
   );
 }

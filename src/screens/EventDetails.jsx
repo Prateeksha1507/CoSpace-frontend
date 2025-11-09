@@ -22,7 +22,9 @@ import {
   COLLAB_STATUS,
   canRequestFromStatus,
 } from "../api/collabAPI";
-import { toast } from "react-toastify";
+import { showToast } from "../components/ToastContainer.jsx"
+import EventReviews from "../components/EventReviews";
+
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -131,7 +133,7 @@ export default function EventDetails() {
       try {
         const data = await fetchEventById(id);
         if (!data) {
-          toast.error("Event not found");
+          showToast("Event not found", "error");
           return;
         }
         setEvent(data);
@@ -143,7 +145,7 @@ export default function EventDetails() {
         setActorId(auth?.actor?.id || null);
         setActorType(auth?.actor?.type || null);
       } catch (e) {
-        toast.error(errMsg(e, "Failed to load event"));
+        showToast(errMsg(e, "Failed to load event"), "error");
       } finally {
         setLoading(false);
       }
@@ -174,7 +176,7 @@ export default function EventDetails() {
       setParticipants(normalizeAttendees(att));
       setVolunteers(normalizeVolunteers(vol));
     } catch (e) {
-      toast.error(errMsg(e, "Failed to load attendees/volunteers"));
+      showToast(errMsg(e, "Failed to load attendees/volunteers"), "error");
     } finally {
       setLoadingLists(false);
     }
@@ -192,7 +194,7 @@ export default function EventDetails() {
       const res = await getMyCollabStatus(event._id);
       setCollabStatus(res?.status || null);
     } catch (e) {
-      toast.error(errMsg(e, "Failed to fetch collaboration status"));
+      showToast(errMsg(e, "Failed to fetch collaboration status"), "error");
     } finally {
       setCollabLoading(false);
     }
@@ -205,7 +207,7 @@ export default function EventDetails() {
       const res = await listCollabRequests(event._id);
       setCollabRequests(Array.isArray(res?.items) ? res.items : []);
     } catch (e) {
-      toast.error(errMsg(e, "Failed to fetch collaboration requests"));
+      showToast(errMsg(e, "Failed to fetch collaboration requests"), "error");
     } finally {
       setCollabLoading(false);
     }
@@ -226,11 +228,11 @@ export default function EventDetails() {
     try {
       setCollabLoading(true);
       await requestCollab(event._id, { note: requestNote?.trim() || undefined });
-      toast.success("Collaboration request sent");
+      showToast("Collaboration request sent", "success");
       setRequestNote("");
       await loadMyCollabStatus();
     } catch (e) {
-      toast.error(errMsg(e, "Failed to send request"));
+      showToast(errMsg(e, "Failed to send request"), "error");
     } finally {
       setCollabLoading(false);
     }
@@ -245,14 +247,14 @@ export default function EventDetails() {
       const res = await getMyCollabStatus(event._id);
       const reqId = res?.request?._id || res?.request?.id;
       if (!reqId || res?.status !== COLLAB_STATUS.PENDING) {
-        toast.info("No pending request to cancel");
+        showToast("No pending request to cancel");
       } else {
         await cancelMyCollabRequest(event._id, reqId);
-        toast.success("Request cancelled");
+        showToast("Request cancelled", "success");
         await loadMyCollabStatus();
       }
     } catch (e) {
-      toast.error(errMsg(e, "Failed to cancel request"));
+      showToast(errMsg(e, "Failed to cancel request"), "error");
     } finally {
       setCollabLoading(false);
     }
@@ -262,13 +264,13 @@ export default function EventDetails() {
     try {
       setCollabLoading(true);
       await acceptCollabRequest(event._id, requestId);
-      toast.success("Collaboration accepted");
+      showToast("Collaboration accepted", "success");
       await Promise.all([loadIncomingRequests()]);
       // also refresh event to see collaborator reflected
       const fresh = await fetchEventById(event._id);
       setEvent(fresh);
     } catch (e) {
-      toast.error(errMsg(e, "Failed to accept request"));
+      showToast(errMsg(e, "Failed to accept request"), "error");
     } finally {
       setCollabLoading(false);
     }
@@ -278,10 +280,10 @@ export default function EventDetails() {
     try {
       setCollabLoading(true);
       await rejectCollabRequest(event._id, requestId);
-      toast.success("Request rejected");
+      showToast("Request rejected", "success");
       await loadIncomingRequests();
     } catch (e) {
-      toast.error(errMsg(e, "Failed to reject request"));
+      showToast(errMsg(e, "Failed to reject request"), "error");
     } finally {
       setCollabLoading(false);
     }
@@ -292,9 +294,9 @@ export default function EventDetails() {
 
   const onConfirm = async (userId) => {
     const v = getVolunteerById(userId);
-    if (!v) return toast.error("Volunteer not found");
+    if (!v) return showToast("Volunteer not found", "error");
     if (v.status !== "pending")
-      return toast.info("Action available only for pending volunteers");
+      return showToast("Action available only for pending volunteers");
     try {
       await approveVolunteer(event._id, userId);
       setVolunteers((prev) =>
@@ -302,17 +304,17 @@ export default function EventDetails() {
           String(x.userId) === String(userId) ? { ...x, status: "confirmed" } : x
         )
       );
-      toast.success("Volunteer confirmed");
+      showToast("Volunteer confirmed", "success");
     } catch (e) {
-      toast.error(errMsg(e, "Failed to confirm volunteer"));
+      showToast(errMsg(e, "Failed to confirm volunteer"), "error");
     }
   };
 
   const onRejectVolunteer = async (userId) => {
     const v = getVolunteerById(userId);
-    if (!v) return toast.error("Volunteer not found");
+    if (!v) return showToast("Volunteer not found", "error");
     if (v.status !== "pending")
-      return toast.info("Action available only for pending volunteers");
+      return showToast("Action available only for pending volunteers");
     try {
       await rejectVolunteer(event._id, userId);
       setVolunteers((prev) =>
@@ -320,9 +322,9 @@ export default function EventDetails() {
           String(x.userId) === String(userId) ? { ...x, status: "rejected" } : x
         )
       );
-      toast.success("Volunteer rejected");
+      showToast("Volunteer rejected", "success");
     } catch (e) {
-      toast.error(errMsg(e, "Failed to reject volunteer"));
+      showToast(errMsg(e, "Failed to reject volunteer"), "error");
     }
   };
 
@@ -337,7 +339,7 @@ export default function EventDetails() {
 
   // ---------- UI ----------
   return (
-    <main>
+    <section>
       <EventSection
         banner={event.image}
         name={event.name}
@@ -356,287 +358,277 @@ export default function EventDetails() {
         actorType={actorType}
       />
 
-      {/* --- Collaboration box for non-conducting orgs --- */}
-      {isOtherOrg && (
-        <section className="user-card" style={{ marginTop: 16 }}>
-          <h3 style={{ marginBottom: 8 }}>Collaboration</h3>
+{isOtherOrg && (
+  <section className="user-card ed-collab">
+    <div className="ed-collab-head">
+      <h3 className="ed-heading">Collaboration</h3>
+      {past && <span className="ed-chip muted" title="Event has passed">Closed</span>}
+    </div>
 
-          {collabStatus === COLLAB_STATUS.ACCEPTED && (
-            <p className="user-muted">You are the accepted collaborator for this event.</p>
-          )}
+    {/* Status banners */}
+    {collabStatus === COLLAB_STATUS.ACCEPTED && (
+      <div className="ed-alert success">You are the accepted collaborator for this event.</div>
+    )}
+    {collabStatus === COLLAB_STATUS.PENDING && (
+      <div className="ed-alert info">
+        Your request is pending.
+        <button
+          className="secondary-btn ed-inline-btn"
+          onClick={onCancelMyRequest}
+          disabled={collabLoading}
+        >
+          {collabLoading ? 'Cancelling…' : 'Cancel Request'}
+        </button>
+      </div>
+    )}
+    {collabStatus === COLLAB_STATUS.REJECTED && (
+      <div className="ed-alert warn">Your previous request was rejected.</div>
+    )}
+    {collabStatus === COLLAB_STATUS.CANCELLED && (
+      <div className="ed-alert neutral">Your previous request was cancelled.</div>
+    )}
+    {collabStatus === COLLAB_STATUS.BLOCKED && (
+      <div className="ed-alert muted">
+        Collaboration closed: another organization has already been accepted.
+      </div>
+    )}
 
-          {collabStatus === COLLAB_STATUS.PENDING && (
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <span className="user-muted">Your request is pending.</span>
-              <button
-                className="secondary-btn"
-                onClick={onCancelMyRequest}
-                disabled={collabLoading}
-              >
-                {collabLoading ? "Cancelling..." : "Cancel Request"}
-              </button>
-            </div>
-          )}
+    {/* Request form (only when allowed & no collaborator chosen) */}
+    {canRequestFromStatus(collabStatus) && !collaboratorChosen && (
+      <div className="ed-collab-row">
+        <input
+          type="text"
+          placeholder="Optional note to conducting org"
+          value={requestNote}
+          onChange={(e) => setRequestNote(e.target.value)}
+          className="ed-input"
+          disabled={collabLoading}
+        />
+        <button
+          className="primary-btn ed-primary-btn"
+          onClick={onSendRequest}
+          disabled={collabLoading || past}
+          title={past ? 'Event is in the past' : undefined}
+        >
+          {collabLoading ? 'Sending…' : 'Request Collaboration'}
+        </button>
+      </div>
+    )}
+  </section>
+)}
 
-          {collabStatus === COLLAB_STATUS.REJECTED && (
-            <p className="user-muted">Your previous request was rejected.</p>
-          )}
 
-          {collabStatus === COLLAB_STATUS.CANCELLED && (
-            <p className="user-muted">Your previous request was cancelled.</p>
-          )}
+{isOwner && (
+  <section className="ed-owner user-card">
+    <div className="ed-owner-tabs">
+      <button
+        className={activeTab === 'participants' ? 'primary-btn' : 'secondary-btn'}
+        onClick={() => setActiveTab('participants')}
+      >
+        Participants ({participants.length})
+      </button>
 
-          {collabStatus === COLLAB_STATUS.BLOCKED && (
-            <p className="user-muted">
-              Collaboration closed: another organization has already been accepted.
-            </p>
-          )}
+      <button
+        className={activeTab === 'volunteers' ? 'primary-btn' : 'secondary-btn'}
+        onClick={() => setActiveTab('volunteers')}
+      >
+        Volunteers ({volunteers.length})
+      </button>
 
-          {(canRequestFromStatus(collabStatus) && !collaboratorChosen) ? (
-            <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
-              <input
-                type="text"
-                placeholder="Optional note to conducting org"
-                value={requestNote}
-                onChange={(e) => setRequestNote(e.target.value)}
-                style={{ flex: 1, padding: "8px 10px" }}
-                disabled={collabLoading}
-              />
-              <button
-                className="primary-btn"
-                onClick={onSendRequest}
-                disabled={collabLoading || past}
-                title={past ? "Event is in the past" : undefined}
-              >
-                {collabLoading ? "Sending..." : "Request Collaboration"}
-              </button>
-            </div>
-          ) : null}
-        </section>
+      {isConductingOrg && (
+        <button
+          className={activeTab === 'collab' ? 'primary-btn' : 'secondary-btn'}
+          onClick={() => {
+            setActiveTab('collab');
+            loadIncomingRequests();
+          }}
+        >
+          Collaboration {collabRequests.length ? `(${collabRequests.length})` : ''}
+        </button>
       )}
 
-      {/* --- Owner panels (participants/volunteers + conducting-only collaboration tab) --- */}
-      {isOwner && (
-        <section style={{ marginTop: "2rem" }}>
-          <div style={{ display: "flex", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
-            <button
-              className={activeTab === "participants" ? "primary-btn" : "secondary-btn"}
-              onClick={() => setActiveTab("participants")}
-            >
-              Participants ({participants.length})
-            </button>
-            <button
-              className={activeTab === "volunteers" ? "primary-btn" : "secondary-btn"}
-              onClick={() => setActiveTab("volunteers")}
-            >
-              Volunteers ({volunteers.length})
-            </button>
+      <button className="secondary-btn" onClick={loadLists} disabled={loadingLists}>
+        {loadingLists ? 'Refreshing…' : 'Refresh'}
+      </button>
+    </div>
 
-            {isConductingOrg && (
-              <button
-                className={activeTab === "collab" ? "primary-btn" : "secondary-btn"}
-                onClick={() => {
-                  setActiveTab("collab");
-                  loadIncomingRequests();
-                }}
-              >
-                Collaboration {collabRequests.length ? `(${collabRequests.length})` : ""}
-              </button>
+    {activeTab === 'participants' && (
+      <div className="ed-owner-card user-card">
+        <table className="user-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            {participants.length ? (
+              participants.map((p) => (
+                <tr key={p.id || p.email}>
+                  <td>
+                    {p.id ? (
+                      <a href={`/profile/user/${p.id}`} className="user-link">
+                        {p.name}
+                      </a>
+                    ) : (
+                      p.name
+                    )}
+                  </td>
+                  <td className="user-muted">{p.email}</td>
+                  <td className="user-muted">
+                    {p.joinedAt ? new Date(p.joinedAt).toLocaleString() : '—'}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="user-muted">
+                  No participants yet.
+                </td>
+              </tr>
             )}
+          </tbody>
+        </table>
+      </div>
+    )}
 
-            <button className="secondary-btn" onClick={loadLists} disabled={loadingLists}>
-              {loadingLists ? "Refreshing..." : "Refresh"}
-            </button>
-          </div>
-
-          {activeTab === "participants" && (
-            <div className="user-card">
-              <table className="user-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Joined</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {participants.length ? (
-                    participants.map((p) => (
-                      <tr key={p.id || p.email}>
-                        <td>
-                          {p.id ? (
-                            <a href={`/profile/user/${p.id}`} className="user-link">
-                              {p.name}
-                            </a>
-                          ) : (
-                            p.name
-                          )}
-                        </td>
-                        <td className="user-muted">{p.email}</td>
-                        <td className="user-muted">
-                          {p.joinedAt ? new Date(p.joinedAt).toLocaleString() : "—"}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="3" className="user-muted">
-                        No participants yet.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {activeTab === "volunteers" && (
-            <div className="user-card">
-              <table className="user-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    {isConductingOrg && <th>Actions</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {volunteers.length ? (
-                    volunteers.map((v, i) => (
-                      <tr key={v.userId || v.email || i}>
-                        <td>{v.name}</td>
-                        <td className="user-muted">{v.email}</td>
-                        <td>
-                          <span
-                            className={`tag ${v.status}`}
-                            style={{
-                              padding: "2px 8px",
-                              borderRadius: 12,
-                              textTransform: "capitalize",
-                            }}
+    {activeTab === 'volunteers' && (
+      <div className="ed-owner-card user-card">
+        <table className="user-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              {isConductingOrg && <th className="user-right">Actions</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {volunteers.length ? (
+              volunteers.map((v, i) => (
+                <tr key={v.userId || v.email || i}>
+                  <td>{v.name}</td>
+                  <td className="user-muted">{v.email}</td>
+                  <td>
+                    <span className={`tag ${v.status} ed-pill`}>{v.status}</span>
+                  </td>
+                  {isConductingOrg && (
+                    <td className="user-right">
+                      {v.status === 'pending' ? (
+                        <div className="ed-row-actions">
+                          <button
+                            className="secondary-btn"
+                            onClick={() => onConfirm(v.userId)}
                           >
-                            {v.status}
-                          </span>
-                        </td>
-                        {isConductingOrg && (
-                          <td
-                            className="user-right"
-                            style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}
+                            Confirm
+                          </button>
+                          <button
+                            className="secondary-btn"
+                            onClick={() => onRejectVolunteer(v.userId)}
                           >
-                            {v.status === "pending" ? (
-                              <>
-                                <button
-                                  className="secondary-btn"
-                                  onClick={() => onConfirm(v.userId)}
-                                >
-                                  Confirm
-                                </button>
-                                <button
-                                  className="secondary-btn"
-                                  onClick={() => onRejectVolunteer(v.userId)}
-                                >
-                                  Reject
-                                </button>
-                              </>
-                            ) : (
-                              <span className="user-muted">—</span>
-                            )}
-                          </td>
-                        )}
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={isConductingOrg ? 4 : 3} className="user-muted">
-                        No volunteers yet.
-                      </td>
-                    </tr>
+                            Reject
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="user-muted">—</span>
+                      )}
+                    </td>
                   )}
-                </tbody>
-              </table>
-            </div>
-          )}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={isConductingOrg ? 4 : 3} className="user-muted">
+                  No volunteers yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    )}
 
-          {activeTab === "collab" && isConductingOrg && (
-            <div className="user-card">
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-                <h3>Collaboration Requests</h3>
-                <button className="secondary-btn" onClick={loadIncomingRequests} disabled={collabLoading}>
-                  {collabLoading ? "Refreshing..." : "Refresh"}
-                </button>
-              </div>
+    {activeTab === 'collab' && isConductingOrg && (
+      <div className="ed-owner-card user-card">
+        <div className="ed-owner-header">
+          <h3>Collaboration Requests</h3>
+          <button
+            className="secondary-btn"
+            onClick={loadIncomingRequests}
+            disabled={collabLoading}
+          >
+            {collabLoading ? 'Refreshing…' : 'Refresh'}
+          </button>
+        </div>
 
-              <table className="user-table">
-                <thead>
-                  <tr>
-                    <th>Organization</th>
-                    <th>Note</th>
-                    <th>Status</th>
-                    <th className="user-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {collabRequests.length ? (
-                    collabRequests.map((r) => (
-                      <tr key={r._id || r.id}>
-                        <td>
-                          {r.requesterOrgId?._id ? (
-                            <a
-                              className="user-link"
-                              href={`/profile/org/${r.requesterOrgId._id}`}
-                            >
-                              {r.requesterOrgId?.name || "Org"}
-                            </a>
-                          ) : (
-                            r.requesterOrgId?.name || "Org"
-                          )}
-                        </td>
-                        <td className="user-muted" style={{ maxWidth: 360 }}>
-                          {r.note || "—"}
-                        </td>
-                        <td>
-                          <span className={`tag ${r.status}`} style={{ padding: "2px 8px", borderRadius: 12 }}>
-                            {r.status}
-                          </span>
-                        </td>
-                        <td className="user-right" style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-                          {r.status === COLLAB_STATUS.PENDING ? (
-                            <>
-                              <button
-                                className="secondary-btn"
-                                onClick={() => onAccept(r._id || r.id)}
-                                disabled={collabLoading}
-                              >
-                                Accept
-                              </button>
-                              <button
-                                className="secondary-btn"
-                                onClick={() => onReject(r._id || r.id)}
-                                disabled={collabLoading}
-                              >
-                                Reject
-                              </button>
-                            </>
-                          ) : (
-                            <span className="user-muted">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="4" className="user-muted">
-                        No collaboration requests yet.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-      )}
+        <table className="user-table">
+          <thead>
+            <tr>
+              <th>Organization</th>
+              <th>Note</th>
+              <th>Status</th>
+              <th className="user-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {collabRequests.length ? (
+              collabRequests.map((r) => (
+                <tr key={r._id || r.id}>
+                  <td>
+                    {r.requesterOrgId?._id ? (
+                      <a
+                        className="user-link"
+                        href={`/profile/org/${r.requesterOrgId._id}`}
+                      >
+                        {r.requesterOrgId?.name || 'Org'}
+                      </a>
+                    ) : (
+                      r.requesterOrgId?.name || 'Org'
+                    )}
+                  </td>
+                  <td className="user-muted ed-note-cell">{r.note || '—'}</td>
+                  <td>
+                    <span className={`tag ${r.status} ed-pill`}>{r.status}</span>
+                  </td>
+                  <td className="user-right">
+                    {r.status === COLLAB_STATUS.PENDING ? (
+                      <div className="ed-row-actions">
+                        <button
+                          className="secondary-btn"
+                          onClick={() => onAccept(r._id || r.id)}
+                          disabled={collabLoading}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className="secondary-btn"
+                          onClick={() => onReject(r._id || r.id)}
+                          disabled={collabLoading}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="user-muted">—</span>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="user-muted">
+                  No collaboration requests yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </section>
+)}
+
 
       {!isOwner && (
         <section className="event-stats-simple">
@@ -653,6 +645,17 @@ export default function EventDetails() {
           </div>
         </section>
       )}
-    </main>
+{/* Show reviews only after the event has passed. No banner otherwise. */}
+{isEventInPast(event) && (
+  <EventReviews
+    eventId={event._id}
+    eventDate={event.date}
+    eventTime={event.time}
+    actorType={actorType}
+    actorId={actorId}
+  />
+)}
+
+    </section>
   );
 }

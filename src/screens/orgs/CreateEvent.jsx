@@ -116,7 +116,7 @@ export default function CreateEvent() {
   );
 
   return (
-    <main className="ce-container">
+    <section className="ce-container">
       <h1 className="ce-title">Create New Event</h1>
 
       <EventForm
@@ -143,6 +143,6 @@ export default function CreateEvent() {
           actorType={"user"}  //So it looks like what user will see
         />
       </Modal>
-    </main>
+    </section>
   );
 }

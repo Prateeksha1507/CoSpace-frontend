@@ -13,6 +13,7 @@ import "../styles/Settings.css";
 import LogoutButton from "../components/Logout";
 import { getCurrentActorDocument } from "../api/authAPI";
 import { updateMyProfile, deleteMyProfile } from "../api/authAPI";
+import { showToast } from "../components/ToastContainer";
 
 export default function Settings() {
 
@@ -185,7 +186,7 @@ export default function Settings() {
         }));
       }
     } catch (err) {
-      setMsg(err?.message || "Failed to update profile.");
+      showToast(err?.message || "Failed to update profile.", "error");
     } finally {
       setLoading(false);
     }
@@ -232,7 +233,7 @@ export default function Settings() {
   }
 
   return (
-    <main className="set-container">
+    <section className="set-container">
       {/* Tabs */}
       <nav className="set-tabs">
         {["account", "notifications", "security", "delete"].map((t) => (
@@ -520,6 +521,6 @@ export default function Settings() {
           </Button>
         </section>
       )}
-    </main>
+    </section>
   );
 }

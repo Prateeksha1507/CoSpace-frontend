@@ -56,7 +56,7 @@ const notifications = [
 
 export default function NotificationsPage() {
   return (
-    <main className="notif-container">
+    <section className="notif-container">
       <h1 className="notif-title">Notifications</h1>
       <p className="notif-subtitle">
         Stay updated on events, volunteer opportunities, and donations.
@@ -76,6 +76,6 @@ export default function NotificationsPage() {
           </div>
         ))}
       </div>
-    </main>
+    </section>
   );
 }

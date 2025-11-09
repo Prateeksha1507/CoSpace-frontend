@@ -3,7 +3,7 @@ import "../styles/About.css";
 
 export default function AboutPage() {
   return (
-    <main className="about-container">
+    <section className="about-container">
       <section className="about-section">
         <h2>About CoSpace</h2>
         <p>
@@ -104,6 +104,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </main>
+    </section>
   );
 }

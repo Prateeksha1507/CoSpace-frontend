@@ -19,7 +19,7 @@ export default function Verification() {
   };
 
   return (
-    <main className="docs-container">
+    <section className="docs-container">
       <section className="docs-box">
         <h1 className="docs-title">Document Submission</h1>
 
@@ -81,7 +81,7 @@ export default function Verification() {
           </div>
         </form>
       </section>
-    </main>
+    </section>
   );
 }
 

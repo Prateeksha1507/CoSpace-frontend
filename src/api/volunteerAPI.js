@@ -27,7 +27,6 @@ export async function approveVolunteer(eventId, userId) {
 }
 
 export async function rejectVolunteer(eventId, userId) {
-  alert(`api/volunteer/reject/${eventId}/${userId}`)
   return await authFetch(`/api/volunteer/reject/${eventId}/${userId}`, {
     method: "POST",
   });

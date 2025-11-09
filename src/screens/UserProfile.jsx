@@ -40,7 +40,7 @@ const normalizeAttending = (raw) =>
   Array.isArray(raw?.events) ? raw.events : Array.isArray(raw) ? raw : [];
 
 const normalizeDonations = (raw) =>
-  Array.isArray(raw?.events) ? raw.events : Array.isArray(raw) ? raw : [];
+  Array.isArray(raw?.data) ? raw.data : Array.isArray(raw) ? raw : [];
 
 export default function PublicUserProfilePage() {
   const { id } = useParams();
@@ -124,14 +124,16 @@ export default function PublicUserProfilePage() {
 
   if (notFound) {
     return (
-      <main className="user-container">
+      <section className="user-container">
         <div className="user-card" style={{ padding: 24, textAlign: "center" }}>
           <h2>User not found</h2>
           <p>We couldn’t find a profile for ID <strong>{id}</strong>.</p>
         </div>
-      </main>
+      </section>
     );
   }
+
+  console.log(donations);
 
   return (
     <UserProfileView

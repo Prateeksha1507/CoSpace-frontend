@@ -32,7 +32,7 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="contact-container">
+    <section className="contact-container">
       <section className="contact-form-section">
         <h1 className="contact-title">Contact</h1>
 
@@ -111,6 +111,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-    </main>
+    </section>
   );
 }

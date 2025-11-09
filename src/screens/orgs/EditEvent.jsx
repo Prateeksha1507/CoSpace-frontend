@@ -168,11 +168,11 @@ export default function EditEvent() {
 
   const bannerForPreview = imagePreviewURL || serverImage || "/default-event.jpg";
 
-  if (loading) return <main className="ce-container"><h1 className="ce-title">Edit Event</h1><p>Loading…</p></main>;
-  if (error) return <main className="ce-container"><h1 className="ce-title">Edit Event</h1><p style={{ color: "red" }}>{error}</p></main>;
+  if (loading) return <section className="ce-container"><h1 className="ce-title">Edit Event</h1><p>Loading…</p></section>;
+  if (error) return <section className="ce-container"><h1 className="ce-title">Edit Event</h1><p style={{ color: "red" }}>{error}</p></section>;
 
   return (
-    <main className="ce-container">
+    <section className="ce-container">
       <h1 className="ce-title">Edit Event</h1>
 
       <EventForm
@@ -205,6 +205,6 @@ export default function EditEvent() {
           clickable={false}
         />
       </Modal>
-    </main>
+    </section>
   );
 }

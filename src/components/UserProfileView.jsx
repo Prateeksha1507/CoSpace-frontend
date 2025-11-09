@@ -1,6 +1,7 @@
 import React from "react";
 import Avatar from "../components/Avatar"; // ← ensure correct relative path
 
+
 function formatDate(iso) {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -34,12 +35,21 @@ export default function UserProfileView({
   };
 
   return (
-    <main className="user-container">
+    <section className="user-container">
       {/* Header */}
       <section className="user-identity">
         <Avatar src={user?.profilePicture} backup={user?._id} />
         <h2 className="user-name">{user?.name}</h2>
         <p className="user-role">{user?.bio}</p>
+
+        {user?.interests?.length > 0 && (
+          <div className="user-interests">
+            {user.interests.map((interest, index) => (
+              <span key={index} className="interest-badge">{interest}</span>
+            ))}
+          </div>
+        )}
+
       </section>
 
       {/* KPIs */}
@@ -75,7 +85,7 @@ export default function UserProfileView({
           onKeyDown={(e) => handleKpiKey(e, "donations")}
         >
           <div className="user-kpi-value">
-            ${Number(stats?.totalDonations ?? 0).toLocaleString()}
+            ₹{Number(stats?.totalDonations ?? 0).toLocaleString()}
           </div>
           <div className="user-kpi-label">Total Donations</div>
         </div>
@@ -131,7 +141,7 @@ export default function UserProfileView({
                   <tr>
                     <th>Event</th>
                     <th>Date</th>
-                    <th>Status</th> {/* ✅ show status */}
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -171,58 +181,83 @@ export default function UserProfileView({
         )}
 
         {activeTab === "donations" && (
-          <>
-            <h3 className="user-section-title">Donation History</h3>
-            <div className="user-card">
-              <table className="user-table">
-                <thead>
-                  <tr>
-                    <th>Event</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(donations || []).length > 0 ? (
-                    donations.map((d, i) => (
-                      <tr key={d.id || i}>
-                        <td className="user-amount">
-                          {d.event || d.eventName || d.name || "—"}
-                        </td>
-                        <td className="user-amount">
-                          ${Number(d.amount || 0).toLocaleString()}
-                        </td>
-                        <td className="user-muted">{formatDate(d.date)}</td>
-                        <td className="user-right">
-                          {d?.receiptUrl ? (
-                            <a
-                              className="user-receipt-btn primary-btn"
-                              href={d.receiptUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Download Receipt
-                            </a>
-                          ) : (
-                            "—"
-                          )}
-                        </td>
-                      </tr>
-                    ))
+<>
+  <h3 className="user-section-title">Donation History</h3>
+  <div className="user-card">
+    <table className="user-table">
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Amount</th>
+          <th>Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {(donations || []).length > 0 ? (
+          donations.map((d, i) => {
+            const eventName =
+              d?.event?.name || d?.eventName || d?.name || "—";
+            const eventId = d?.event?._id || d?.eventId;
+            const date =
+              d?.date ||
+              d?.createdAt ||
+              d?.timestamp ||
+              d?.updatedAt ||
+              null;
+
+            return (
+              <tr key={d.id || d._id || i}>
+                <td className="user-amount">
+                  {eventId ? (
+                    <a
+                      href={`/event/${eventId}`}
+                      className="user-link"
+                      title="View event"
+                    >
+                      {eventName}
+                    </a>
                   ) : (
-                    <tr>
-                      <td colSpan="4" className="user-muted">
-                        No donation records found.
-                      </td>
-                    </tr>
+                    eventName
                   )}
-                </tbody>
-              </table>
-            </div>
-          </>
+                </td>
+                <td className="user-amount">
+                  ₹{Number(d.amount || 0).toLocaleString()}
+                </td>
+                <td className="user-muted">
+                  {date ? formatDate(date) : "—"}
+                </td>
+                {/* <td className="user-right">
+                  {d?.receiptUrl ? (
+                    <a
+                      className="user-receipt-btn primary-btn"
+                      href={d.receiptUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Download Receipt
+                    </a>
+                  ) : (
+                    "—"
+                  )}
+                </td> */}
+              </tr>
+            );
+          })
+        ) : (
+          <tr>
+            <td colSpan="4" className="user-muted">
+              No donation records found.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</>
+
         )}
       </section>
-    </main>
+    </section>
   );
 }

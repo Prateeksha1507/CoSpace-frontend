@@ -38,7 +38,7 @@ export default function SearchResults() {
   const { orgs = [], events = [] } = data?.results || {};
 
   return (
-    <main style={{ maxWidth: 960, margin: "24px auto", padding: "0 16px" }}>
+    <section style={{ maxWidth: 960, margin: "24px auto", padding: "0 16px" }}>
       <h2 style={{ marginBottom: 12 }}>Search results for “{q}”</h2>
 
       {loading && <p>Searching…</p>}
@@ -105,6 +105,6 @@ export default function SearchResults() {
           </div>
         </section>
       )}
-    </main>
+    </section>
   );
 }

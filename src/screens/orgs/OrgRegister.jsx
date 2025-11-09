@@ -6,6 +6,7 @@ import {
 } from "../../components/Form";
 import "../../styles/RoleRegister.css";
 import { setToken, signup } from "../../api/authAPI";
+import { showToast } from "../../components/ToastContainer";
 
 const ORG_TYPES = [
   { value: "", label: "Select organization type" },
@@ -46,9 +47,9 @@ export default function OrgRegister() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.password !== form.confirmPassword) return alert("Passwords do not match");
-    if (!form.tos || !form.privacy) return alert("You must accept Terms and Privacy Policy");
-    if (!form.orgType) return alert("Please select organization type");
+    if (form.password !== form.confirmPassword) return showToast("Passwords do not match", "error");
+    if (!form.tos || !form.privacy) return showToast("You must accept Terms and Privacy Policy", "error");
+    if (!form.orgType) return showToast("Please select organization type", "error");
 
     const data = new FormData();
     data.append("type", "org");
@@ -67,14 +68,12 @@ export default function OrgRegister() {
     try {
       setLoading(true);
       const { actor } = await signup(data);
-      console.log(actor)
-      alert("Done")
       setToken(actor.token)
       // go to dashboard or verification
       // navigate("/register/verification");
       navigate("/org/home");
     } catch (err) {
-      alert(err?.message || "Organization signup failed");
+      showToast(err?.message || "Organization signup failed");
     } finally {
       setLoading(false);
     }

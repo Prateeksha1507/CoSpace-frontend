@@ -21,6 +21,7 @@ export function setToken(t) {
 
 export function logout() {
   setToken(null);
+  window.location.href="/login"
 }
 
 /* ---------------- Core Fetch Helper ---------------- */
@@ -168,9 +169,11 @@ export async function getCurrentActor() {
 
 export async function getCurrentActorDocument() {
   const { actor } = await verify();
+  if (!actor) return null;
   const doc =
     actor?.type === "org"
       ? await fetchOrgById(actor.id)
       : await fetchUserById(actor.id);
+    console.log(doc)
   return { ...doc, type: actor?.type, id: actor?.id };
 }

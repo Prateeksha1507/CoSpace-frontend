@@ -4,6 +4,7 @@ import { fetchMyOrgDashboard } from "../../api/orgAPI";
 import { useNavigate } from 'react-router-dom';
 import Warning from "../../components/Warning";
 import { deleteEvent } from "../../api/eventAPI";
+import { showToast } from "../../components/ToastContainer";
 
 export default function OrgDashboard() {
   const navigate = useNavigate();
@@ -20,8 +21,6 @@ export default function OrgDashboard() {
   const [eventToDelete, setEventToDelete] = useState(null)
 
   const handleDelete = (eventId) => {
-    console.log(eventId)
-    alert(eventId)
     setEventToDelete(eventId);
     setIsWarningOpen(true);
   };
@@ -43,12 +42,10 @@ const confirmDelete = async () => {
     setEventToDelete(null);
   } catch (error) {
     console.error('Error deleting event:', error);
-    alert(error?.message || 'Failed to delete event. Please try again.');
+    showToast(error?.message || 'Failed to delete event. Please try again.', "error");
   }
 };
 
-
-  
   const cancelDelete = () => {
     setIsWarningOpen(false);
     setEventToDelete(null);
@@ -106,7 +103,7 @@ const confirmDelete = async () => {
   };
 
   return (
-    <main className="od-container">
+    <section className="od-container">
       <h1 className="od-title">{org ? `${org.name}'s Dashboard` : "My Dashboard"}</h1>
       <p className="od-subtitle">Manage your events, volunteers, and track your impact.</p>
 
@@ -209,6 +206,6 @@ const confirmDelete = async () => {
         onConfirm={confirmDelete}
         message="Are you sure you want to delete this event? This action is non-reversible"
       />
-    </main>
+    </section>
   );
 }

@@ -370,7 +370,7 @@ export default function ChatsPage() {
   /* ---------------- render (DOM/CSS preserved; added anchors for profile links) ---------------- */
 
   return (
-    <main
+    <section
       className={[
         "chatspg",
         isMobile ? "is-mobile" : "is-desktop",
@@ -498,6 +498,6 @@ export default function ChatsPage() {
           </>
         )}
       </section>
-    </main>
+    </section>
   );
 }

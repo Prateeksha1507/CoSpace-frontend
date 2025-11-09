@@ -89,27 +89,27 @@ export default function OrgProfile() {
 
   if (error && !org) {
     return (
-      <main className="org-container">
+      <section className="org-container">
         <section className="org-section">
           <h3>Organization not found</h3>
           <p>{error}</p>
         </section>
-      </main>
+      </section>
     );
   }
 
   if (!org) {
     return (
-      <main className="org-container">
+      <section className="org-container">
         <section className="org-section">
           <h3>Loading…</h3>
         </section>
-      </main>
+      </section>
     );
   }
 
   return (
-    <main className="org-container">
+    <section className="org-container">
       {/* Header */}
       <section className="org-header">
         <Avatar
@@ -258,6 +258,6 @@ export default function OrgProfile() {
           </section>
         </>
       )}
-    </main>
+    </section>
   );
 }

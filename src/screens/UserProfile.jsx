@@ -10,7 +10,8 @@ import { getUserDonations } from "../api/donationAPI";
 import { getAttendingDetails } from "../api/attendanceAPI";
 import CenterSpinner from "../components/LoadingSpinner";
 
-// --- Normalizers ---
+import "../styles/UserProfile.css"
+
 const normalizeVolunteers = (raw) => {
   const arr = Array.isArray(raw?.records)
     ? raw.records

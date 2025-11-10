@@ -1,6 +1,5 @@
 // FollowButton.jsx
 import { useEffect, useState } from 'react';
-import { authFetch } from '../api/authAPI';
 import { doIFollow, unfollowOrg, followOrg } from '../api/followAPI';
 import { fetchOrgFollowerCount } from '../api/orgAPI';
 import { InlineSpinner } from './LoadingSpinner';

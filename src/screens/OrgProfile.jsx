@@ -9,6 +9,7 @@ import {
 import { useSearchParams, useParams } from "react-router-dom";
 import FollowSection from "../components/FollowSection";
 import { verify } from "../api/authAPI";
+import CenterSpinner from "../components/LoadingSpinner";
 
 function formatNiceDate(iso) {
   try {
@@ -100,11 +101,7 @@ export default function OrgProfile() {
 
   if (!org) {
     return (
-      <section className="org-container">
-        <section className="org-section">
-          <h3>Loading…</h3>
-        </section>
-      </section>
+      <CenterSpinner/>
     );
   }
 
@@ -122,10 +119,9 @@ export default function OrgProfile() {
           <h2 className="org-name">{org.name}</h2>
           <p className="org-type">{org.orgType || "Other"}</p>
 
-          {/* Followers count (always visible) */}
-          <p className="org-followers">
+          { actorType!="user" && (<p className="org-followers">
             {followersCount} follower{followersCount === 1 ? "" : "s"}
-          </p>
+          </p>)}
         </div>
 
         {/* Actions: only for user actors */}

@@ -43,7 +43,7 @@ function UserHome() {
       <section style={{ padding: "40px 20px" }} id="event-section">
         <h2>Upcoming Events</h2>
 
-        <div className="filters">
+        {/* <div className="filters">
           <select>
             <option>Category</option>
           </select>
@@ -53,7 +53,7 @@ function UserHome() {
           <select>
             <option>Location</option>
           </select>
-        </div>
+        </div> */}
 
         <div className="events">
           {events.map((event, index) => (

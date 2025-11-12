@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 import UserProfileView from "../components/UserProfileView";
 
-import { fetchUserById } from "../api/userAPI"; // export async function fetchUserById(id){ return publicFetch(`/api/users/${encodeURIComponent(id)}`) }
+import { fetchUserById } from "../api/userAPI";
 import { listUserVolunteered } from "../api/volunteerAPI";
 import { getUserDonations } from "../api/donationAPI";
 import { getAttendingDetails } from "../api/attendanceAPI";

@@ -469,7 +469,7 @@ export default function EventDetails() {
                 <tr key={p.id || p.email}>
                   <td>
                     {p.id ? (
-                      <a href={`/profile/user/${p.id}`} className="user-link">
+                      <a href={`/profile/user/${p.id}`} className="link">
                         {p.name}
                       </a>
                     ) : (
@@ -509,7 +509,11 @@ export default function EventDetails() {
             {volunteers.length ? (
               volunteers.map((v, i) => (
                 <tr key={v.userId || v.email || i}>
-                  <td>{v.name}</td>
+                <td>
+                  <a href={`/profile/user/${v.id}`} className="link">
+                    {v.name}
+                  </a>
+                </td>
                   <td className="user-muted">{v.email}</td>
                   <td>
                     <span className={`tag ${v.status} ed-pill`}>{v.status}</span>

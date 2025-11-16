@@ -32,6 +32,7 @@ export default function OrgRegister() {
     mission: "",
     regId: "",
     affiliation: "",
+    upi: "",
     tos: false,
     privacy: false,
     profileImage: null,
@@ -64,6 +65,7 @@ export default function OrgRegister() {
     if (form.mission) data.append("mission", form.mission);
     if (form.regId) data.append("regId", form.regId);
     if (form.affiliation) data.append("affiliation", form.affiliation);
+    if (form.upi) data.append("upi", form.upi);
     if (form.profileImage) data.append("profileImage", form.profileImage); // <-- matches multer field
 
     try {
@@ -99,6 +101,7 @@ export default function OrgRegister() {
           <FormField name="website" label="Website (optional)" value={form.website} onChange={onChange} />
           <FormField name="regId" label="Registration ID (optional)" value={form.regId} onChange={onChange} />
           <FormField name="affiliation" label="Affiliation (optional)" value={form.affiliation} onChange={onChange} />
+          <FormField name="upi" label="UPI ID (for donations)" value={form.upi} onChange={onChange} />
           <TextAreaField name="mission" label="Mission (optional)" value={form.mission} onChange={onChange} />
 
           <FileUploadField

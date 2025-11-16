@@ -6,6 +6,7 @@ import { attend, unattend, isMeAttending } from "../api/attendanceAPI";
 import { volunteer, unvolunteer, isMeVolunteering } from "../api/volunteerAPI";
 import { toast } from "react-toastify";
 import CenterSpinner from "./LoadingSpinner.jsx";
+import DonateButton from "./DonateButton.jsx";
 
 export default function EventSection({
   banner,
@@ -20,7 +21,7 @@ export default function EventSection({
   skills = [],
   clickable = true,
   orgId,
-  userId,
+  actorId,
   eventId,
   actorType
 }) {
@@ -105,7 +106,7 @@ export default function EventSection({
 
   const handleDonate = () => {
     if (!clickable) return;
-    if (userId && eventId) navigate(`/donate/${userId}/${eventId}`);
+    if (actorId && eventId) navigate(`/donate/${actorId}/${eventId}`);
   };
 
   //TODO: LoadingSpinner
@@ -210,9 +211,7 @@ export default function EventSection({
         <button className="secondary-btn" onClick={handleVolunteer} disabled={!clickable}>
           {hasSentVolReq ? "Requested" : isVolunteering ? "Unvolunteer" : "Volunteer"}
         </button>
-        <button className="primary-btn" onClick={handleDonate} disabled={!clickable}>
-          Donate
-        </button>
+        <DonateButton actorId={actorId} clickable={clickable} eventId={eventId} />
         <button className="secondary-btn" onClick={handleAttend} disabled={!clickable}>
           {isAttending ? "Unattend" : "Attend"}
         </button>

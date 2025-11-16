@@ -1,5 +1,5 @@
 // src/api/followAPI.js
-import { authFetch, publicFetch } from './authAPI'; // make sure this path matches your project
+import { authFetch, publicFetch } from './authAPI';
 
 /* ---------- public ---------- */
 

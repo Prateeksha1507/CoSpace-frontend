@@ -39,7 +39,7 @@ export default function Settings() {
     email: "", // display-only
     bio: "",
     mission: "",
-    interests: "", // CSV in the form input; API will accept array or string
+    interests: "",
     profileImage: null,
     previewUrl: "",
     // org-only
@@ -48,6 +48,7 @@ export default function Settings() {
     regId: "",
     affiliation: "",
     orgType: "", // orgType
+    upi: "",
   });
 
   const [notify, setNotify] = useState({
@@ -98,6 +99,7 @@ export default function Settings() {
           regId: actor?.regId || actor?.registrationId || "",
           affiliation: actor?.affiliation || "",
           orgType: actor?.orgType || actor?.typeLabel || "",
+          upi: actor?.upi || "",
         }));
       } catch {
         // silent
@@ -153,6 +155,7 @@ export default function Settings() {
           regId: account.regId,
           affiliation: account.affiliation,
           orgType: account.orgType,
+          upi: account.upi,
         }),
       };
 
@@ -385,6 +388,13 @@ export default function Settings() {
                   options={ORG_TYPES}
                   error={msg} // Optional: if you want to show an error message
                   placeholder="Select organization type"
+                />
+                <FormField
+                  name="upi"
+                  label="UPI ID (for donations)"
+                  placeholder="e.g. yourname@upi"
+                  value={account.upi}
+                  onChange={onAccountChange}
                 />
               </>
             )}

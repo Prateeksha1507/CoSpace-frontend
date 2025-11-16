@@ -85,7 +85,7 @@ export default function UserProfileView({
           onKeyDown={(e) => handleKpiKey(e, "donations")}
         >
           <div className="user-kpi-value">
-            ₹{Number(stats?.totalDonations ?? 0).toLocaleString()}
+            ₹{Number(stats?.totalDonations/100 ?? 0).toLocaleString()}
           </div>
           <div className="user-kpi-label">Total Donations</div>
         </div>
@@ -222,7 +222,7 @@ export default function UserProfileView({
                   )}
                 </td>
                 <td className="user-amount">
-                  ₹{Number(d.amount || 0).toLocaleString()}
+                  ₹{Number(d.amount/100 || 0).toLocaleString()}
                 </td>
                 <td className="user-muted">
                   {date ? formatDate(date) : "—"}

@@ -100,16 +100,15 @@ export default function EventDetails() {
       : Array.isArray(raw)
       ? raw
       : [];
-    return arr.map((v, idx) => {
-      const u = v.user || {};
-      const userId = v.userId || u.id || u._id || v.id || v._id || String(idx);
+    return arr.map((v) => {
+      const userId = v._id;
       return {
         userId: String(userId),
-        name: v.name || u.name || "—",
-        email: v.email || u.email || "—",
-        profilePicture: v.profilePicture || u.profilePicture || "",
+        name: v.name || "—",
+        email: v.email || "—",
+        profilePicture: v.profilePicture || "",
         status: v.status || "pending",
-        joinedAt: v.joinedAt || v.createdAt || null,
+        joinedAt: v.createdAt || null,
       };
     });
   };
@@ -159,7 +158,7 @@ export default function EventDetails() {
       if (isOwner) return;
       try {
         const s = await fetchEventStats(event._id);
-        setStats({ participants: s.participants || 0, volunteers: s.volunteers || 0 });
+        setStats({ participants: s.participants || 0, volunteers: s.volunteers || 0, pending: s.pending });
       } catch {
         setStats({ participants: 0, volunteers: 0 });
       }

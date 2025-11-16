@@ -86,7 +86,7 @@ function Header() {
         </button>
 
         {/* Desktop Nav */}
-        {actor && (
+        {true ? (
           <div className="desktop-right">
             <nav className="nav-links">
               <a href="/">Home</a>
@@ -95,7 +95,6 @@ function Header() {
             </nav>
 
             <div>
-              {/* Desktop search */}
               <SearchBox
                 q={q}
                 setQ={setQ}
@@ -114,7 +113,17 @@ function Header() {
               </a>
             </div>
           </div>
-        )}
+        ):
+              <SearchBox
+                q={q}
+                setQ={setQ}
+                showSug={showSug}
+                setShowSug={setShowSug}
+                loadingSug={loadingSug}
+                suggestions={suggestions}
+                goToResultsHref={goToResultsHref}
+              />
+        }
       </header>
 
       {/* Backdrop */}

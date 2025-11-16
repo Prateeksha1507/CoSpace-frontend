@@ -27,6 +27,7 @@ export default function EventSection({
   const navigate = useNavigate();
 
   const [isVolunteering, setIsVolunteering] = useState(false);
+  const [hasSentVolReq, setHasSentVolReq] = useState(false);
   const [isAttending, setIsAttending] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -48,11 +49,13 @@ export default function EventSection({
         setIsAttending(attending);
 
         const volunteeringResp = await isMeVolunteering(eventId);
-        const volunteering =
-          typeof volunteeringResp === "boolean"
-            ? volunteeringResp
-            : !!volunteeringResp?.volunteering;
-        setIsVolunteering(volunteering);
+        if (!volunteeringResp.volunteering){
+          setIsVolunteering(false)
+        } else if (volunteeringResp.status == "pending"){
+          setHasSentVolReq(true)
+        } else {
+          setIsVolunteering(true)
+        }
       } catch (e) {
         toast.error(errMsg(e, "Error loading event status"));
       } finally {
@@ -68,12 +71,15 @@ export default function EventSection({
   const handleVolunteer = async () => {
     if (!clickable || !eventId) return;
     try {
+      if (hasSentVolReq){
+        toast.info("Volunteering request is being processed by the organization");
+      }
       if (isVolunteering) {
         await unvolunteer(eventId);
         setIsVolunteering(false);
       } else {
         await volunteer(eventId);
-        setIsVolunteering(true);
+        setHasSentVolReq(true);
       }
     } catch (e) {
       toast.error(errMsg(e, "Error updating volunteer status"));
@@ -86,9 +92,11 @@ export default function EventSection({
       if (isAttending) {
         await unattend(eventId);
         setIsAttending(false);
+        window.location.reload();
       } else {
         await attend(eventId);
         setIsAttending(true);
+        window.location.reload();
       }
     } catch (e) {
       toast.error(errMsg(e, "Error updating attendance status"));
@@ -200,7 +208,7 @@ export default function EventSection({
       {actorType=="user" && (
       <div className="ed-actions">
         <button className="secondary-btn" onClick={handleVolunteer} disabled={!clickable}>
-          {isVolunteering ? "Unvolunteer" : "Volunteer"}
+          {hasSentVolReq ? "Requested" : isVolunteering ? "Unvolunteer" : "Volunteer"}
         </button>
         <button className="primary-btn" onClick={handleDonate} disabled={!clickable}>
           Donate

@@ -34,5 +34,5 @@ export async function rejectVolunteer(eventId, userId) {
 
 export const isMeVolunteering = async (eventId) => {
   const res = await authFetch(`/api/volunteer/isMeVolunteering/${eventId}`);
-  return res.data;
+  return res;
 };

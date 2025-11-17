@@ -101,7 +101,7 @@ export default function EventDetails() {
       ? raw
       : [];
     return arr.map((v) => {
-      const userId = v._id;
+      const userId = v.userId;
       return {
         userId: String(userId),
         name: v.name || "—",
@@ -175,6 +175,7 @@ export default function EventDetails() {
       ]);
       setParticipants(normalizeAttendees(att));
       setVolunteers(normalizeVolunteers(vol));
+      console.log(normalizeVolunteers(vol))
     } catch (e) {
       showToast(errMsg(e, "Failed to load attendees/volunteers"), "error");
     } finally {

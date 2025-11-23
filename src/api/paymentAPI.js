@@ -6,14 +6,15 @@ const BASE = '/api/payment';
  * POST /api/payment/create
  * Body: { amount (in paise), currency, eventId }
  */
-export async function createPaymentOrder({ eventId, amountInRupees, currency = 'INR' }) {
-  if (!eventId) throw new Error('eventId is required');
+export async function createPaymentOrder({ eventId, orgId, amountInRupees, currency = 'INR' }) {
+  // if (!eventId) throw new Error('eventId is required');
   if (!amountInRupees || amountInRupees <= 0) throw new Error('amount must be > 0');
 
   return await authFetch(`${BASE}/create`, {
     method: 'POST',
     body: {
-      amount: Math.round(amountInRupees * 100), // rupees -> paise
+      amount: Math.round(amountInRupees * 100), // rupees -> paise,
+      orgId,
       currency,
       eventId,
     },

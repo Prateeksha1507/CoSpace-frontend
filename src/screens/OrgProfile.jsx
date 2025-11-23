@@ -10,6 +10,7 @@ import { useSearchParams, useParams } from "react-router-dom";
 import FollowSection from "../components/FollowSection";
 import { verify } from "../api/authAPI";
 import CenterSpinner from "../components/LoadingSpinner";
+import DonateButton from "../components/DonateButton";
 
 function formatNiceDate(iso) {
   try {
@@ -37,6 +38,7 @@ export default function OrgProfile() {
 
   // NEW: actor + followers
   const [actorType, setActorType] = useState(null); // 'user' | 'org' | null
+  const [actorId, setActorId] = useState(null);
   const [followersCount, setFollowersCount] = useState(0);
 
   useEffect(() => {
@@ -70,6 +72,8 @@ export default function OrgProfile() {
         setEvents(withNiceDate);
 
         setActorType(auth?.actor?.type || null);
+        setActorId(auth?.actor?.id || null);
+
         setFollowersCount(Number.isFinite(followers) ? followers : Number(followers || 0));
       } catch (e) {
         setError(e?.message || "Failed to load organization.");
@@ -129,7 +133,7 @@ export default function OrgProfile() {
           {actorType === "user" && (
             <>
               <FollowSection orgId={org._id} />
-              <button className="primary-btn">Donate</button>
+              <DonateButton actorId={actorId} clickable={true} eventId={null} orgId={org._id} />
             </>
           )}
           <a className="secondary-btn" href={`/chats?org=${org._id}`}>Chat with us</a>

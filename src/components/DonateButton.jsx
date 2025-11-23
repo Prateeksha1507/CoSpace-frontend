@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { createPaymentOrder } from "../api/paymentAPI";
 
-function DonateButton({ actorId, eventId, clickable, name, email, contact }) {
+function DonateButton({ actorId, eventId, clickable, name, email, contact, orgId }) {
   const [showOptions, setShowOptions] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState(null); // number | "custom"
   const [customAmount, setCustomAmount] = useState("");
@@ -22,10 +22,6 @@ function DonateButton({ actorId, eventId, clickable, name, email, contact }) {
         toast.error('Please enter a valid amount');
         return;
     }
-    if (!eventId) {
-        toast.error('Missing event');
-        return;
-    }
     if (!window.Razorpay) {
         toast.error('Payment SDK not loaded');
         return;
@@ -35,8 +31,9 @@ function DonateButton({ actorId, eventId, clickable, name, email, contact }) {
         setLoading(true);
 
         const { orderId, amount, currency, key } = await createPaymentOrder({
-        eventId,
-        amountInRupees,
+          eventId,
+          orgId,
+          amountInRupees,
         });
 
         const options = {

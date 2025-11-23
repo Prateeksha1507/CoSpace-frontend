@@ -69,3 +69,38 @@
   font-size: 1.2rem;
   color: var(--secondary-color);
 }
+
+
+.notif-item.unread {
+  background: #f6faff;
+  border-left: 4px solid #2b7cff;
+}
+
+.notif-item.read {
+  opacity: 0.8;
+}
+
+.notif-body {
+  font-size: 0.9rem;
+  margin-top: 2px;
+  color: #555;
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.notif-markall-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+}
+.notif-markall-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

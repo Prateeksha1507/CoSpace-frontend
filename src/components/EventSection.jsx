@@ -23,7 +23,8 @@ export default function EventSection({
   orgId,
   actorId,
   eventId,
-  actorType
+  actorType,
+  collaboratingOrg
 }) {
   const navigate = useNavigate();
 
@@ -68,6 +69,9 @@ export default function EventSection({
   const handleClick = () => {
     if (clickable && orgId) navigate(`/profile/org/${orgId}`);
   };
+  const handleCollabClick = () => {
+    if (clickable && orgId) navigate(`/profile/org/${collaboratingOrg._id}`);
+  };
 
   const handleVolunteer = async () => {
     if (!clickable || !eventId) return;
@@ -104,11 +108,6 @@ export default function EventSection({
     }
   };
 
-  const handleDonate = () => {
-    if (!clickable) return;
-    if (actorId && eventId) navigate(`/donate/${actorId}/${eventId}`);
-  };
-
   //TODO: LoadingSpinner
   if (loading) return <CenterSpinner label="Loading event details…" />;
 
@@ -137,6 +136,26 @@ export default function EventSection({
             </div>
           )}
         </div>
+      )}
+
+      {collaboratingOrg && (
+        <>
+          <h3 className="ed-heading">In Collaboration with</h3>
+          <div className={`ed-org ${clickable ? "clickable" : ""}`}>
+            <Avatar src={collaboratingOrg.profilePicture} backup={collaboratingOrg._id} alt={collaboratingOrg.name} className="ed-org-logo" />
+            {clickable ? (
+              <div onClick={handleCollabClick} className="clickable">
+                <p className="ed-org-name">{collaboratingOrg.name}</p>
+                <p className="ed-org-type">{collaboratingOrg.orgType}</p>
+              </div>
+            ) : (
+              <div>
+                <p className="ed-org-name">{collaboratingOrg.name}</p>
+                <p className="ed-org-type">{collaboratingOrg.orgType}</p>
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       <section className="ed-section">

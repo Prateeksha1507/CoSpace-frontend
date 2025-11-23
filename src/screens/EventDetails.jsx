@@ -32,6 +32,7 @@ export default function EventDetails() {
   const [stats, setStats] = useState({ participants: 0, volunteers: 0 });
   const [event, setEvent] = useState(null);
   const [org, setOrg] = useState(null);
+  const [collabOrg, setCollabOrg] = useState(null);
   const [actorId, setActorId] = useState(null);
   const [actorType, setActorType] = useState(null);
 
@@ -131,14 +132,18 @@ export default function EventDetails() {
   useEffect(() => {
     (async () => {
       try {
-        const data = await fetchEventById(id);
-        if (!data) {
+        const eventInfo = await fetchEventById(id);
+        if (!eventInfo) {
           showToast("Event not found", "error");
           return;
         }
-        setEvent(data);
+        if (eventInfo.collaboratingOrgId) {
+          const collaber = await fetchOrgById(eventInfo.collaboratingOrgId);
+          setCollabOrg(collaber);
+        }
+        setEvent(eventInfo);
         const [orgInfo, auth] = await Promise.all([
-          fetchOrgById(data.conductingOrgId),
+          fetchOrgById(eventInfo.conductingOrgId),
           verify().catch(() => null),
         ]);
         setOrg(orgInfo || null);
@@ -356,6 +361,7 @@ export default function EventDetails() {
         eventId={event._id}
         actorId={actorId}
         actorType={actorType}
+        collaboratingOrg={collabOrg}
       />
 
 {isOtherOrg && (
@@ -365,7 +371,6 @@ export default function EventDetails() {
       {past && <span className="ed-chip muted" title="Event has passed">Closed</span>}
     </div>
 
-    {/* Status banners */}
     {collabStatus === COLLAB_STATUS.ACCEPTED && (
       <div className="ed-alert success">You are the accepted collaborator for this event.</div>
     )}
@@ -632,7 +637,6 @@ export default function EventDetails() {
     )}
   </section>
 )}
-
 
       {!isOwner && (
         <section className="event-stats-simple">

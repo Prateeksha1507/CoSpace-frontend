@@ -135,8 +135,6 @@ export default function PublicUserProfilePage() {
     );
   }
 
-  console.log(donations);
-
   return (
     <UserProfileView
       user={user}

@@ -174,6 +174,5 @@ export async function getCurrentActorDocument() {
     actor?.type === "org"
       ? await fetchOrgById(actor.id)
       : await fetchUserById(actor.id);
-    console.log(doc)
   return { ...doc, type: actor?.type, id: actor?.id };
 }

@@ -175,7 +175,6 @@ export default function EventDetails() {
       ]);
       setParticipants(normalizeAttendees(att));
       setVolunteers(normalizeVolunteers(vol));
-      console.log(normalizeVolunteers(vol))
     } catch (e) {
       showToast(errMsg(e, "Failed to load attendees/volunteers"), "error");
     } finally {

@@ -29,7 +29,6 @@ export default function Avatar({ src, backup, size = 64, alt = "avatar", total =
         backgroundColor: "#e8eef2", // subtle background behind SVGs
       }}
       onError={(e) => {
-        console.log(src)
         if (e.target.src !== fallback) e.target.src = fallback;
       }}
     />

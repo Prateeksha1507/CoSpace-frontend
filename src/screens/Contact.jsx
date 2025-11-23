@@ -23,7 +23,6 @@ export default function ContactPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form)
     alert(`Form submitted! Preview:\n${JSON.stringify(
         { ...form, image: form.image ? form.image.name : null },
         null,

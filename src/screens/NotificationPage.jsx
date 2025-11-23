@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from "react";
 import "../styles/NotificationPage.css";
 import {
@@ -51,6 +52,7 @@ function iconFor(type) {
 }
 
 export default function NotificationsPage() {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [markingAll, setMarkingAll] = useState(false);
@@ -84,7 +86,6 @@ export default function NotificationsPage() {
     if (n.readAt) return; // already read, do nothing
     try {
       await markNotificationAsRead(n._id);
-      // optimistic update
       setItems(prev =>
         prev.map(x =>
           x._id === n._id ? { ...x, readAt: new Date().toISOString() } : x
@@ -92,6 +93,21 @@ export default function NotificationsPage() {
       );
     } catch (e) {
       console.warn("mark read failed:", e.message);
+    }
+  }
+
+  async function handleRedirect(n) {
+    await handleMarkRead(n);
+    if (["COLLAB_ACCEPTED", "COLLAB_REJECTED", "COLLAB_REQUEST", "COLLAB_CANCELLED", "ATTEND_EVENT", "VOLUNTEER_APPLIED", "VOLUNTEER_APPROVED", "VOLUNTEER_REJECTED"]
+    .includes(n.type)){
+      const destination = `/event/${n.entityId}`
+      navigate(destination);
+    } else if (["DONATION_RECEIVED"].includes(n.type)){
+      const destination = `/profile/user/${n.data.donorId}`
+      navigate(destination);
+    } else if (["FOLLOW_ORG"].includes(n.type)) {
+      const destination = `/profile/user/${n.data.followerId}`
+      navigate(destination);
     }
   }
 
@@ -162,7 +178,7 @@ export default function NotificationsPage() {
               <div
                 key={n._id}
                 className={`notif-item ${unread ? "unread" : "read"}`}
-                onClick={() => handleMarkRead(n)}
+                onClick={() => handleRedirect(n)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => (e.key === "Enter" ? handleMarkRead(n) : null)}

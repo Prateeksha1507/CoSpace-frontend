@@ -50,7 +50,6 @@ function DonateButton({ actorId, eventId, clickable, name, email, contact, orgId
         },
         notes: { actorId, eventId },
         handler: function (response) {
-            console.log('Payment success:', response);
             toast.success('Payment successful!');
         },
         };

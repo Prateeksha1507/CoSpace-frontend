@@ -1,5 +1,5 @@
 import React from "react";
-import Avatar from "../components/Avatar.jsx";
+import Avatar from "../components/avatar.jsx";
 
 function formatDate(iso) {
   if (!iso) return "—";

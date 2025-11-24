@@ -103,9 +103,8 @@ export default function ContactPage() {
           <div>
             <h4>Address</h4>
             <p>
-              123 Community Drive,
-              <br />
-              Anytown, USA
+               Cluster Innovation Centre, University of Delhi, 
+               <br/>GC Narang Road, Delhi, 110007
             </p>
           </div>
         </div>

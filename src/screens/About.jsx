@@ -7,37 +7,35 @@ export default function AboutPage() {
       <section className="about-section">
         <h2>About CoSpace</h2>
         <p>
-          CoSpace is a platform dedicated to connecting non-profit organizations,
-          college societies, and other community groups with individuals seeking
-          opportunities for events, volunteering, and donations. Our mission is to
-          empower communities to create positive change through collaboration and
-          shared resources.
+          CoSpace is a dedicated web platform designed to be the definitive digital hub for Non-Governmental Organizations (NGOs), student clubs, and community societies. Our mission is to dismantle the barriers of low visibility, poor coordination, and scattered communication that prevent these vital organizations from maximizing their social impact.
         </p>
       </section>
 
       <section className="about-section">
-        <h3>Our Vision</h3>
+        <h3>Our Solution</h3>
         <p>
-          To be the leading platform for community engagement, fostering a world
-          where everyone can easily contribute to causes they care about.
+          We created CoSpace to solve the fundamental challenges identified through our requirement analysis: attracting reliable volunteers, coordinating events, securing fundraising, and facilitating collaboration.
         </p>
+        <p>
+          CoSpace provides a single, unified digital space with the tools necessary to thrive:
+        </p>
+        <ul>
+          <li><strong>Verified Organization Profiles:</strong> Building donor trust and organizational credibility through our registration and verification process.</li>
+          <li><strong>Streamlined Volunteer Management:</strong> Easy sign-up, role assignment, attendance tracking, and recognition (certificates) to activate passive interest into active involvement.</li>
+          <li><strong>Secure Fundraising:</strong> Integrated, secure donation channels (UPI/cards/wallets) enabled exclusively for verified NGOs.</li>
+          <li><strong>Enhanced Collaboration:</strong> Dedicated spaces and tools to facilitate resource sharing and joint event planning between organizations.</li>
+        </ul>
       </section>
 
       <section className="about-section">
-        <h3>Our Values</h3>
+        <h3>Our Impact</h3>
         <p>
-          Collaboration, Transparency, Impact, Inclusivity, and Empowerment.
+          By centralizing communication, volunteer opportunities, and fundraising, CoSpace aims to dramatically increase community participation and organizational outreach. We are designed to foster a sustainable culture of social action, making it easier for every individual to find and contribute to the causes they care about.
         </p>
-      </section>
-
-      <section className="about-section">
-        <h3>History</h3>
         <p>
-          Founded in 2020, CoSpace began as a small initiative to bridge the gap
-          between community organizations and volunteers. Over the years, we’ve
-          grown into a thriving platform, facilitating thousands of connections
-          and supporting countless community projects.
+          Join CoSpace and help us build a stronger, more connected community.
         </p>
+        <p>#letscometogether</p>
       </section>
 
       <section className="about-section">
@@ -56,50 +54,54 @@ export default function AboutPage() {
             <img src="/person.png" alt="Akshita Sheera" />
             <h4 className="member-name">Akshita Sheera</h4>
             <p className="role">Requirement Analyst</p>
-                  <div className="team-socials">
-        <a href="https://github.com/sarahchen" target="_blank" rel="noopener noreferrer">GitHub</a>
-        <a href="https://linkedin.com/in/sarahchen" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="mailto:sarah@cospace.com">Email</a>
-      </div>
+            <div className="team-socials">
+              <a href="https://github.com/AkshitaSheera" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href="https://www.linkedin.com/in/akshita-sheera-85b148289/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              <a href="mailto:akshitasheera@gmail.com">Email</a>
+            </div>
           </div>
+
           <div className="team-member">
             <img src="/person.png" alt="Prateeksha" />
             <h4 className="member-name">Prateeksha</h4>
             <p className="role">Designer</p>
             <div className="team-socials">
-                <a href="https://github.com/sarahchen" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="https://linkedin.com/in/sarahchen" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                <a href="mailto:sarah@cospace.com">Email</a>
+              <a href="https://github.com/Prateeksha1507" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href="https://www.linkedin.com/in/prateeksha-y/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              <a href="mailto:ygungun09@gmail.com">Email</a>
             </div>
           </div>
+
           <div className="team-member">
             <img src="/person.png" alt="Vijay Samant" />
             <h4 className="member-name">Vijay Samant</h4>
             <p className="role">Developer</p>
             <div className="team-socials">
-                <a href="https://github.com/sarahchen" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="https://linkedin.com/in/sarahchen" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                <a href="mailto:sarah@cospace.com">Email</a>
+              <a href="https://github.com/VijaySamant4368" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href="https://www.linkedin.com/in/vijaysamant4368/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              <a href="mailto:vijaysamant4368@gmail.com">Email</a>
             </div>
           </div>
+
           <div className="team-member">
             <img src="/person.png" alt="Pratham Singh Chauhan" />
             <h4 className="member-name">Pratham Singh Chauhan</h4>
             <p className="role">Tester</p>
             <div className="team-socials">
-                <a href="https://github.com/sarahchen" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="https://linkedin.com/in/sarahchen" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                <a href="mailto:sarah@cospace.com">Email</a>
+              <a href="https://github.com/Pratham2375" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href="https://www.linkedin.com/in/pratham-singh-chauhan-306624288/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              <a href="mailto:prathamchauhan230507@gmail.com">Email</a>
             </div>
           </div>
+
           <div className="team-member">
             <img src="/person.png" alt="Prakhar Raghuwanshi" />
             <h4 className="member-name">Prakhar Raghuwanshi</h4>
             <p className="role">Manager</p>
             <div className="team-socials">
-                <a href="https://github.com/sarahchen" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="https://linkedin.com/in/sarahchen" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                <a href="mailto:sarah@cospace.com">Email</a>
+              <a href="https://github.com/PrakharRaghuwanshi" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href="https://www.linkedin.com/in/prakhar-raghuwanshi-3a829828a/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              <a href="mailto:prakhar19raghuwanshi2005@gmail.com">Email</a>
             </div>
           </div>
         </div>

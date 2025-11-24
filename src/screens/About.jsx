@@ -38,20 +38,12 @@ export default function AboutPage() {
         <p>#letscometogether</p>
       </section>
 
-      <section className="about-section">
-        <h3>Key Achievements</h3>
-        <div className="achievements-box">
-          <p>✔ Facilitated over 5,000 successful events</p>
-          <p>✔ Connected over 10,000 volunteers with community organizations</p>
-          <p>✔ Raised over $500,000 in donations for various causes</p>
-        </div>
-      </section>
-
+     
       <section className="about-section">
         <h3>Our Team</h3>
         <div className="team-grid">
           <div className="team-member">
-            <img src="/person.png" alt="Akshita Sheera" />
+            <img src="/team/akshita.jpeg"alt="Akshita Sheera" />
             <h4 className="member-name">Akshita Sheera</h4>
             <p className="role">Requirement Analyst</p>
             <div className="team-socials">
@@ -62,7 +54,7 @@ export default function AboutPage() {
           </div>
 
           <div className="team-member">
-            <img src="/person.png" alt="Prateeksha" />
+            <img src="/team/prateeksha.jpeg" alt="Prateeksha" />
             <h4 className="member-name">Prateeksha</h4>
             <p className="role">Designer</p>
             <div className="team-socials">
@@ -73,7 +65,7 @@ export default function AboutPage() {
           </div>
 
           <div className="team-member">
-            <img src="/person.png" alt="Vijay Samant" />
+            <img src="/team/vijay.jpeg" alt="Vijay Samant" />
             <h4 className="member-name">Vijay Samant</h4>
             <p className="role">Developer</p>
             <div className="team-socials">
@@ -84,7 +76,7 @@ export default function AboutPage() {
           </div>
 
           <div className="team-member">
-            <img src="/person.png" alt="Pratham Singh Chauhan" />
+            <img src="/team/pratham.jpeg" alt="Pratham Singh Chauhan" />
             <h4 className="member-name">Pratham Singh Chauhan</h4>
             <p className="role">Tester</p>
             <div className="team-socials">
@@ -95,7 +87,7 @@ export default function AboutPage() {
           </div>
 
           <div className="team-member">
-            <img src="/person.png" alt="Prakhar Raghuwanshi" />
+            <img src="/team/prakhar.jpeg" alt="Prakhar Raghuwanshi" />
             <h4 className="member-name">Prakhar Raghuwanshi</h4>
             <p className="role">Manager</p>
             <div className="team-socials">

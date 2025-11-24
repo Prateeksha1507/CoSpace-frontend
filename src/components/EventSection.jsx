@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Avatar from "./Avatar.jsx";
+import Avatar from "./avatar.jsx";
 import "../styles/EventDetails.css";
 import { useNavigate } from "react-router-dom";
 import { attend, unattend, isMeAttending } from "../api/attendanceAPI";

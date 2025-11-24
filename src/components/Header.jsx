@@ -3,7 +3,7 @@ import "../styles/header.css";
 import { suggestSearch } from "../api/searchAPI";
 import { SearchBox } from "../components/SearchBox"; // <— import the extracted SearchBox component
 import { getCurrentActorDocument } from "../api/authAPI";
-import Avatar from "./Avatar"
+import Avatar from "./avatar.jsx"
 
 function Header() {
   const [open, setOpen] = useState(false);

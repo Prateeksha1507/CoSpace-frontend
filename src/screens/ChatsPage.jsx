@@ -9,7 +9,7 @@ import {
 import { getCurrentActorDocument } from "../api/authAPI";
 import { fetchOrgById } from "../api/orgAPI";
 import "../styles/ChatsPage.css";
-import Avatar from "../components/Avatar";
+import Avatar from "../components/Avatar.jsx";
 
 export default function ChatsPage() {
   const [me, setMe] = useState(null);             // { id, type }

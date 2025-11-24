@@ -1,6 +1,5 @@
 import React from "react";
-import Avatar from "../components/Avatar"; // ← ensure correct relative path
-
+import Avatar from "../components/Avatar.jsx";
 
 function formatDate(iso) {
   if (!iso) return "—";

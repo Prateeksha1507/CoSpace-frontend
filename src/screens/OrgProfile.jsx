@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../styles/OrgProfile.css";
-import Avatar from "../components/Avatar";
+import Avatar from "../components/Avatar.jsx";
 import {
   fetchOrgById,
   fetchOrgFollowerCount,

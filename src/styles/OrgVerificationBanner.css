@@ -1,0 +1,70 @@
+.org-verif-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  gap: 16px;
+}
+
+.org-verif-left {
+  flex: 1;
+}
+
+.org-verif-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.org-verif-subtitle {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.org-verif-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.org-verif-label {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.org-verif-warning {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #9a5b00;
+}
+
+.org-verif-error {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+.org-verif-right {
+  flex-shrink: 0;
+}
+
+.org-verif-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  background: #2563eb;
+  color: white;
+}
+
+.org-verif-btn:hover {
+  background: #1d4ed8;
+}

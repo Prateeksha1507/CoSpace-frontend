@@ -55,6 +55,7 @@ function App() {
               <Route path="/register/organization" element={<OrgRegister />} />
               <Route path="/register/organisation" element={<OrgRegister />} />
               <Route path="/register/verification" element={<Verification />} />
+              <Route path="/org/verification" element={<Verification />} />
               <Route path="/search" element={<SearchResults />} />
 
               {/* Public info */}

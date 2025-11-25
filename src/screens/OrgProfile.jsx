@@ -11,6 +11,7 @@ import FollowSection from "../components/FollowSection";
 import { verify } from "../api/authAPI";
 import CenterSpinner from "../components/LoadingSpinner";
 import DonateButton from "../components/DonateButton";
+import VerificationBadge from "../components/VerificationBadge.jsx";
 
 function formatNiceDate(iso) {
   try {
@@ -121,7 +122,11 @@ export default function OrgProfile() {
         />
         <div className="org-info">
           <h2 className="org-name">{org.name}</h2>
-          <p className="org-type">{org.orgType || "Other"}</p>
+
+          <p className="org-type">
+            {org.orgType || "Other"}
+            <VerificationBadge verified={org.verified} />
+          </p>
 
           { actorType!="user" && (<p className="org-followers">
             {followersCount} follower{followersCount === 1 ? "" : "s"}

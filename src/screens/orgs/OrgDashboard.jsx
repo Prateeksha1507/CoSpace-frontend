@@ -6,6 +6,7 @@ import Warning from "../../components/Warning";
 import { deleteEvent } from "../../api/eventAPI";
 import { showToast } from "../../components/ToastContainer";
 import LoadingSpinner, { CenterSpinner } from "../../components/LoadingSpinner";
+import OrgVerificationBanner from "../../components/OrgVerificationBanner";
 
 export default function OrgDashboard() {
   const navigate = useNavigate();
@@ -108,6 +109,7 @@ const confirmDelete = async () => {
   return (
     <section className="od-container">
       <h1 className="od-title">{org ? `${org.name}'s Dashboard` : "My Dashboard"}</h1>
+      <OrgVerificationBanner />
       <p className="od-subtitle">Manage your events, volunteers, and track your impact.</p>
 
       {loading && <p>Loading…</p>}

@@ -29,6 +29,8 @@ const MyProfile = lazy(() => import("./screens/users/MyProfile"));
 const UserProfilePage = lazy(() => import("./screens/UserProfile"));
 const EditEvent = lazy(() => import("./screens/orgs/EditEvent"));
 const SearchResults = lazy(() => import("./screens/SearchResults"));
+const AdminDashboard= lazy(() => import("./screens/AdminDashboard"));
+const OrgDocs= lazy(() => import("./screens/OrgDocs"));
 
 function App() {
   return (
@@ -146,6 +148,25 @@ function App() {
                 }
               />
             </Route>
+            <Route
+              path="/admin/home"
+              element={
+                
+                  <AdminDashboard />
+                
+              }
+            />
+
+
+            <Route
+              path="/admin/orgs/:orgId/docs"
+              element={
+                <ProtectedRoute allowed={["admin"]}>
+                  <OrgDocs />
+                </ProtectedRoute>
+              }
+            />
+
           </Routes>
         </Suspense>
       </BrowserRouter>

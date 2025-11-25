@@ -1,0 +1,155 @@
+.admin-layout {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.admin-header-bar {
+  height: 56px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+}
+
+.admin-header-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.admin-logo {
+  font-weight: 700;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.admin-main {
+  max-width: 1120px;
+  margin: 24px auto;
+  padding: 0 24px 40px;
+}
+
+.admin-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.admin-error {
+  color: #b91c1c;
+}
+
+.admin-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-stat-card {
+  flex: 1;
+  min-width: 220px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 16px 18px;
+}
+
+.admin-stat-label {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.admin-stat-value {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.admin-table-section {
+  margin-top: 16px;
+}
+
+.admin-section-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.admin-table {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.admin-table-header,
+.admin-table-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 2fr 1.2fr 1fr;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+.admin-table-header {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.admin-table-row:nth-child(odd) {
+  background: #ffffff;
+}
+.admin-table-row:nth-child(even) {
+  background: #f9fafb;
+}
+
+.admin-table-empty {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.admin-table-link {
+  color: #0f172a;
+}
+
+.admin-table-email {
+  color: #0f172a;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.admin-table-doc-link {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.admin-table-doc-link:hover {
+  text-decoration: underline;
+}
+
+.admin-verify-btn {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: none;
+  background: #16a34a;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.admin-verify-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.admin-verify-btn:not(:disabled):hover {
+  background: #15803d;
+}

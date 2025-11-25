@@ -58,6 +58,8 @@ export default function Verification() {
         <h1 className="docs-title">Document Submission</h1>
 
         <form key={formKey} className="docs-form" onSubmit={handleSubmit}>
+          
+          {/* Required documents section */}
           <div className="docs-section">
             <h3 className="docs-subtitle">Required Documents</h3>
             <p className="docs-hint">
@@ -99,26 +101,12 @@ export default function Verification() {
             {!!status.error && <p className="docs-error">{status.error}</p>}
           </div>
 
-          <div className="docs-section">
-            <h3 className="docs-subtitle">Verification Status</h3>
-            <p className="docs-hint">Verification Progress</p>
-
-            <div className="docs-progress">
-              <div className="docs-progress-bar" style={{ width: "28%" }} />
-            </div>
-
-            <p className="docs-text">
-              Your documents are currently under review. You will receive a
-              notification once the verification process is complete.
-            </p>
-          </div>
-
+          {/* Support section */}
           <div className="docs-section">
             <h3 className="docs-subtitle">Support</h3>
             <p className="docs-text">
-              If you have any questions or need assistance, please contact our support team at
-              <a className="docs-link" href="mailto:support@coSpace.com"> support@coSpace.com</a>
-              {" "}or call us at (555) 123-4567.
+              If you have any questions or need assistance, please visit our{" "}
+              <a className="docs-link" href="/contact">Contact Page</a>.
             </p>
           </div>
         </form>
@@ -127,6 +115,7 @@ export default function Verification() {
   );
 }
 
+/* ---------- Small helper component ---------- */
 function UploadRow({ label, file, onChange }) {
   const inputId = label.replace(/\s+/g, "-").toLowerCase();
 

@@ -1,0 +1,96 @@
+.admin-doc-subtitle {
+  margin: 4px 0 16px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.admin-back-link {
+  margin-bottom: 8px;
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.admin-back-link:hover {
+  text-decoration: underline;
+}
+
+.admin-doc-tabs {
+  display: flex;
+  gap: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 16px;
+}
+
+.admin-doc-tab {
+  padding: 8px 0;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+}
+
+.admin-doc-tab.active {
+  color: #0f172a;
+}
+
+.admin-doc-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: #2563eb;
+}
+
+.admin-doc-viewer {
+  margin-top: 8px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  min-height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-doc-frame {
+  width: 100%;
+  height: 70vh;
+  border: none;
+  border-radius: 12px;
+}
+
+.admin-doc-image {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.admin-doc-empty {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.admin-doc-toolbar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.admin-doc-toolbar a {
+  color: #2563eb;
+}
+.admin-doc-toolbar a:hover {
+  text-decoration: underline;
+}

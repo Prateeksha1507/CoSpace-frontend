@@ -152,7 +152,7 @@ export async function verify() {
 
   try {
     const data = await jsonFetch("/api/auth/verify", { auth: true });
-    const actor = data?.user || data?.org || null;
+    const actor = data?.user || data?.org || data?.admin || null;
     return { actor };
   } catch (err) {
     console.warn("verify failed:", err.message);
@@ -160,8 +160,6 @@ export async function verify() {
     return { actor: null };
   }
 }
-
-// Shortcut to get current user/org
 export async function getCurrentActor() {
   const { actor } = await verify();
   return actor;

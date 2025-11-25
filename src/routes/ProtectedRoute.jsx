@@ -31,7 +31,12 @@ export default function ProtectedRoute({ children, allowed, redirectToDashboard 
   if (redirectToDashboard && state.user.type == "org")  return <Navigate to="/dashboard" replace />;
   
   if (Array.isArray(allowed) && allowed.length > 0 && !allowed.includes(state.user.type)) {
-    const home = state.user.type === "org" ? "/org/home" : "/user/home";
+    const home =
+    state.user.type === "admin"
+      ? "/admin/home"
+      : state.user.type === "org"
+      ? "/org/home"
+      : "/user/home";
     return <Navigate to={home} replace />;
   }
   return children;

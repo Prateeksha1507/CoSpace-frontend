@@ -31,3 +31,11 @@ export async function verifyOrg(orgId) {
     method: "PATCH",
   });
 }
+
+// OPTIONAL: if you add a stats endpoint later
+// GET /api/admin/orgs/stats
+export async function getOrgVerificationStats() {
+  return await authFetch("/api/admin/orgs/stats", {
+    method: "GET",
+  });
+}

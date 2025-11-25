@@ -21,7 +21,13 @@ export default function Login() {
     setLoading(true);
     try {
       const { user } = await login({ email, password });
-      window.location.href = user.type === "org" ? "/org/home" : "/user/home";
+      if (user.type === "admin") {
+        window.location.href = "/admin/home";
+      } else if (user.type === "org") {
+        window.location.href = "/org/home";
+      } else {
+        window.location.href = "/user/home";
+      }
     } catch (err) {
       setError(err.message || "Login failed");
     } finally {
@@ -37,7 +43,7 @@ export default function Login() {
         <Form className="login-form" onSubmit={handleSubmit}>
           <FormField
             name="email"
-            type="email"yy
+            type="email"
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}

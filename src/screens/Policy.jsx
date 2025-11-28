@@ -52,7 +52,7 @@ const sections = [
     content: (
       <p>
         If you have any questions about this Privacy Policy, please contact us at:{" "}
-        <a href="mailto:privacy@cospace.com">privacy@cospace.com</a>
+        <a href="mailto:prakhar19raghuwanshi@cic.du.ac.in">prakhar19raghuwanshi@cic.du.ac.in</a>
       </p>
     ),
   },
@@ -100,7 +100,7 @@ export default function PrivacyPolicy() {
         <h3>Contact Us</h3>
         <p>
           If you have any questions about this Privacy Policy, please contact us at{" "}
-          <a href="mailto:privacy@cospace.com">privacy@cospace.com</a>.
+          <a href="mailto:prakhar19raghuwanshi@cic.du.ac.in">prakhar19raghuwanshi@cic.du.ac.in</a>.
         </p>
       </section>
     </section>

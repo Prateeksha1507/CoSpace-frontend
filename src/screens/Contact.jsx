@@ -23,12 +23,26 @@ export default function ContactPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Form submitted! Preview:\n${JSON.stringify(
-        { ...form, image: form.image ? form.image.name : null },
-        null,
-        2
-      )}`);
+
+    const recipient = "prakhar19raghuwanshi@cic.du.ac.in"; // or support email
+    const { name, email, subject, message } = form;
+
+    const body = `
+    CoSpace team,
+    ${message}
+    Regards,
+    Name: ${name}
+    Email: ${email}
+
+  `.trim();
+
+    const mailto = `mailto:${recipient}?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailto; // opens the user's mail app with fields filled
   };
+
 
   return (
     <section className="contact-container">
@@ -86,29 +100,35 @@ export default function ContactPage() {
         <div className="contact-info-grid">
           <div>
             <h4>General Inquiries</h4>
-            <p>info@coSpace.org</p>
+            <p>
+              <a href="mailto:prakhar19raghuwanshi@cic.du.ac.in" className="link">
+                Prakhar Raghuwanshi
+              </a>
+            </p>
           </div>
           <div>
             <h4>Support</h4>
-            <p>support@coSpace.org</p>
-          </div>
-          <div>
-            <h4>Partnerships</h4>
-            <p>partnerships@coSpace.org</p>
+            <p>
+              <a href="mailto:vijaysamant4368@cic.du.ac.in" className="link">
+                Vijay Samant
+              </a>
+            </p>
           </div>
           <div>
             <h4>Phone</h4>
-            <p>+1-555-123-4567</p>
+            <p>+91-7803941754</p>
           </div>
           <div>
             <h4>Address</h4>
             <p>
-               Cluster Innovation Centre, University of Delhi, 
-               <br/>GC Narang Road, Delhi, 110007
+              Cluster Innovation Centre, University of Delhi,
+              <br />GC Narang Road, Delhi, 110007
             </p>
           </div>
         </div>
       </section>
+
+
     </section>
   );
 }

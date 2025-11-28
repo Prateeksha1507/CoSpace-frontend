@@ -7,6 +7,7 @@ import {
   verifyOrg,
 } from "../api/adminAPI";
 import CenterSpinner from "../components/LoadingSpinner";
+import { AdminHeader } from "../components/adminHeader";
 
 export default function AdminDashboard() {
   const [actor, setActor] = useState(null);
@@ -73,7 +74,7 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <div className="admin-layout">
-        <HeaderBar />
+        <AdminHeader />
         <main className="admin-main">
           <h1 className="admin-page-title">Admin Dashboard</h1>
           <p className="admin-error">{error}</p>
@@ -84,7 +85,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="admin-layout">
-      <HeaderBar />
+      <AdminHeader />
 
       <main className="admin-main">
         <h1 className="admin-page-title">Admin Dashboard</h1>
@@ -152,16 +153,6 @@ export default function AdminDashboard() {
         </section>
       </main>
     </div>
-  );
-}
-
-function HeaderBar() {
-  return (
-    <header className="admin-header-bar">
-      <div className="admin-header-inner">
-        <div className="admin-logo">CoSpace</div>
-      </div>
-    </header>
   );
 }
 

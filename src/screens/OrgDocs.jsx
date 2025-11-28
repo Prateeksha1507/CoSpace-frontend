@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import "../styles/OrgDocs.css";
 import { viewOrgDocs } from "../api/adminAPI";
 import CenterSpinner from "../components/LoadingSpinner";
+import { AdminHeader } from "../components/adminHeader";
 
 export default function AdminOrgDocs() {
   const { orgId } = useParams();
@@ -31,7 +32,7 @@ export default function AdminOrgDocs() {
   if (error || !org) {
     return (
       <div className="admin-layout">
-        <HeaderBar />
+        <AdminHeader />
         <main className="admin-main">
           <button className="admin-back-link" onClick={() => navigate(-1)}>
             ← Back
@@ -56,7 +57,7 @@ export default function AdminOrgDocs() {
 
   return (
     <div className="admin-layout">
-      <HeaderBar />
+      <AdminHeader />
       <main className="admin-main">
         <button className="admin-back-link" onClick={() => navigate(-1)}>
           ← Back
@@ -70,17 +71,17 @@ export default function AdminOrgDocs() {
         {/* Tabs */}
         <div className="admin-doc-tabs">
           <DocTab
-            label="Document 1"
+            label="Registration Certificate"
             active={activeTab === "registration"}
             onClick={() => setActiveTab("registration")}
           />
           <DocTab
-            label="Document 2"
+            label="Tax Exemption"
             active={activeTab === "tax"}
             onClick={() => setActiveTab("tax")}
           />
           <DocTab
-            label="Document 3"
+            label="Legal ID / Proof"
             active={activeTab === "id"}
             onClick={() => setActiveTab("id")}
           />
@@ -121,16 +122,6 @@ export default function AdminOrgDocs() {
 
       </main>
     </div>
-  );
-}
-
-function HeaderBar() {
-  return (
-    <header className="admin-header-bar">
-      <div className="admin-header-inner">
-        <div className="admin-logo">CoSpace</div>
-      </div>
-    </header>
   );
 }
 

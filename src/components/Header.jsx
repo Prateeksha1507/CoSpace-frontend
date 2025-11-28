@@ -1,13 +1,20 @@
+import { useLocation } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/header.css";
 import { suggestSearch } from "../api/searchAPI";
-import { SearchBox } from "../components/SearchBox"; // <— import the extracted SearchBox component
+import { SearchBox } from "../components/SearchBox";
 import { getCurrentActorDocument } from "../api/authAPI";
 import Avatar from "./avatar.jsx"
 
 function Header() {
+
   const [open, setOpen] = useState(false);
   const [actor, setActor] = useState(null);
+
+  const location = useLocation();
+  const pathname = location.pathname;
+  const logoOnlyPages = ["/login", "/register", "/admin/home", "/register/organization", "/register/user", "/contact", "/about", "/privacy", "/terms"];
+  const logoOnly = logoOnlyPages.includes(pathname);
 
   useEffect(() => {
     const fetchActor = async () => {
@@ -64,6 +71,18 @@ function Header() {
 
   const term = q.trim();
   const goToResultsHref = `/search?q=${encodeURIComponent(term)}`;
+
+  if (logoOnly) {
+    return (
+          <header className="header" style={{ position: "relative", zIndex: 1001 }}>
+            {/* Always show logo */}
+            <a href="/" className="brand-only">
+              <img src="/logo.png" alt="CoSpace Logo" className="logo" />
+              <span className="brand-name">CoSpace</span>
+            </a>
+          </header>
+    )
+  }
 
   return (
     <>

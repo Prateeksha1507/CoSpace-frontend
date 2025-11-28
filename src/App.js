@@ -57,7 +57,6 @@ function App() {
               <Route path="/register/organization" element={<OrgRegister />} />
               <Route path="/register/organisation" element={<OrgRegister />} />
               <Route path="/register/verification" element={<Verification />} />
-              <Route path="/org/verification" element={<Verification />} />
               <Route path="/search" element={<SearchResults />} />
 
               {/* Public info */}
@@ -147,16 +146,23 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+            <Route
+              path="/org/verification"
+              element={
+                <ProtectedRoute allowed={["org"]}>
+                  <Verification />
+                </ProtectedRoute>
+              }
+            />
             </Route>
+
+
             <Route
               path="/admin/home"
               element={
-                
                   <AdminDashboard />
-                
               }
             />
-
 
             <Route
               path="/admin/orgs/:orgId/docs"

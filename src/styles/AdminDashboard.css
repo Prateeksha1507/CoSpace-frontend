@@ -153,3 +153,10 @@
 .admin-verify-btn:not(:disabled):hover {
   background: #15803d;
 }
+
+.set-btn {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.95rem;
+}

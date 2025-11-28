@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../../styles/org/Verification.css";
 import { submitOrgDocs } from "../../api/orgDocsAPI";
+import { showToast } from "../../components/ToastContainer";
 
 export default function Verification() {
   const [files, setFiles] = useState({
@@ -41,6 +42,7 @@ export default function Verification() {
       });
 
       setStatus({ loading: false, msg: "Documents submitted for review.", error: "" });
+      showToast("Documents submitted for review", "success")
       setFiles({ registration: null, tax: null, id: null });
       setFormKey((k) => k + 1); // reset native file inputs
     } catch (err) {
@@ -49,6 +51,7 @@ export default function Verification() {
         msg: "",
         error: err.message || "Upload failed",
       });
+      showToast(`${err.message || "Upload failed"}`, "error")
     }
   };
 

@@ -411,24 +411,6 @@ export default function Settings() {
               <LogoutButton />
             </FormActions>
           </Form>
-
-          <h3 className="set-subtitle">Linked Accounts</h3>
-          <div className="set-linked">
-            <div className="set-linked-item">
-              <span className="set-linked-icon">🔗</span>
-              <span>Connect with Facebook</span>
-              <Button variant="outline" className="secondary-btn set-mini">
-                Connect
-              </Button>
-            </div>
-            <div className="set-linked-item">
-              <span className="set-linked-icon">🔗</span>
-              <span>Connect with Twitter</span>
-              <Button variant="outline" className="secondary-btn set-mini">
-                Connect
-              </Button>
-            </div>
-          </div>
         </section>
       )}
 
